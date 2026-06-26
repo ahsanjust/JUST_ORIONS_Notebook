@@ -9,11 +9,12 @@
 \usepackage{mathptmx}
 \usepackage{courier}
 \usepackage{xcolor}
-\definecolor{codekw}{rgb}{0.0,0.0,0.7}    % dark blue for keywords
-\definecolor{codestr}{rgb}{0.13,0.55,0.13} % dark green for strings
-\definecolor{codecmt}{rgb}{0.5,0.5,0.5}   % gray for comments
-\definecolor{codenum}{rgb}{0.7,0.0,0.0}   % dark red for numbers
-\definecolor{codepre}{rgb}{0.55,0.15,0.55} % purple for preprocessor
+\definecolor{codekw}{rgb}{0.10,0.35,0.65}     % vivid blue for keywords
+\definecolor{codestr}{rgb}{0.70,0.40,0.15}     % warm orange-brown for strings (VS Code style)
+\definecolor{codecmt}{rgb}{0.35,0.35,0.35}     % medium gray for comments
+\definecolor{codenum}{rgb}{0.10,0.55,0.10}     % green for numbers (VS Code style)
+\definecolor{codepre}{rgb}{0.55,0.18,0.60}     % purple for preprocessor
+\definecolor{codetype}{rgb}{0.15,0.58,0.55}    % teal for C++ types (VS Code style)
 \usepackage{caption}
 \usepackage{tikz}
 
@@ -35,6 +36,7 @@
   commentstyle=\color{codecmt},
   numberstyle=\color{codenum},
   identifierstyle=\color{black},
+  directivestyle=\color{codepre},
   morekeywords={mt19937,mt19937_64,uniform_int_distribution,
     pb_ds,gnu_pbds,tree,null_type,rb_tree_tag,
     tree_order_statistics_node_update,ordered_set,OS,
@@ -48,15 +50,17 @@
   keepspaces=true,
   showspaces=false,
   showstringspaces=false,
-  aboveskip=2pt,
-  belowskip=2pt,
-  lineskip=0.5pt,
+  aboveskip=4pt,
+  belowskip=4pt,
+  lineskip=1pt,
   upquote=true,
   tabsize=2,
 }
 
-\setlength{\parskip}{5pt}
+\setlength{\parskip}{6pt}
 \setlength{\parindent}{0pt}
+
+\linespread{1.2}
 
 \begin{document}
 

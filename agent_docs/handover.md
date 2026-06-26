@@ -47,7 +47,7 @@ Template/
 │   ├── main.tex               # Master document (11 includes)
 │   ├── JUST_ORIONS_Notebook.tex  # Monolithic (backup)
 │   ├── JUST_ORIONS Notebook_Original.pdf
-│   ├── sections/               # 11 modular .tex files
+│   ├── sections/               # 00_index.tex + 11 modular .tex files
 │   └── images/                 # 5 PNG images
 ├── code_library/               # CP code library (nested repo)
 │   ├── templates/              # 16 standalone .cpp templates
@@ -74,7 +74,9 @@ Template/
 
 ## Key Metrics
 
-- Notebook: 23 pages (matches original)
+- Notebook: 21 pages (index page + 20 content pages)
+- Index page with page-numbered algorithm listing on page 1
+- Section-aware page headers showing current category on every page
 - 11 modular section files (replaced 28 old files + 12 topic files)
 - 16 standalone templates in code_library/templates/
 - code_library: ~68MB, ~2000 files across personal code + 4 external repos
@@ -88,4 +90,4 @@ Template/
 
 ## Key Constraint
 
-The final PDF must be **≤25 pages** (the IUPC/ICPC limit). Currently at 23 pages, which gives us ~2 pages of breathing room for fixes.
+The final PDF must be **≤25 pages** (the IUPC/ICPC limit). Currently at 21 pages, leaving ~4 pages of breathing room for fixes and additions.

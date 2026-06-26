@@ -13,9 +13,19 @@
 
 - **Style**: fancyhdr
 - **Left header**: `\textbf{JUST\_ORIONS} - Jashore University of Science and Technology`
-- **Right header**: page number (`\thepage`)
+- **Right header**: `\leftmark\ -- \thepage` (section name + page number)
 - **Header rule**: 0.8pt
 - **No footer content**
+
+Section names are set via `\markboth{NAME}{NAME}` at the start of each section file:
+`SETUP & BASICS`, `SEGTREE / BIT`, `SPARSE / MERGE`, `TREAP`, `GRAPH`,
+`TREE`, `STRING`, `TRIE / BOOTH`, `BASIS / DP`, `COMBINATORICS`, `GEOMETRY`
+
+## Index Page
+
+Page 1 of the notebook is a full-width index (`sections/00_index.tex`) listing
+all algorithms with `\pageref` page numbers and category names. Each section
+file has a `\label{sec:XX}` at its start for page referencing.
 
 ## Typography
 
