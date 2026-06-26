@@ -1,0 +1,60 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[top=1.0in,bottom=1.0in,left=0.65in,right=0.65in]{geometry}
+\usepackage{paracol}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{charter}
+\usepackage{caption}
+\usepackage{tikz}
+
+\setlength{\columnsep}{14pt}
+\setlength{\columnseprule}{0.4pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.8pt}
+\fancyhead[L]{\textbf{JUST\_ORIONS} - Jashore University of Science and Technology}
+\fancyhead[R]{\thepage}
+\fancyfoot{}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  breakatwhitespace=false,
+  frame=none,
+  columns=fullflexible,
+  keepspaces=true,
+  showspaces=false,
+  showstringspaces=false,
+  aboveskip=2pt,
+  belowskip=2pt,
+  lineskip=0.5pt,
+}
+
+\setlength{\parskip}{5pt}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\columnratio{0.5}
+\begin{paracol}{2}
+
+\input{sections/s01_build_and_basics}
+\input{sections/s02_persistent_segtree}
+\input{sections/s03_sparse_table}
+\input{sections/s04_treap}
+\input{sections/s05_graph_algorithms}
+\input{sections/s06_tree_algorithms}
+\input{sections/s07_string_algorithms}
+\input{sections/s08_trie_and_booth}
+\input{sections/s09_basis_and_dp}
+\input{sections/s10_combinatorics}
+\input{sections/s11_geometry_and_misc}
+
+\end{paracol}
+\end{document}
