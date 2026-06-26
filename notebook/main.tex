@@ -1,5 +1,5 @@
 \documentclass[10pt,a4paper]{article}
-\usepackage[papersize={596pt,842pt},top=1.0in,bottom=1.0in,left=0.65in,right=0.65in]{geometry}
+\usepackage[papersize={596pt,842pt},top=0.7in,bottom=1.0in,left=0.65in,right=0.65in,headsep=8pt]{geometry}
 \usepackage{paracol}
 \usepackage{fancyhdr}
 \usepackage{listings}
@@ -9,12 +9,12 @@
 \usepackage{mathptmx}
 \usepackage{courier}
 \usepackage{xcolor}
-\definecolor{codekw}{rgb}{0.10,0.35,0.65}    % vivid blue for keywords
-\definecolor{codestr}{rgb}{0.70,0.40,0.15}   % warm orange-brown for strings
-\definecolor{codecmt}{rgb}{0.45,0.45,0.45}   % medium gray for comments
-\definecolor{codenum}{rgb}{0.10,0.55,0.10}   % green for numbers
-\definecolor{codepre}{rgb}{0.55,0.18,0.60}   % purple for preprocessor
-\definecolor{codetype}{rgb}{0.15,0.58,0.55}  % teal for C++ types
+\definecolor{codekw}{HTML}{004DFF}   % ultra-bright blue for keywords
+\definecolor{codestr}{HTML}{FF6600}  % blazing orange for strings
+\definecolor{codecmt}{HTML}{33AA44}  % bright green for comments
+\definecolor{codenum}{HTML}{AA00CC}  % vivid purple for numbers
+\definecolor{codepre}{HTML}{DD0088}  % hot pink for preprocessor
+\definecolor{codetype}{HTML}{00BBAA} % bright teal for C++ types
 \usepackage{caption}
 \usepackage{tikz}
 
@@ -24,8 +24,8 @@
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\headrulewidth}{0.8pt}
-\fancyhead[L]{\textbf{JUST\_ORIONS} - Jashore University of Science and Technology}
-\fancyhead[R]{\leftmark\ -- \thepage}
+\fancyhead[L]{\nouppercase{\textbf{JUST\_ORIONS} - Jashore University of Science and Technology}}
+\fancyhead[R]{\thepage}
 \fancyfoot{}
 
 \lstset{
@@ -76,21 +76,17 @@
   keepspaces=true,
   showspaces=false,
   showstringspaces=false,
-  aboveskip=2pt,
-  belowskip=2pt,
-  lineskip=0.5pt,
+  aboveskip=1pt,
+  belowskip=1pt,
+  lineskip=0.3pt,
   upquote=true,
   tabsize=2,
 }
 
-\setlength{\parskip}{5pt}
+\setlength{\parskip}{4pt}
 \setlength{\parindent}{0pt}
 
 \begin{document}
-
-% Index page (full-width, before two-column content)
-\input{sections/00_index}
-\newpage
 
 \columnratio{0.5}
 \begin{paracol}{2}
