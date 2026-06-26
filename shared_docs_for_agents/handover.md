@@ -1,5 +1,35 @@
 # Handover Notes
 
+## Project Context: What Is This?
+
+**JUST_ORIONS** is a competitive programming team from **Jashore University of Science and Technology (JUST)**, Bangladesh.
+
+This repository contains the team's **25-page reference notebook** for **IUPCs (Inter University Programming Contests)**.
+
+### What is an IUPC?
+
+IUPCs are ICPC-style team programming contests held across Bangladeshi universities (BUET, SUST, CUET, AUST, UIU, etc.). Multiple IUPCs happen every year. Key rules:
+- **3 members** per team from the same university
+- **5 hours** to solve 7–13 algorithmic problems
+- ICPC scoring (most problems solved, ties broken by penalty time)
+- Teams can bring a **printed reference document** (max 25 pages)
+
+### What is the 25-page notebook?
+
+The **team reference document** (also called codebook, team notebook, or template) is a printed booklet teams bring to contests. The standard limit across ICPC regionals and IUPCs is **25 pages maximum**. It contains algorithms, data structures, code snippets, and formulas the team might need — compressed into compact two-column LaTeX to maximize content per page.
+
+The notebook is **not** meant to teach algorithms — it's a reference for experienced contestants who already know the material but need to avoid coding complex algorithms from scratch under time pressure.
+
+### Repository Purpose
+
+| Component | Purpose |
+|---|---|
+| `notebook/` | The 25-page LaTeX notebook itself (compiled PDF = team reference doc) |
+| `Resources/` | Algorithm implementations + external CP libraries used to build the notebook |
+| `shared_docs_for_agents/` | Coordination docs for AI agents working on this project |
+
+The goal is to produce a PDF that matches the original Google Docs version as closely as possible in layout, pagination (23–25 pages), fonts, and content.
+
 ## Current State
 
 - Monolithic `JUST_ORIONS_Notebook.tex` (reference) compiles successfully
@@ -55,3 +85,7 @@ Template/
 2. Column layout fine-tuning (paracol vs multicols)
 3. Pixel-level PDF comparison with original
 4. Image embedding verification
+
+## Key Constraint
+
+The final PDF must be **≤25 pages** (the IUPC/ICPC limit). Currently at 23 pages, which gives us ~2 pages of breathing room for fixes.
