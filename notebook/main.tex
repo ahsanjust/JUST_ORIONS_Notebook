@@ -9,6 +9,11 @@
 \usepackage{mathptmx}
 \usepackage{courier}
 \usepackage{xcolor}
+\definecolor{codekw}{rgb}{0.0,0.0,0.7}    % dark blue for keywords
+\definecolor{codestr}{rgb}{0.13,0.55,0.13} % dark green for strings
+\definecolor{codecmt}{rgb}{0.5,0.5,0.5}   % gray for comments
+\definecolor{codenum}{rgb}{0.7,0.0,0.0}   % dark red for numbers
+\definecolor{codepre}{rgb}{0.55,0.15,0.55} % purple for preprocessor
 \usepackage{caption}
 \usepackage{tikz}
 
@@ -23,7 +28,21 @@
 \fancyfoot{}
 
 \lstset{
+  language=C++,
   basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{codekw},
+  stringstyle=\color{codestr},
+  commentstyle=\color{codecmt},
+  numberstyle=\color{codenum},
+  identifierstyle=\color{black},
+  morekeywords={mt19937,mt19937_64,uniform_int_distribution,
+    pb_ds,gnu_pbds,tree,null_type,rb_tree_tag,
+    tree_order_statistics_node_update,ordered_set,OS,
+    gp_hash_table,chash,__int128_t,int128_t,
+    emplace_back,push_back,make_pair,iota,fill,
+    upper_bound,lower_bound,binary_search,swap},
+  alsoletter={\#},
+  morekeywords={\#include,\#define,\#pragma,\#ifndef,\#endif,\#ifdef},
   breaklines=true,
   breakatwhitespace=false,
   frame=none,

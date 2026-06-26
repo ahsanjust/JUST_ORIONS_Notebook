@@ -52,9 +52,19 @@
 - Inline math: `$...$`
 - Display math: `\[...\]`
 
-## Colors
+## Colors (Code Syntax Highlighting)
 
-- `xcolor` package loaded (colors used where needed)
+Code listings use `listings` with C++ language coloring:
+
+| Element | Color | Usage |
+|---|---|---|
+| Keywords | `\color{codekw}` (dark blue) | `int`, `for`, `while`, `struct`, `auto`, etc. |
+| Strings | `\color{codestr}` (dark green) | `"hello"`, `'c'` |
+| Comments | `\color{codecmt}` (gray) | `// comment`, `/* comment */` |
+| Numbers | `\color{codenum}` (dark red) | `42`, `3.14`, `0xFF` |
+| Identifiers | `\color{black}` (black) | variable/function names |
+
+Additional CP-specific keywords highlighted: `mt19937`, `pb_ds`, `gp_hash_table`, `ordered_set`, `tree`, etc.
 
 ## Graphics
 
