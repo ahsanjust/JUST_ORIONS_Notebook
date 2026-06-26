@@ -64,17 +64,21 @@ file has a `\label{sec:XX}` at its start for page referencing.
 
 ## Colors (Code Syntax Highlighting)
 
-Code listings use `listings` with C++ language coloring:
+Code listings use `listings` with C++ language coloring. Every code element has a distinct color for instant visual parsing:
 
-| Element | Color | Usage |
-|---|---|---|
-| Keywords | `\color{codekw}` (dark blue) | `int`, `for`, `while`, `struct`, `auto`, etc. |
-| Strings | `\color{codestr}` (dark green) | `"hello"`, `'c'` |
-| Comments | `\color{codecmt}` (gray) | `// comment`, `/* comment */` |
-| Numbers | `\color{codenum}` (dark red) | `42`, `3.14`, `0xFF` |
-| Identifiers | `\color{black}` (black) | variable/function names |
+| Element | Color | Looks like | Purpose |
+|---|---|---|---|
+| Keywords | `\color{codekw}` (vivid blue) | `for`, `while`, `if`, `return` | Control flow jumps out |
+| Types | `\color{codetype}` (teal) `\emph` | `int`, `vector`, `string`, `auto` | Types distinct from code |
+| Strings | `\color{codestr}` (warm orange-brown) | `"hello"`, `'c'` | Warm tone, different from code |
+| Comments | `\color{codecmt}` (medium gray) | `// comment` | Recedes into background |
+| Numbers | `\color{codenum}` (green) | `42`, `3.14`, `1e9` | Stands out against black text |
+| Preprocessor | `\color{codepre}` (purple) `\color{codepre}` | `#include`, `#define` | Directives are clearly marked |
+| Identifiers | `\color{black}` (black) | `myVar`, `solve()` | Normal code text |
 
-Additional CP-specific keywords highlighted: `mt19937`, `pb_ds`, `gp_hash_table`, `ordered_set`, `tree`, etc.
+CP-specific types highlighted: `mt19937`, `pb_ds`, `gp_hash_table`, `ordered_set`, `tree`, `chash`, etc.
+
+CP-specific keywords highlighted: `emplace_back`, `push_back`, `resize`, `substr`, `iota`, `fill`, `upper_bound`, `lower_bound`, etc.
 
 ## Graphics
 

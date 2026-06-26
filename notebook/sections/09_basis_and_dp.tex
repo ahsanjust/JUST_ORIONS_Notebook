@@ -141,11 +141,12 @@ int64_t get(int64_t n) {
 \end{lstlisting}
 
 \textbf{Linear Combination Checking}
-Given \texttt{arr[] = \{a, b, c, d, ...\}} and an integer N, the task is to check if N can be represented as a linear combination of the array elements.
+Given array \texttt{arr} and integer N, check if N is
+a linear combination of arr's elements.
 
-For example, $N = a \cdot x + b \cdot y + c \cdot z + \ldots$ where $x, y, z, \ldots$ are integers.
+E.g.\ $N = a \cdot x + b \cdot y + c \cdot z + \ldots$
 
-Ans: if $N \bmod \text{GCD}(\text{all array elements})$ is zero.
+Ans: $N \bmod \text{GCD}(\text{all elements}) == 0$.
 
 \switchcolumn
 
