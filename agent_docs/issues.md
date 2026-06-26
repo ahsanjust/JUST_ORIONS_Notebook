@@ -17,14 +17,14 @@
 
 5. **Page size**: Original: 596×842pt. Current matches via `papersize={596pt,842pt}`. ✓
 
-6. **Resources submodule**: Resources/ is tracked as a gitlink (160000) without proper
+6. **code_library submodule**: code_library/ is tracked as a gitlink (160000) without proper
    `.gitmodules` entry. Should be fixed or converted to proper submodule.
 
 ## Resolved Issues
 
 1. **Redundant section files**: Removed 40 duplicate/unused .tex files from sections/
 2. **Build artifacts clutter**: Added *.aux *.log to .gitignore
-3. **Resources directory disorganization**: Reorganized into professional structure
+3. **code_library directory disorganization**: Reorganized into professional structure
 4. **Page count mismatch**: Fixed via `\linespread{1.15}` (now 23 pages ✓)
 5. **Overfull hboxes**: Fixed line breaks in GCD properties, Segment Area text, etc.
 6. **Custom cmp pbds column**: Fixed column placement.

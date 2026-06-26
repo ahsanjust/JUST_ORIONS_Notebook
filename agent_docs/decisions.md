@@ -12,7 +12,7 @@
 | 2026-06-26 | Split monolithic .tex into 11 modular sections | Each section is a logical topic group |
 | 2026-06-26 | Remove 40 redundant section files | Only 11 active files needed — others were duplicates |
 | 2026-06-26 | Exclude build artifacts via .gitignore | Prevents clutter in repo |
-| 2026-06-26 | Reorganize Resources/ into professional structure | Templates/, References/, Tools/, Tricks/ etc. |
+| 2026-06-26 | Reorganize code_library/ into professional structure | templates/, references/, tools/, tricks/ etc. |
 | 2026-06-26 | Add `\linespread{1.15}` | Matches original 23-page count |
 
 ## Pending Decisions

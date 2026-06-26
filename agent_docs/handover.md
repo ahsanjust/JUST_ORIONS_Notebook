@@ -25,8 +25,8 @@ The notebook is **not** meant to teach algorithms — it's a reference for exper
 | Component | Purpose |
 |---|---|
 | `notebook/` | The 25-page LaTeX notebook itself (compiled PDF = team reference doc) |
-| `Resources/` | Algorithm implementations + external CP libraries used to build the notebook |
-| `shared_docs_for_agents/` | Coordination docs for AI agents working on this project |
+| `code_library/` | Algorithm implementations + external CP libraries used to build the notebook |
+| `agent_docs/` | Coordination docs for AI agents working on this project |
 
 The goal is to produce a PDF that matches the original Google Docs version as closely as possible in layout, pagination (23–25 pages), fonts, and content.
 
@@ -36,7 +36,7 @@ The goal is to produce a PDF that matches the original Google Docs version as cl
 - Modular `main.tex` + 11 section files in `sections/` compiles identically (23 pages)
 - Redundant files (old s01-s28, topic files, setup.tex) have been removed
 - Build artifacts (.aux, .log) excluded via `.gitignore`
-- Resources/ directory reorganized with professional structure
+- code_library/ directory reorganized with professional structure
 - Both repos pushed to GitHub
 
 ## Architecture
@@ -49,22 +49,22 @@ Template/
 │   ├── JUST_ORIONS Notebook_Original.pdf
 │   ├── sections/               # 11 modular .tex files
 │   └── images/                 # 5 PNG images
-├── Resources/                  # CP code library (nested repo)
-│   ├── Templates/              # 16 standalone .cpp templates
-│   ├── Number_Theory/          # Sieves, modular arithmetic, etc.
-│   ├── Data_Structures/        # Segment Tree, BIT, DSU, Trie, etc.
-│   ├── Graph/                  # SCC, LCA, HLD, Flow, etc.
-│   ├── Dynamic_Programming/    # Digit DP, SOS DP, CHT, etc.
-│   ├── Math/                   # FFT, combinatorics, matrices
-│   ├── String/                 # KMP, Z, Hashing, Suffix Array
-│   ├── Geometry/               # Geometric algorithms
-│   ├── Bits/                   # Basis vectors, FWHT
-│   ├── Tricks/                 # Algorithmic tricks
-│   ├── Others/                 # Miscellaneous
-│   ├── Unsolved_Problems/      # Problem tracker
-│   ├── References/             # External CP libraries
-│   └── Tools/                  # debug-tips.txt, stl-ref.txt
-└── shared_docs_for_agents/     # Agent coordination docs
+├── code_library/               # CP code library (nested repo)
+│   ├── templates/              # 16 standalone .cpp templates
+│   ├── number_theory/          # Sieves, modular arithmetic, etc.
+│   ├── data_structures/        # Segment Tree, BIT, DSU, Trie, etc.
+│   ├── graph/                  # SCC, LCA, HLD, Flow, etc.
+│   ├── dynamic_programming/    # Digit DP, SOS DP, CHT, etc.
+│   ├── math/                   # FFT, combinatorics, matrices
+│   ├── string/                 # KMP, Z, Hashing, Suffix Array
+│   ├── geometry/               # Geometric algorithms
+│   ├── bits/                   # Basis vectors, FWHT
+│   ├── tricks/                 # Algorithmic tricks
+│   ├── misc/                   # Miscellaneous
+│   ├── unsolved_problems/      # Problem tracker
+│   ├── references/             # External CP libraries
+│   └── tools/                  # debug-tips.txt, stl-ref.txt
+└── agent_docs/                 # Agent coordination docs
     ├── progress.md
     ├── issues.md
     ├── decisions.md
@@ -76,8 +76,8 @@ Template/
 
 - Notebook: 23 pages (matches original)
 - 11 modular section files (replaced 28 old files + 12 topic files)
-- 16 standalone templates in Resources/Templates/
-- Resources: ~68MB, ~2000 files across personal code + 4 external repos
+- 16 standalone templates in code_library/templates/
+- code_library: ~68MB, ~2000 files across personal code + 4 external repos
 
 ## Remaining Work
 
