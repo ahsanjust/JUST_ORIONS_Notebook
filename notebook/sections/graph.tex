@@ -1,0 +1,249 @@
+
+\textbf{Graph Condense}
+// Implements Kosaraju's algorithm to find all
+// Strongly Connected Components (SCCs).
+\begin{lstlisting}
+vector<bool>visited;
+void dfs(int v, vector<vector<int>> const& g,
+vector<int>& output) {
+  visited[v] = true;
+  for (auto u : g[v])
+    if (!visited[u])
+      dfs(u, g, output);
+  output.push_back(v);
+}
+void strongly_connected_components(
+  vector<vector<int>> const& g,
+  vector<vector<int>>& components,
+  vector<vector<int>>& g_cond,
+  vector<int>& roots
+){
+  int n = sz(g);
+  components.clear(); g_cond.clear();
+  vector<int> order;
+  visited.assign(n, false);
+  for (int i = 0; i < n; ++i)
+    if (!visited[i])
+      dfs(i, g, order);
+  vector<vector<int>> g_rev(n);
+  for (int v = 0; v < n; ++v)
+    for (int u : g[v])
+      g_rev[u].push_back(v);
+  visited.assign(n, false);
+  reverse(order.begin(), order.end());
+  roots.assign(n, -1);
+  int component_id = 0;
+  for (int v : order) {
+    if (!visited[v]) {
+      vector<int> component;
+      dfs(v, g_rev, component);
+      for (int u : component)
+        roots[u] = component_id;
+      components.push_back(component);
+      component_id++;
+    }
+  }
+  g_cond.assign(component_id, {});
+  for (int v = 0; v < n; ++v) {
+    for (int u : g[v]) {
+      if (roots[v] != roots[u]) {
+        g_cond[roots[v]].push_back(roots[u]);
+      }
+    }
+  }
+}
+\end{lstlisting}
+
+\textbf{Articulation Points and Bridges in Graph}
+\begin{lstlisting}
+vector<int> dfs_num, dfs_low, dfs_parent;
+vector<bool>articulation_vertex;
+int dfsNumberCounter, dfsRoot, rootChildren;
+vector<pair<int,int>>bridges;
+const int UNVISITED = -1;
+void articulationPointAndBridge(int u)
+{
+  dfs_num[u] = dfsNumberCounter++;
+  dfs_low[u] = dfs_num[u];
+  for (auto &[v, w] : g[u])
+  {
+    if (dfs_num[v] == UNVISITED)
+    {
+      dfs_parent[v] = u;
+      if (u == dfsRoot)
+        ++rootChildren;
+      articulationPointAndBridge(v);
+      if (dfs_low[v] >= dfs_num[u])
+        articulation_vertex[u] = true;
+      if (dfs_low[v] > dfs_num[u])
+        bridges.push_back({u,v});
+      dfs_low[u] = min(dfs_low[u], dfs_low[v]);
+    }
+    else if (v != dfs_parent[u])
+      dfs_low[u] = min(dfs_low[u],
+      dfs_num[v]);
+  }
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+// inside int main()
+bridges.clear();
+dfs_num.assign(n, UNVISITED);
+dfs_low.assign(n, 0);
+dfs_parent.assign(n, -1);
+articulation_vertex.assign(n, false);
+dfsNumberCounter = 0;
+for (int u = 0; u < n; ++u){
+  if (dfs_num[u] == UNVISITED)
+  {
+    dfsRoot = u;
+    rootChildren = 0;
+    articulationPointAndBridge(u);
+    articulation_vertex[dfsRoot] = (rootChildren
+    > 1);
+  }
+}
+\end{lstlisting}
+
+\switchcolumn
+
+\textbf{HopcroftKarp}
+\begin{lstlisting}
+struct HopcroftKarp { // Bipartite Matching
+  int n, m;
+  vector<vector<int>> g;
+  vector<int> dist, pairU, pairV;
+  static const int INF = 1e9;
+  HopcroftKarp(int n_ = 0, int m_ = 0) {
+    n = n_; m = m_;
+    g.assign(n, {});
+    pairU.assign(n, -1);
+    pairV.assign(m, -1);
+    dist.assign(n, 0);
+  }
+  void add_edge(int u, int v) {
+    g[u].push_back(v);
+  }
+  bool bfs() {
+    queue<int> q;
+    for (int u = 0; u < n; ++u) {
+      if (pairU[u] == -1) {
+        dist[u] = 0;
+        q.push(u);
+      } else {
+        dist[u] = INF;
+      }
+    }
+    bool foundAug = false;
+    while (!q.empty()) {
+      int u = q.front(); q.pop();
+      for (int v : g[u]) {
+        int u2 = pairV[v];
+        if (u2 == -1) {
+          foundAug = true;
+        } else if (dist[u2] == INF) {
+          dist[u2] = dist[u] + 1;
+          q.push(u2);
+        }
+      }
+    }
+    return foundAug;
+  }
+  bool dfs(int u) {
+    for (int v : g[u]) {
+      int u2 = pairV[v];
+      if (u2 == -1 || (dist[u2] == dist[u] + 1 &&
+      dfs(u2))) {
+        pairU[u] = v;
+        pairV[v] = u;
+        return true;
+      }
+    }
+    dist[u] = INF;
+    return false;
+  }
+  int max_matching() {
+    int matching = 0;
+    while (bfs()) {
+      for (int u = 0; u < n; ++u)
+        if (pairU[u] == -1 && dfs(u))
+          ++matching;
+    }
+    return matching;
+  }
+  vector<pair<int,int>> matching_edges() const
+  {
+    vector<pair<int,int>> res;
+    for (int v = 0; v < m; ++v)
+      if (pairV[v] != -1)
+        res.emplace_back(pairV[v], v);
+    return res;
+  }
+};
+\end{lstlisting}
+
+\switchcolumn
+
+\textbf{Dinic's Algorithm(Max Flow)}
+\begin{lstlisting}
+const int64_t inf = 1LL << 61;
+struct Dinic {
+  struct edge {
+    int to, rev;
+    int64_t flow, w;
+  };
+  int n, s, t;
+  vector<int> d;
+  vector<int> done;
+  vector<vector<edge>> g;
+  Dinic() {};
+  Dinic(int _n) {
+    n = _n + 10, g.resize(n);
+  }
+  void add_edge(int u, int v, int64_t w) {
+    edge a = {v, (int)g[v].size(), 0, w};
+    edge b = {u, (int)g[u].size(), 0, 0};
+    g[u].push_back(a), g[v].push_back(b);
+  }
+  bool bfs() {
+    d.assign(n, -1), d[s] = 0;
+    queue<int> Q;
+    Q.push(s);
+    while (Q.size()) {
+      int u = Q.front(); Q.pop();
+      for (auto &e : g[u]) {
+        int v = e.to;
+        if (!~d[v] && e.flow < e.w) d[v] = d[u] + 1,
+        Q.push(v);
+      }
+    }
+    return d[t] != -1;
+  }
+  int64_t dfs(int u, int64_t flow) {
+    if (u == t) return flow;
+    for (int &i = done[u]; i < (int)g[u].size(); i++) {
+      edge &e = g[u][i];
+      if (e.w <= e.flow) continue;
+      int v = e.to;
+      if (d[v] == d[u] + 1) {
+        int64_t nw = dfs(v, min(flow, e.w - e.flow));
+        if (nw > 0) {
+          e.flow += nw;
+          g[v][e.rev].flow -= nw;
+          return nw;
+        }
+      }
+    }
+    return 0;
+  }
+  int64_t max_flow(int _s, int _t) {
+    s = _s, t = _t;
+    int64_t flow = 0;
+    while (bfs()) {
+      done.assign(n, 0);
+      while (int64_t nw = dfs(s, inf)) flow += nw;
+    }
+    return flow;
+  }
+};

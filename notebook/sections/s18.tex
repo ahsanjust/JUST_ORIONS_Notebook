@@ -1,0 +1,97 @@
+\textbf{Aho-Corasick}
+//The Aho-Corasick algorithm allows us to quickly
+//search for multiple patterns in a text.
+\begin{lstlisting}
+const int K = 26;
+struct Vertex {
+  vector<int>next_char, go;
+  bool output = false;
+  int link = -1;
+  Vertex(){
+    next_char.assign(K,-1);
+    go.assign(K,-1);
+  }
+};
+vector<Vertex> Trie(1);
+void add_string(string const& s) {
+  int v = 0;
+  for (char ch : s) {
+    int c = ch - 'a';
+    if (Trie[v].next_char[c] == -1) {
+      Trie[v].next_char[c] = Trie.size();
+      Trie.emplace_back();
+    }
+    v = Trie[v].next_char[c];
+  }
+  Trie[v].output = true;
+}
+void add_links() {
+  queue<int> q;
+  Trie[0].link = 0;
+  for (int c = 0; c < K; c++) {
+    int u = Trie[0].next_char[c];
+    if (u != -1) {
+      Trie[u].link = 0;
+      q.push(u);
+      Trie[0].go[c] = u;
+    } else {
+      Trie[0].go[c] = 0;
+    }
+  }
+  while (!q.empty()) {
+    int u = q.front();
+    q.pop();
+    for (int c = 0; c < K; c++) {
+      int v = Trie[u].next_char[c], suffix_link =
+      Trie[u].link;
+      if (v != -1) {
+        while (suffix_link != 0 &&
+        Trie[suffix_link].next_char[c] == -1){
+          suffix_link = Trie[suffix_link].link;
+        }
+        if (Trie[suffix_link].next_char[c] != -1)
+          Trie[v].link =
+          Trie[suffix_link].next_char[c];
+        else
+          Trie[v].link = 0;
+        q.push(v);
+      }
+      Trie[u].go[c] = (v != -1) ? v :
+      Trie[suffix_link].go[c];
+    }
+  }
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+int main() {
+  vector<string> patterns = {"a", "ab", "bab", "bc",
+  "bca", "c", "caa"};
+  for (const string& s : patterns) {
+    add_string(s);
+  }
+  add_links();
+  // Search for patterns in a text
+  string text = "abccab";
+  cout << "Text: " << text << endl;
+  cout << "Found:" << endl;
+  int currentState = 0;
+  for (int i = 0; i < text.length(); ++i) {
+    int c = text[i] - 'a';
+    // Use the 'go' transition to move to next state
+    currentState = Trie[currentState].go[c];
+    // Check current state and all suffix/failure links
+    // for matches
+    int checkState = currentState;
+    while (checkState != 0) {
+      if (Trie[checkState].output) {
+        // Found a pattern ending at this index
+        cout << " - Pattern ended at index " << i <<
+        endl;
+      }
+      checkState = Trie[checkState].link; // Follow
+      // the failure link
+    }
+  }
+}
+\end{lstlisting}

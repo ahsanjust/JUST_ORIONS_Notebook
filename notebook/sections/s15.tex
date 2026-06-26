@@ -1,0 +1,98 @@
+\textbf{Tree}
+\begin{lstlisting}
+vector<vector<int>>t,parents;
+vector<int>level;
+int mx;
+void dfs(int node, int parent, int cLevel){
+  level[node] = cLevel;
+  parents[0][node] = parent;
+  for(auto &x: t[node]){
+    if(x!=parent) dfs(x,node, cLevel+1);
+  }
+}
+int kthParent(int a, int k){
+  for(int i = 0; i<mx; i++){
+    if(a==-1) return a;
+    if(k&(1<<i)) a = parents[i][a];
+  }
+  return a;
+}
+int lca(int a, int b){
+  if(level[a]>level[b]){
+    a = kthParent(a, level[a] - level[b]);
+  }else{
+    b = kthParent(b, level[b] - level[a]);
+  }
+  if(a==b) return a;
+  for(int i = mx-1; i>=0; i--){
+    if(parents[i][a]!=parents[i][b]){
+      a = parents[i][a];
+      b = parents[i][b];
+    }
+  }
+  return parents[0][a];
+}
+int distance(int a,int b){
+  return level[a]+level[b] - 2*level[lca(a,b)];
+}
+int main(){
+  int n;
+  cin>>n;
+  mx = log2(n)+1;
+  //resize and input
+  dfs(1,-1,0);
+  for(int i = 1; i<mx; i++){
+    for(int j = 1; j<=n; j++){
+      int prevParent = parents[i-1][j];
+      if(prevParent!=-1) parents[i][j] =
+      parents[i-1][prevParent];
+    }
+  }
+}
+\end{lstlisting}
+
+\textbf{String Double Hashing}
+\begin{lstlisting}
+ll mod1 = 127657753, mod2 = 987654319, p1 = 31,
+p2 = 37;
+ll invp1 = ModPow(p1, mod1 - 2, mod1), invp2 =
+ModPow(p2, mod2 - 2, mod2);
+vector<pair<ll, ll>> pPow(1, {1, 1}), iPow(1, {1,
+1});
+void genP(ll n) {
+  while ((ll)pPow.size() <= n) {
+    pPow.push_back({pPow.back().xx * p1 %
+    mod1, pPow.back().yy * p2 % mod2});
+    iPow.push_back({iPow.back().xx * invp1 %
+    mod1, iPow.back().yy * invp2 % mod2});
+  }
+}
+struct Hash {
+  int n = 0;
+  vector<pair<ll, ll>> sHash;
+  void genHash(string& s) {
+    sHash.resize(n + 1, {0, 0}); // 0-indexed
+    for (int i = 0; i < n; i++) {
+      sHash[i + 1].xx = (sHash[i].xx + (s[i] - 'a' +
+      1) * pPow[i].xx) % mod1;
+      sHash[i + 1].yy = (sHash[i].yy + (s[i] - 'a' +
+      1) * pPow[i].yy) % mod2;
+    }
+  }
+  pair<ll, ll> getHash(int l, int r) {
+    ll h1 = (sHash[r + 1].xx - sHash[l].xx + mod1)
+    % mod1 * iPow[l].xx % mod1;
+    ll h2 = (sHash[r + 1].yy - sHash[l].yy + mod2)
+    % mod2 * iPow[l].yy % mod2;
+    return {h1, h2}; // 0-indexed
+  }
+  pair<ll, ll> getHash() {
+    return sHash[n]; // Get the hash of the whole
+    // string
+  }
+  Hash(string& s) {
+    n = s.size();
+    genP(n), genHash(s);
+  }
+};
+\end{lstlisting}

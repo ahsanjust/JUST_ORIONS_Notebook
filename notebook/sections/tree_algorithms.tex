@@ -1,0 +1,248 @@
+
+\textbf{Binary Lifting}
+\begin{lstlisting}
+int up[200001][20];
+vector<vector<int>> tree(200001);
+void binary_lifting(int src, int par) {
+  up[src][0] = par;
+  for (int i = 1; i <= 19; i++) {
+    if (up[src][i - 1] != -1)
+      up[src][i] = up[up[src][i-1]][i-1];
+    else
+      up[src][i] = -1;
+  }
+  for (int i = 0; i < tree[src].size(); i++)
+    if (tree[src][i] != par)
+      binary_lifting(tree[src][i], src);
+}
+int lift_node(int node, int k) {
+  if (node == -1 || k == 0)
+    return node;
+  for (int i = 19; i >= 0; i--)
+    if (k >= (1 << i))
+      return lift_node(up[node][i], k-(1<<i));
+}
+\end{lstlisting}
+
+\textbf{Tree Flattening (Euler Tour)}
+\begin{lstlisting}
+void eularDFS(ll node, ll par, ll arr[], vector<ll>&
+flatTree, vector<ll> tree[], pair<ll, ll>
+subTreeRange[], ll& timer)
+{
+  subTreeRange[node].first = ++timer;
+  flatTree.push_back(arr[node]);
+  for (auto& child : tree[node])
+    if (child != par)
+      eularDFS(child, node, arr, flatTree, tree,
+      subTreeRange, timer);
+  subTreeRange[node].second = timer;
+}
+void solve() {
+  vector<ll> flatTree;
+  pair<ll, ll> subTreeRange[n + 1];
+  ll timer = -1;
+  eularDFS(1, 0, arr, flatTree, tree,
+  subTreeRange, timer);
+}
+\end{lstlisting}
+
+\textbf{Heavy Light Decomposition (HLD on Tree)}
+// u to v range query
+\begin{lstlisting}
+struct HLD {
+  int n, cur_pos = 0;
+  vector<int> arr, parent, size, depth, heavy,
+  head, pos;
+  vector<vector<int>> adj;
+  FenwickTree segtree;
+  HLD(int n) : n(n), arr(n + 1), parent(n + 1),
+  size(n + 1), depth(n + 1), heavy(n + 1, 0), head(n +
+  1) , pos(n + 1) , adj(n + 1),
+  segtree(FenwickTree(n + 1)){ }
+  void add_edge(int u, int v) {
+    adj[u].push_back(v), adj[v].push_back(u);
+  }
+  void dfs(int u, int p) {
+    parent[u] = p;
+    size[u] = 1;
+    int max_sz = 0;
+    for (int v : adj[u]) {
+      if (v == p)
+        continue;
+      depth[v] = depth[u] + 1;
+      dfs(v, u);
+      size[u] += size[v];
+      if (size[v] > max_sz) {
+        max_sz = size[v], heavy[u] = v;
+      }
+    }
+  }
+  void decompose(int u, int h) {
+    head[u] = h;
+    pos[u] = cur_pos++;
+    segtree.add(pos[u], arr[u]); // Update
+    // Fenwick tree with the +value of arr[u]
+    if (heavy[u])
+      decompose(heavy[u], h);
+    for (int v : adj[u])
+      if (v != parent[u] && v != heavy[u])
+        decompose(v, v);
+  }
+\end{lstlisting}
+
+\switchcolumn
+
+\begin{lstlisting}
+  int query(int u, int v) { // Range Sum Query
+    int res = 0;
+    while (head[u] != head[v]) {
+      if (depth[head[u]] < depth[head[v]])
+        swap(u, v);
+      res += segtree.sum(pos[head[u]], pos[u]);
+      u = parent[head[u]];
+    }
+    if (depth[u] > depth[v])
+      swap(u, v);
+    res += segtree.sum(pos[u], pos[v]);
+    return res;
+  }
+  void addVal(int idx, int delta) {
+    segtree.add(pos[idx], delta);
+    arr[idx] += delta;
+  }
+  void editVal(int idx, int value) {
+    segtree.add(pos[idx], value - arr[idx]);
+    arr[idx] = value;
+  }
+};
+\end{lstlisting}
+
+\textbf{Centroid Decomposition}
+\begin{lstlisting}
+vector<vector<int>> adj;
+vector<bool> is_removed;
+vector<int> subtree_size;
+int get_subtree_size(int node, int parent = -1) {
+  subtree_size[node] = 1;
+  for (int child : adj[node]) {
+    if (child == parent || is_removed[child]) {
+      continue; }
+    subtree_size[node] +=
+    get_subtree_size(child, node);
+  }
+  return subtree_size[node];
+}
+int get_centroid(int node, int tree_size, int parent
+= -1) {
+  for (int child : adj[node]) {
+    if (child == parent || is_removed[child]) {
+      continue; }
+    if (subtree_size[child] * 2 > tree_size) {
+      return get_centroid(child, tree_size, node);
+    }
+  }
+  return node;
+}
+void build_centroid_decomp(int node = 0) {
+  int centroid = get_centroid(node,
+  get_subtree_size(node));
+  // do something
+  is_removed[centroid] = true;
+  for (int child : adj[centroid]) {
+    if (is_removed[child]) { continue; }
+    build_centroid_decomp(child);
+  }
+}
+\end{lstlisting}
+
+\textit{// Ahsan's}
+\begin{lstlisting}
+int tot = 0;
+vector<int> sz(n, 1), removed(n, 0), cenpar(n, -1);
+auto dfs_sz = [&](auto &&self, int node, int pr) ->
+void {
+  tot += 1;
+  sz[node] = 1;
+  for (auto &son : g[node]) {
+    if (son == pr || removed[son]) continue;
+    self(self, son, node);
+    sz[node] += sz[son];
+  }
+};
+auto find_cen = [&](auto &&self, int node, int pr)
+-> int {
+  for (auto &son : g[node]) {
+    if (son == pr || removed[son]) continue;
+    if (sz[son] > tot / 2) return self(self, son, node);
+  }
+  return node;
+};
+auto decompose = [&](auto &&self, int node, int
+pr) -> void {
+  tot = 0;
+  dfs_sz(dfs_sz, node, pr);
+  int cen = find_cen(find_cen, node, pr);
+  removed[cen] = 1;
+  cenpar[cen] = pr;
+  for (auto &son : g[cen]) {
+    if (son == pr || removed[son]) continue;
+    self(self, son, cen);
+  }
+};
+decompose(decompose, 0, -1);
+\end{lstlisting}
+
+\switchcolumn
+
+\textbf{Tree}
+\begin{lstlisting}
+vector<vector<int>>t,parents;
+vector<int>level;
+int mx;
+void dfs(int node, int parent, int cLevel){
+  level[node] = cLevel;
+  parents[0][node] = parent;
+  for(auto &x: t[node]){
+    if(x!=parent) dfs(x,node, cLevel+1);
+  }
+}
+int kthParent(int a, int k){
+  for(int i = 0; i<mx; i++){
+    if(a==-1) return a;
+    if(k&(1<<i)) a = parents[i][a];
+  }
+  return a;
+}
+int lca(int a, int b){
+  if(level[a]>level[b]){
+    a = kthParent(a, level[a] - level[b]);
+  }else{
+    b = kthParent(b, level[b] - level[a]);
+  }
+  if(a==b) return a;
+  for(int i = mx-1; i>=0; i--){
+    if(parents[i][a]!=parents[i][b]){
+      a = parents[i][a];
+      b = parents[i][b];
+    }
+  }
+  return parents[0][a];
+}
+int distance(int a,int b){
+  return level[a]+level[b] - 2*level[lca(a,b)];
+}
+int main(){
+  int n;
+  cin>>n;
+  mx = log2(n)+1;
+  //resize and input
+  dfs(1,-1,0);
+  for(int i = 1; i<mx; i++){
+    for(int j = 1; j<=n; j++){
+      int prevParent = parents[i-1][j];
+      if(prevParent!=-1) parents[i][j] =
+      parents[i-1][prevParent];
+    }
+  }
+}

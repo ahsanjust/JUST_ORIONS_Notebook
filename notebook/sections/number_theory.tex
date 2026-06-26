@@ -1,0 +1,221 @@
+
+\textbf{GCD Properties:}
+In particular, recalling that gcd is a positive integer valued function we obtain that $\gcd(a, b \cdot c) = 1$ if and only if $\gcd(a, b) = 1$ and $\gcd(a, c) = 1$.
+
+15. If none of $a_1, a_2, \ldots, a_r$ is zero, then $\gcd(a_1, a_2, \ldots, a_r) = \gcd(\gcd(a_1, a_2, \ldots, a_{r-1}), a_r)$
+
+16. $\gcd(a,b) \cdot \text{lcm}(a,b) = |a \cdot b|$, so for any two numbers LCM is always multiple of GCD.
+
+17. In a Cartesian coordinate system, $\gcd(a, b)$ can be interpreted as the number of segments between points with integral coordinates on the straight line segment joining the points $(0, 0)$ and $(a, b)$.
+
+18. Two numbers are called relatively prime, or coprime, if their greatest common divisor equals 1. For example, 9 and 28 are relatively prime.
+
+19. Any two consecutive integers will be Co-Prime. Ex: 25,26 is co-prime. 5,6 is co-prime and so on. This will work because, let x divides 25 so remainder is something. If we divided 26 by x then remainder will be 1. This is the logic.
+
+20. Two or more odd consecutive positive integer GCD is also 1.
+
+\begin{lstlisting}
+int gcdFast(int a, int b)
+{
+  int result;
+  __asm__ __volatile__(
+    "movl %1, %%eax;"
+    "movl %2, %%ebx;"
+    "CONTD: cmpl $0, %%ebx;"
+    "je DONE;"
+    "xorl %%edx, %%edx;"
+    "idivl %%ebx;"
+    "movl %%ebx, %%eax;"
+    "movl %%edx, %%ebx;"
+    "jmp CONTD;"
+    "DONE: movl %%eax, %0;"
+    : "=g"(result)
+    : "g"(a), "g"(b));
+  return result;
+}
+\end{lstlisting}
+
+\textbf{Extended Euclid and CRT}
+\begin{lstlisting}
+using T = __int128_t;
+T egcd(T a, T b, T &x, T &y) {
+  T xx = y = 0, yy = x = 1;
+  while (b) {
+    T q = a / b;
+    T t = b; b = a % b; a = t;
+    t = xx; xx = x - q * xx; x = t;
+    t = yy; yy = y - q * yy; y = t;
+  }
+  return a;
+}
+// finds x such that x % m1 = a1, x % m2 = a2.
+// m1 and m2 may not be coprime
+// here, x is unique modulo m = lcm(m1, m2).
+// returns (x, m). on failure, m = -1.
+pair<T, T> crt(T a1, T m1, T a2, T m2) {
+  T p, q;
+  T g = egcd(m1, m2, p, q);
+  if (a1 % g != a2 % g) return {0, -1};
+  T m = m1 / g * m2;
+  p = (p % m + m) % m;
+  q = (q % m + m) % m;
+  T x = p * a2 % m * (m1 / g) % m + q * a1 % m *
+  (m2 / g) % m;
+  return {x % m, m};
+}
+\end{lstlisting}
+
+\textbf{SPF, Mobius, Primes in O(N)}
+\begin{lstlisting}
+const int N = 1e6 + 2;
+vector<int> spf(N), mob(N), primes;
+void build() {
+  mob[1] = 1;
+  for (int i = 2; i < N; i++) {
+    if (spf[i] == 0) {
+      spf[i] = i, mob[i] = -1,
+      primes.push_back(i);
+    }
+    for (int j = 0; i * primes[j] < N; j++) {
+      spf[i * primes[j]] = primes[j];
+      if (i % primes[j])
+        mob[i * primes[j]] = mob[i] *
+        mob[primes[j]];
+      else mob[i * primes[j]] = 0;
+      if (primes[j] == spf[i]) break;
+    }
+  }
+}
+\end{lstlisting}
+
+\switchcolumn
+
+\textbf{SegSieve}
+\begin{lstlisting}
+vector<char> segmentedSieve(long long L, long
+long R) {
+  // generate all primes up to sqrt(R)
+  long long lim = sqrt(R);
+  vector<char> mark(lim + 1, false);
+  vector<long long> primes;
+  for (long long i = 2; i <= lim; ++i) {
+    if (!mark[i]) {
+      primes.emplace_back(i);
+      for (long long j = i * i; j <= lim; j += i)
+        mark[j] = true;
+    }
+  }
+  vector<char> isPrime(R - L + 1, true);
+  for (long long i : primes) {
+    ll sm = (L / i) * i;
+    if (sm < L) sm += i;
+    for (long long j = max(i * i, sm); j <= R; j
+    += i)
+      isPrime[j - L] = false;
+  }
+  if (L == 1) isPrime[0] = false;
+  return isPrime;
+}
+\end{lstlisting}
+
+\textbf{Phi}
+\begin{lstlisting}
+int phi(int n) {
+  int result = n;
+  for (int i = 2; i * i <= n; i++) {
+    if (n % i == 0) {
+      while (n % i == 0)
+        n /= i;
+      result -= result / i;
+    }
+  }
+  if (n > 1)
+    result -= result / n;
+  return result;
+}
+void phi_1_to_n(){
+  phi[1] = 1;
+  for(int i = 2; i < N; i++) {
+    if(phi[i] == 0){
+      primes.push_back(i);
+      phi[i] = i - 1;
+    }
+    for(int p : primes){
+      if(i * p >= N) break;
+      if(i % p == 0){
+        phi[i * p] = phi[i] * p;
+        break;
+      }else {
+        phi[i * p] = phi[i] * (p - 1);
+      }
+    }
+  }
+}
+\end{lstlisting}
+
+\textbf{Large number prime check (M.R.)}
+\begin{lstlisting}
+ull pow(ull a, ull t, ull mod) {
+  ull r = 1;
+  for (; t; t >>= 1, a = (ull)a * a % mod)
+    if (t & 1) r = (ull)r * a % mod;
+  return r;
+}
+bool isprime(ull n) {
+  if (n < 2 || n % 6 % 4 != 1) return (n | 1) == 3;
+  ull A[] = {2, 325, 9375, 28178, 450775,
+  9780504, 1795265022},
+  s = __builtin_ctzll(n - 1), d = n >> s;
+  for (ull a : A) {
+    ull p = pow(a % n, d, n), i = s;
+    while (p != 1 && p != n - 1 && a % n && i--)
+      p = (ull)p * p % n;
+    if (p != n - 1 && i != s) return 0;
+  }
+  return 1;
+}
+\end{lstlisting}
+
+\textbf{Matrix Exponentiation}
+\begin{lstlisting}
+vector<vector<int>>
+multiply(vector<vector<int>>& a,
+vector<vector<int>>& b) {
+  int n = sz(a), m = sz(a[0]), p = sz(b[0]);
+  vector<vector<int>> result(n, vector<int>(p,
+  0));
+  for (int i = 0; i < n; i++) {
+    for (int k = 0; k < m; k++) {
+      if (a[i][k] == 0) continue;
+      for (int j = 0; j < p; j++) {
+        result[i][j] = ((result[i][j] + a[i][k] *
+        b[k][j]) % mod + mod) % mod;
+      }
+    }
+  }
+  return result;
+}
+vector<vector<int>> expo(vector<vector<int>> t,
+int p) {
+  int n = t.size();
+  vector<vector<int>> result(n, vector<int>(n,
+  0));
+  for (int i = 0; i < n; i++) {
+    result[i][i] = 1;
+  }
+  while (p > 0) {
+    if (p & 1) result = multiply(result, t);
+    t = multiply(t, t);
+    p >>= 1;
+  }
+  return result;
+}
+\end{lstlisting}
+
+\switchcolumn
+
+\textbf{Basis Vector}
+\begin{lstlisting}
+template<typename T = int, int LG = 31>
+struct Basis {
+  T basis[LG]; int sz;

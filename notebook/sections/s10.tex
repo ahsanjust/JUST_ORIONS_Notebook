@@ -1,0 +1,106 @@
+\textbf{Graph Condense}
+// Implements Kosaraju's algorithm to find all
+// Strongly Connected Components (SCCs).
+\begin{lstlisting}
+vector<bool>visited;
+void dfs(int v, vector<vector<int>> const& g,
+vector<int>& output) {
+  visited[v] = true;
+  for (auto u : g[v])
+    if (!visited[u])
+      dfs(u, g, output);
+  output.push_back(v);
+}
+void strongly_connected_components(
+  vector<vector<int>> const& g,
+  vector<vector<int>>& components,
+  vector<vector<int>>& g_cond,
+  vector<int>& roots
+){
+  int n = sz(g);
+  components.clear(); g_cond.clear();
+  vector<int> order;
+  visited.assign(n, false);
+  for (int i = 0; i < n; ++i)
+    if (!visited[i])
+      dfs(i, g, order);
+  vector<vector<int>> g_rev(n);
+  for (int v = 0; v < n; ++v)
+    for (int u : g[v])
+      g_rev[u].push_back(v);
+  visited.assign(n, false);
+  reverse(order.begin(), order.end());
+  roots.assign(n, -1);
+  int component_id = 0;
+  for (int v : order) {
+    if (!visited[v]) {
+      vector<int> component;
+      dfs(v, g_rev, component);
+      for (int u : component)
+        roots[u] = component_id;
+      components.push_back(component);
+      component_id++;
+    }
+  }
+  g_cond.assign(component_id, {});
+  for (int v = 0; v < n; ++v) {
+    for (int u : g[v]) {
+      if (roots[v] != roots[u]) {
+        g_cond[roots[v]].push_back(roots[u]);
+      }
+    }
+  }
+}
+\end{lstlisting}
+
+\textbf{Articulation Points and Bridges in Graph}
+\begin{lstlisting}
+vector<int> dfs_num, dfs_low, dfs_parent;
+vector<bool>articulation_vertex;
+int dfsNumberCounter, dfsRoot, rootChildren;
+vector<pair<int,int>>bridges;
+const int UNVISITED = -1;
+void articulationPointAndBridge(int u)
+{
+  dfs_num[u] = dfsNumberCounter++;
+  dfs_low[u] = dfs_num[u];
+  for (auto &[v, w] : g[u])
+  {
+    if (dfs_num[v] == UNVISITED)
+    {
+      dfs_parent[v] = u;
+      if (u == dfsRoot)
+        ++rootChildren;
+      articulationPointAndBridge(v);
+      if (dfs_low[v] >= dfs_num[u])
+        articulation_vertex[u] = true;
+      if (dfs_low[v] > dfs_num[u])
+        bridges.push_back({u,v});
+      dfs_low[u] = min(dfs_low[u], dfs_low[v]);
+    }
+    else if (v != dfs_parent[u])
+      dfs_low[u] = min(dfs_low[u],
+      dfs_num[v]);
+  }
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+// inside int main()
+bridges.clear();
+dfs_num.assign(n, UNVISITED);
+dfs_low.assign(n, 0);
+dfs_parent.assign(n, -1);
+articulation_vertex.assign(n, false);
+dfsNumberCounter = 0;
+for (int u = 0; u < n; ++u){
+  if (dfs_num[u] == UNVISITED)
+  {
+    dfsRoot = u;
+    rootChildren = 0;
+    articulationPointAndBridge(u);
+    articulation_vertex[dfsRoot] = (rootChildren
+    > 1);
+  }
+}
+\end{lstlisting}

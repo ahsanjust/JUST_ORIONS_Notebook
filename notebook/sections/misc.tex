@@ -1,0 +1,67 @@
+
+\textbf{MO:}
+\begin{lstlisting}
+sort(cu.begin(), cu.end(), [&](auto &x, auto &y){
+  if (x.l / B != y.l / B) return x.l / B < y.l / B;
+  return (x.l / B) % 2 ? x.r > y.r : x.r < y.r;
+});
+int R = -1, L = 0;
+while (R < r) add(++R);
+while (L > l) add(--L);
+while (R > r) rem(R--);
+while (L < l) rem(L++);
+\end{lstlisting}
+
+\textbf{Fast Factorization (Maybe not prime)}
+\begin{lstlisting}
+#define ull uint64_t
+struct Montgomery {
+  ull n, nr;
+  Montgomery(ull n) {
+    this->n = n, nr = 1;
+    for (int i = 0; i < 6; i++)
+      nr *= 2 - n * nr;
+  }
+  ull reduce(__uint128_t x) const {
+    ull q = ull(x) * nr,
+    m = ((__uint128_t)q * n) >> 64;
+    return (x >> 64) + n - m;
+  }
+  ull multiply(ull x, ull y) {
+    return reduce((__uint128_t)x * y); }
+};
+ull f(ull x, Montgomery& m, ull a) {
+  return m.multiply(x, x) + a; }
+ull diff(ull a, ull b) {
+  return a > b ? a - b : b - a; }
+const int M = 1024;
+const ull SEED = 42;
+ull find_factor(ull n, ull x0 = 2, ull a = 1)
+{
+  Montgomery m(n);
+  ull x = SEED;
+  for (int l = M; l < (1 << 20); l *= 2) {
+    ull y = x, p = 1;
+    for (int i = 0; i < l; i += M) {
+      for (int j = 0; j < M; j++)
+        x = f(x, m, a), p = m.multiply(p,
+        diff(x, y));
+      if (ull g = gcd(p, n); g != 1)
+        return g;
+    }
+  }
+  return n;
+}
+int32_t main() {
+  ll n;
+  cin >> n;
+  ll factor = find_factor(n);
+  if (factor != 1) {
+    cout << "Factor found: " << factor << endl;
+  } else {
+    cout << "No factor found" << endl;
+  }
+  return 0;
+}
+\end{lstlisting}
+

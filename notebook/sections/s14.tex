@@ -1,0 +1,99 @@
+\begin{lstlisting}
+  int query(int u, int v) { // Range Sum Query
+    int res = 0;
+    while (head[u] != head[v]) {
+      if (depth[head[u]] < depth[head[v]])
+        swap(u, v);
+      res += segtree.sum(pos[head[u]], pos[u]);
+      u = parent[head[u]];
+    }
+    if (depth[u] > depth[v])
+      swap(u, v);
+    res += segtree.sum(pos[u], pos[v]);
+    return res;
+  }
+  void addVal(int idx, int delta) {
+    segtree.add(pos[idx], delta);
+    arr[idx] += delta;
+  }
+  void editVal(int idx, int value) {
+    segtree.add(pos[idx], value - arr[idx]);
+    arr[idx] = value;
+  }
+};
+\end{lstlisting}
+
+\textbf{Centroid Decomposition}
+\begin{lstlisting}
+vector<vector<int>> adj;
+vector<bool> is_removed;
+vector<int> subtree_size;
+int get_subtree_size(int node, int parent = -1) {
+  subtree_size[node] = 1;
+  for (int child : adj[node]) {
+    if (child == parent || is_removed[child]) {
+      continue; }
+    subtree_size[node] +=
+    get_subtree_size(child, node);
+  }
+  return subtree_size[node];
+}
+int get_centroid(int node, int tree_size, int parent
+= -1) {
+  for (int child : adj[node]) {
+    if (child == parent || is_removed[child]) {
+      continue; }
+    if (subtree_size[child] * 2 > tree_size) {
+      return get_centroid(child, tree_size, node);
+    }
+  }
+  return node;
+}
+void build_centroid_decomp(int node = 0) {
+  int centroid = get_centroid(node,
+  get_subtree_size(node));
+  // do something
+  is_removed[centroid] = true;
+  for (int child : adj[centroid]) {
+    if (is_removed[child]) { continue; }
+    build_centroid_decomp(child);
+  }
+}
+\end{lstlisting}
+
+\textit{// Ahsan's}
+\begin{lstlisting}
+int tot = 0;
+vector<int> sz(n, 1), removed(n, 0), cenpar(n, -1);
+auto dfs_sz = [&](auto &&self, int node, int pr) ->
+void {
+  tot += 1;
+  sz[node] = 1;
+  for (auto &son : g[node]) {
+    if (son == pr || removed[son]) continue;
+    self(self, son, node);
+    sz[node] += sz[son];
+  }
+};
+auto find_cen = [&](auto &&self, int node, int pr)
+-> int {
+  for (auto &son : g[node]) {
+    if (son == pr || removed[son]) continue;
+    if (sz[son] > tot / 2) return self(self, son, node);
+  }
+  return node;
+};
+auto decompose = [&](auto &&self, int node, int
+pr) -> void {
+  tot = 0;
+  dfs_sz(dfs_sz, node, pr);
+  int cen = find_cen(find_cen, node, pr);
+  removed[cen] = 1;
+  cenpar[cen] = pr;
+  for (auto &son : g[cen]) {
+    if (son == pr || removed[son]) continue;
+    self(self, son, cen);
+  }
+};
+decompose(decompose, 0, -1);
+\end{lstlisting}
