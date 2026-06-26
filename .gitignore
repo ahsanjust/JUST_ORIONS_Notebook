@@ -1,1 +1,15 @@
 .aider*
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.dvi
+*.out
+*.toc
+*.bbl
+*.blg
+*.synctex.gz
+
+# PDF outputs (keep original reference PDF)
+notebook/main.pdf
+notebook/JUST_ORIONS_Notebook.pdf

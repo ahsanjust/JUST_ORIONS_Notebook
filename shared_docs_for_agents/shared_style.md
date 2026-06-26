@@ -3,6 +3,7 @@
 ## Page Layout
 
 - **Paper size**: A4 (210mm × 297mm)
+- **Exact size**: 596pt × 842pt
 - **Margins**: top=1.0in, bottom=1.0in, left=0.65in, right=0.65in
 - **Columns**: Two columns via `paracol` with `\columnratio{0.5}`
 - **Column separation**: 14pt
@@ -18,9 +19,9 @@
 
 ## Typography
 
-- **Main font**: Charter (via `\usepackage{charter}`)
-- **Monospace**: Latin Modern Typewriter (via `\usepackage{lmodern}` + `\usepackage[T1]{fontenc}`)
-- **Math font**: Latin Modern Math (lmodern)
+- **Main font**: Times (via `\usepackage{mathptmx}`)
+- **Monospace**: Courier (via `\usepackage{courier}`)
+- **Math font**: Times (mathptmx)
 - **Paragraph indent**: 0pt
 - **Paragraph skip**: 5pt
 
@@ -37,6 +38,8 @@
 - **aboveskip**: 2pt
 - **belowskip**: 2pt
 - **lineskip**: 0.5pt
+- **upquote**: true
+- **tabsize**: 2
 
 ## Section Headings
 
@@ -59,7 +62,7 @@
 - `tikz` for drawings
 - Image directory: `images/`
 
-## Images from PDF
+## Images
 
-5 images extracted to `/tmp/extracted_images-000.png` through `/tmp/extracted_images-004.png`
-Need to be copied to `images/` directory.
+5 images in `images/`:
+- extracted_images-000.png through extracted_images-004.png
