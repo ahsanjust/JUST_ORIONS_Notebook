@@ -24,7 +24,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\headrulewidth}{0.8pt}
-\fancyhead[L]{\textbf{JUST\_ORIONS} - Jashore University of Science and Technology}
+\fancyhead[L]{\vspace*{15pt}\textbf{JUST\_ORIONS} - Jashore University of Science and Technology}
 \fancyhead[R]{\thepage}
 \fancyfoot{}
 
@@ -37,12 +37,39 @@
   numberstyle=\color{codenum},
   identifierstyle=\color{black},
   directivestyle=\color{codepre},
-  morekeywords={mt19937,mt19937_64,uniform_int_distribution,
+  emph={int,long,double,char,void,bool,short,float,unsigned,
+    signed,size_t,ssize_t,int8_t,int16_t,int32_t,int64_t,
+    uint8_t,uint16_t,uint32_t,uint64_t,__int128_t,
+    int128_t,uint128_t,vector,map,set,pair,string,queue,
+    stack,deque,list,unordered_map,unordered_set,
+    multiset,multimap,priority_queue,tuple,optional,
+    variant,array,complex,valarray,initializer_list,
+    istream,ostream,ifstream,ofstream,stringstream,
+    istringstream,ostringstream,auto,decltype,nullptr_t,
+    mt19937,mt19937_64,uniform_int_distribution,
     pb_ds,gnu_pbds,tree,null_type,rb_tree_tag,
     tree_order_statistics_node_update,ordered_set,OS,
-    gp_hash_table,chash,__int128_t,int128_t,
-    emplace_back,push_back,make_pair,iota,fill,
-    upper_bound,lower_bound,binary_search,swap},
+    gp_hash_table,chash},
+  emphstyle=\color{codetype},
+  morekeywords={emplace_back,push_back,make_pair,iota,
+    fill,upper_bound,lower_bound,binary_search,swap,
+    insert,erase,find,count,begin,end,size,empty,
+    clear,assign,push,pop,top,front,back,sort,
+    reverse,accumulate,adjacent_find,all_of,any_of,
+    binary_search,copy,count_if,equal_range,fill_n,
+    find_if,for_each,generate,includes,inplace_merge,
+    is_heap,is_sorted,iter_swap,lexicographical_compare,
+    lower_bound,make_heap,max_element,merge,min_element,
+    next_permutation,nth_element,partial_sort,partition,
+    pop_heap,prev_permutation,push_heap,random_shuffle,
+    remove,remove_if,replace,replace_if,reverse_copy,
+    rotate,search,set_difference,set_intersection,
+    set_symmetric_difference,set_union,shuffle,sort_heap,
+    stable_partition,stable_sort,swap_ranges,transform,
+    unique,unique_copy,resize,reserve,shrink_to_fit,
+    data,at,substr,compare,append,assign,replace,find,
+    rfind,find_first_of,find_last_of,npos},
+  keywordstyle=\color{codekw},
   breaklines=true,
   breakatwhitespace=false,
   frame=none,
