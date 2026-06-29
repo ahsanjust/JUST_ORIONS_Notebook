@@ -1,95 +1,97 @@
-\documentclass[10pt,a4paper]{article}
-\usepackage[papersize={596pt,842pt},top=0.7in,bottom=1.0in,left=0.65in,right=0.65in,headsep=8pt]{geometry}
-\usepackage{paracol}
+\documentclass[8pt, a4paper, onesided]{article}
+\usepackage[left=0.1in,right=0.1in,top=0.25in,bottom=0.1in,headsep=0.05in]{geometry}
+\usepackage{hyperref}
 \usepackage{fancyhdr}
-\usepackage{listings}
-\usepackage{graphicx}
-\usepackage{amsmath,amssymb}
-\usepackage[T1]{fontenc}
-\usepackage{mathptmx}
-\usepackage{courier}
 \usepackage{xcolor}
-\definecolor{codekw}{HTML}{004DFF}   % ultra-bright blue for keywords
-\definecolor{codestr}{HTML}{FF6600}  % blazing orange for strings
-\definecolor{codecmt}{HTML}{33AA44}  % bright green for comments
-\definecolor{codenum}{HTML}{AA00CC}  % vivid purple for numbers
-\definecolor{codepre}{HTML}{DD0088}  % hot pink for preprocessor
-\definecolor{codetype}{HTML}{00BBAA} % bright teal for C++ types
-\usepackage{caption}
-\usepackage{tikz}
+\usepackage{tocloft}
+\usepackage{pdflscape}
+\usepackage{multicol}
+\usepackage{titlesec}
+\usepackage{minted}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
 
-\setlength{\columnsep}{14pt}
-\setlength{\columnseprule}{0.4pt}
+\usemintedstyle{default}
 
-\pagestyle{fancy}
-\fancyhf{}
-\renewcommand{\headrulewidth}{0.8pt}
-\fancyhead[L]{\nouppercase{\textbf{JUST\_ORIONS} - Jashore University of Science and Technology}}
-\fancyhead[R]{\thepage}
-\fancyfoot{}
+% ── Column layout ──────────────────────────────────────────────────────────────
+\setlength{\columnsep}{0.4cm}
+\setlength{\columnseprule}{0.1pt}
 
-\lstset{
-  language=C++,
-  basicstyle=\ttfamily\footnotesize,
-  keywordstyle=\color{codekw},
-  stringstyle=\color{codestr},
-  commentstyle=\color{codecmt},
-  numberstyle=\color{codenum},
-  identifierstyle=\color{black},
-  emph={int,long,double,char,void,bool,short,float,unsigned,
-    signed,size_t,ssize_t,int8_t,int16_t,int32_t,int64_t,
-    uint8_t,uint16_t,uint32_t,uint64_t,__int128_t,
-    int128_t,uint128_t,vector,map,set,pair,string,queue,
-    stack,deque,list,unordered_map,unordered_set,
-    multiset,multimap,priority_queue,tuple,optional,
-    variant,array,complex,valarray,initializer_list,
-    istream,ostream,ifstream,ofstream,stringstream,
-    istringstream,ostringstream,auto,decltype,nullptr_t,
-    mt19937,mt19937_64,uniform_int_distribution,
-    pb_ds,gnu_pbds,tree,null_type,rb_tree_tag,
-    tree_order_statistics_node_update,ordered_set,OS,
-    gp_hash_table,chash},
-  emphstyle=\color{codetype},
-  morekeywords={emplace_back,push_back,make_pair,iota,
-    fill,upper_bound,lower_bound,binary_search,swap,
-    insert,erase,find,count,begin,end,size,empty,
-    clear,assign,push,pop,top,front,back,sort,
-    reverse,accumulate,adjacent_find,all_of,any_of,
-    copy,count_if,equal_range,fill_n,find_if,for_each,
-    generate,includes,inplace_merge,is_heap,is_sorted,
-    iter_swap,lexicographical_compare,make_heap,
-    max_element,merge,min_element,next_permutation,
-    nth_element,partial_sort,partition,pop_heap,
-    prev_permutation,push_heap,random_shuffle,remove,
-    remove_if,replace,replace_if,reverse_copy,rotate,
-    search,set_difference,set_intersection,
-    set_symmetric_difference,set_union,shuffle,sort_heap,
-    stable_partition,stable_sort,swap_ranges,transform,
-    unique,unique_copy,resize,reserve,shrink_to_fit,
-    data,at,substr,compare,append,assign,replace,find,
-    rfind,find_first_of,find_last_of,substr,getline},
-  directivestyle=\color{codepre},
-  breaklines=true,
-  breakatwhitespace=false,
-  frame=none,
-  columns=fullflexible,
-  keepspaces=true,
-  showspaces=false,
-  showstringspaces=false,
-  aboveskip=1pt,
-  belowskip=1pt,
-  lineskip=0.3pt,
-  upquote=true,
+% ── Spacing ────────────────────────────────────────────────────────────────────
+\setlength{\parskip}{-2.5mm plus 0.3mm minus 0.3mm}
+\setlength{\parindent}{0pt}
+\setlength{\fboxsep}{1pt}
+\setlength{\fboxrule}{0.01pt}
+
+% ── Section / subsection titles ────────────────────────────────────────────────
+\titleformat{\section}{\normalfont\fontsize{10}{15}\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}[hang]{\normalfont\fontsize{9}{12}\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.5ex plus 0.3ex minus 0.3ex}{0.4ex plus 0.1ex}
+\titlespacing*{\subsection}{0pt}{1.0ex plus 0.3ex minus 0.2ex}{0.2ex plus 0.1ex}
+
+% ── TOC styling ────────────────────────────────────────────────────────────────
+\renewcommand\cftsecfont{\fontsize{9}{10}\bfseries\color{red!70!black}}
+\renewcommand\cftsecpagefont{\fontsize{9}{10}\mdseries}
+\renewcommand\cftsubsecfont{\fontsize{7}{8}\mdseries}
+\renewcommand\cftsubsecpagefont{\fontsize{7}{8}\mdseries}
+\renewcommand\cftsecafterpnum{\vspace{-0.5ex}}
+\renewcommand\cftsubsecafterpnum{\vspace{-0.5ex}}
+\setlength{\cftbeforesecskip}{0.5ex}
+\setlength{\cftbeforesubsecskip}{0pt}
+
+% ── Minted line number style ────────────────────────────────────────────────────
+\renewcommand{\theFancyVerbLine}{%
+  \sffamily\textcolor[rgb]{0.6,0.6,0.6}{\scriptsize\arabic{FancyVerbLine}}}
+
+% ── Minted global settings ─────────────────────────────────────────────────────
+\setminted{
+  breaklines,
+  breaksymbolleft=\space,
+  breakafter={,+-*;>=},
+  breakbefore={</},
   tabsize=2,
+  obeytabs,
+  mathescape,
+  frame=topline,
+  framesep=2pt,
+  fontsize=\fontsize{8}{9},
+  baselinestretch=0.95
 }
 
-\setlength{\parskip}{4pt}
-\setlength{\parindent}{0pt}
+% ── Page headers ───────────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhead[L]{\small\textbf{JUST\_ORIONS} Team Notebook}
+\fancyhead[R]{\small\thepage}
+\fancyfoot[C]{}
+
+\fancypagestyle{plain}{
+  \fancyhead[L]{\small\textbf{JUST\_ORIONS} Team Notebook}
+  \fancyhead[R]{\small\thepage}
+  \fancyfoot[C]{}
+}
+
+% ── Title ──────────────────────────────────────────────────────────────────────
+\title{\vspace{-2.5ex}\textbf{JUST\_ORIONS} Team Notebook}
+\author{Jashore University of Science and Technology}
+\date{}
+
+% ── Helpers ────────────────────────────────────────────────────────────────────
+\def\Hrule{\vskip 2pt\hrule\vskip 2pt}
+
+% ── hyperref color ─────────────────────────────────────────────────────────────
+\hypersetup{colorlinks=true, linkcolor=red!70!black, urlcolor=blue!70!black}
 
 \begin{document}
+\begin{landscape}
+\begin{multicols*}{3}
 
-\columnratio{0.5}
-\begin{paracol}{2}
+\maketitle
+\vspace{-7ex}
+\tableofcontents
+\pagestyle{fancy}
+
+\raggedbottom
 
 \input{sections/01_build_and_basics}
 \input{sections/02_persistent_segtree}
@@ -103,5 +105,6 @@
 \input{sections/10_combinatorics}
 \input{sections/11_geometry_and_misc}
 
-\end{paracol}
+\end{multicols*}
+\end{landscape}
 \end{document}
