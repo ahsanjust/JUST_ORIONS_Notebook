@@ -1,6 +1,6 @@
-\markboth{TRIE / BOOTH}{TRIE / BOOTH}\label{sec:08}
-\switchcolumn
-\begin{lstlisting}
+\section{Trie / Booth}
+\subsection{Trie Advanced Operations}
+\begin{minted}{c++}
   // Check if x exists in the Trie
   int count(int x) {
     Node *u = root;
@@ -52,10 +52,9 @@
     return go(root, B - 1, x, 1, 1);
   }
 };
-\end{lstlisting}
-
-\textbf{Minimum Lexicographic Rotation(Booth's Algorithm)}
-\begin{lstlisting}
+\end{minted}
+\subsection{Booth's Algorithm (Min Lex Rotation)}
+\begin{minted}{c++}
 int minLex(string &s) {
   int len = s.size();
   int n = 2 * len, i = 0, j = 1, k = 0;
@@ -76,11 +75,8 @@ int minLex(string &s) {
   }
   return min(i, j);
 }
-\end{lstlisting}
-
-\switchcolumn
-
-\textbf{GCD Properties:}
+\end{minted}
+\subsection{GCD Properties}
 In particular, recalling that gcd is a positive integer valued function we obtain that $\gcd(a, b \cdot c) = 1$ if and only if $\gcd(a, b) = 1$ and $\gcd(a, c) = 1$.
 
 15. $\gcd(a_1, \ldots, a_r) = \gcd(\gcd(a_1, \ldots, a_{r-1}), a_r)$ when none $=0$
@@ -95,7 +91,7 @@ In particular, recalling that gcd is a positive integer valued function we obtai
 
 20. Two or more odd consecutive positive integer GCD is also 1.
 
-\begin{lstlisting}
+\begin{minted}{c++}
 int gcdFast(int a, int b)
 {
   int result;
@@ -114,10 +110,9 @@ int gcdFast(int a, int b)
     : "g"(a), "g"(b));
   return result;
 }
-\end{lstlisting}
-
-\textbf{Extended Euclid and CRT}
-\begin{lstlisting}
+\end{minted}
+\subsection{Extended Euclid and CRT}
+\begin{minted}{c++}
 using T = __int128_t;
 T egcd(T a, T b, T &x, T &y) {
   T xx = y = 0, yy = x = 1;
@@ -144,10 +139,9 @@ pair<T, T> crt(T a1, T m1, T a2, T m2) {
   (m2 / g) % m;
   return {x % m, m};
 }
-\end{lstlisting}
-
-\textbf{SPF, Mobius, Primes in O(N)}
-\begin{lstlisting}
+\end{minted}
+\subsection{SPF, Mobius, Primes in O(N)}
+\begin{minted}{c++}
 const int N = 1e6 + 2;
 vector<int> spf(N), mob(N), primes;
 void build() {
@@ -167,12 +161,9 @@ void build() {
     }
   }
 }
-\end{lstlisting}
-
-\switchcolumn
-
-\textbf{SegSieve}
-\begin{lstlisting}
+\end{minted}
+\subsection{Segmented Sieve}
+\begin{minted}{c++}
 vector<char> segmentedSieve(long long L, long
 long R) {
   // generate all primes up to sqrt(R)
@@ -197,10 +188,9 @@ long R) {
   if (L == 1) isPrime[0] = false;
   return isPrime;
 }
-\end{lstlisting}
-
-\textbf{Phi}
-\begin{lstlisting}
+\end{minted}
+\subsection{Phi (Euler Totient)}
+\begin{minted}{c++}
 int phi(int n) {
   int result = n;
   for (int i = 2; i * i <= n; i++) {
@@ -232,10 +222,9 @@ void phi_1_to_n(){
     }
   }
 }
-\end{lstlisting}
-
-\textbf{Large number prime check (M.R.)}
-\begin{lstlisting}
+\end{minted}
+\subsection{Miller-Rabin Primality Test}
+\begin{minted}{c++}
 ull pow(ull a, ull t, ull mod) {
   ull r = 1;
   for (; t; t >>= 1, a = (ull)a * a % mod)
@@ -255,10 +244,9 @@ bool isprime(ull n) {
   }
   return 1;
 }
-\end{lstlisting}
-
-\textbf{Matrix Exponentiation}
-\begin{lstlisting}
+\end{minted}
+\subsection{Matrix Exponentiation}
+\begin{minted}{c++}
 vector<vector<int>>
 multiply(vector<vector<int>>& a,
 vector<vector<int>>& b) {
@@ -291,5 +279,4 @@ int p) {
   }
   return result;
 }
-\end{lstlisting}
-
+\end{minted}

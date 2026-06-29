@@ -1,5 +1,6 @@
-\markboth{TREAP}{TREAP}\label{sec:04}
-\begin{lstlisting}
+\section{Treap}
+\subsection{Kth Smallest Query}
+\begin{minted}{c++}
 int query(int ci, int st, int end,
 int l, int r, int k)
 {
@@ -29,10 +30,9 @@ int main()
   "
   << arr[query(0, 0, n - 1, 2, 6, 3)] << "\n";
 }
-\end{lstlisting}
-
-\textbf{Treap}
-\begin{lstlisting}
+\end{minted}
+\subsection{Implicit Treap}
+\begin{minted}{c++}
 mt19937
 rnd(chrono::steady_clock::now().time_since_epoch
 ().count());
@@ -74,11 +74,8 @@ struct Treap {
       t -> toProp = 0;
     }
   }
-\end{lstlisting}
-
-\switchcolumn
-
-\begin{lstlisting}
+\end{minted}
+\begin{minted}{c++}
   void split(Node *t, Node *&l, Node *&r, int key,
   int add = 0) {
     if (!t) l = r = nullptr;
@@ -144,7 +141,4 @@ struct Treap {
     merge(t, t, right);
   }
 };
-\end{lstlisting}
-
-\switchcolumn
-
+\end{minted}

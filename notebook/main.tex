@@ -11,6 +11,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{etoolbox}
 
 \usemintedstyle{default}
 
@@ -18,26 +19,28 @@
 \setlength{\columnsep}{0.4cm}
 \setlength{\columnseprule}{0.1pt}
 
-% ── Spacing ────────────────────────────────────────────────────────────────────
-\setlength{\parskip}{-2.5mm plus 0.3mm minus 0.3mm}
+% ── Global spacing ─────────────────────────────────────────────────────────────
+% Zero global parskip — all spacing controlled explicitly via titlespacing + minted
+\setlength{\parskip}{0pt}
 \setlength{\parindent}{0pt}
 \setlength{\fboxsep}{1pt}
 \setlength{\fboxrule}{0.01pt}
 
 % ── Section / subsection titles ────────────────────────────────────────────────
-\titleformat{\section}{\normalfont\fontsize{10}{15}\bfseries}{\thesection}{1em}{}
-\titleformat{\subsection}[hang]{\normalfont\fontsize{9}{12}\bfseries}{\thesubsection}{0.5em}{}
-\titlespacing*{\section}{0pt}{1.5ex plus 0.3ex minus 0.3ex}{0.4ex plus 0.1ex}
-\titlespacing*{\subsection}{0pt}{1.0ex plus 0.3ex minus 0.2ex}{0.2ex plus 0.1ex}
+\titleformat{\section}{\normalfont\fontsize{10}{12}\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}[hang]{\normalfont\fontsize{9}{11}\bfseries}{\thesubsection}{0.5em}{}
+% above-title / below-title spacing (very tight but no overlap)
+\titlespacing*{\section}    {0pt}{3pt plus 1pt minus 1pt}{1pt plus 0.5pt}
+\titlespacing*{\subsection} {0pt}{2pt plus 1pt minus 0.5pt}{1pt plus 0.5pt}
 
-% ── TOC styling ────────────────────────────────────────────────────────────────
+% ── TOC styling (matches Effervescent) ─────────────────────────────────────────
 \renewcommand\cftsecfont{\fontsize{9}{10}\bfseries\color{red!70!black}}
 \renewcommand\cftsecpagefont{\fontsize{9}{10}\mdseries}
 \renewcommand\cftsubsecfont{\fontsize{7}{8}\mdseries}
 \renewcommand\cftsubsecpagefont{\fontsize{7}{8}\mdseries}
-\renewcommand\cftsecafterpnum{\vspace{-0.5ex}}
+\renewcommand\cftsecafterpnum{\vspace{-0.4ex}}
 \renewcommand\cftsubsecafterpnum{\vspace{-0.5ex}}
-\setlength{\cftbeforesecskip}{0.5ex}
+\setlength{\cftbeforesecskip}{0.3ex}
 \setlength{\cftbeforesubsecskip}{0pt}
 
 % ── Minted line number style ────────────────────────────────────────────────────
@@ -45,6 +48,7 @@
   \sffamily\textcolor[rgb]{0.6,0.6,0.6}{\scriptsize\arabic{FancyVerbLine}}}
 
 % ── Minted global settings ─────────────────────────────────────────────────────
+% aboveskip=2pt / belowskip=1pt give tight but non-overlapping spacing
 \setminted{
   breaklines,
   breaksymbolleft=\space,
@@ -58,6 +62,9 @@
   fontsize=\fontsize{8}{9},
   baselinestretch=0.95
 }
+% Tight spacing around minted blocks
+\AtBeginEnvironment{minted}{\vspace{1pt}}
+\AfterEndEnvironment{minted}{\vspace{0pt}}
 
 % ── Page headers ───────────────────────────────────────────────────────────────
 \pagestyle{fancy}
@@ -79,7 +86,7 @@
 % ── Helpers ────────────────────────────────────────────────────────────────────
 \def\Hrule{\vskip 2pt\hrule\vskip 2pt}
 
-% ── hyperref color ─────────────────────────────────────────────────────────────
+% ── hyperref colors ────────────────────────────────────────────────────────────
 \hypersetup{colorlinks=true, linkcolor=red!70!black, urlcolor=blue!70!black}
 
 \begin{document}
@@ -90,8 +97,6 @@
 \vspace{-7ex}
 \tableofcontents
 \pagestyle{fancy}
-
-\raggedbottom
 
 \input{sections/01_build_and_basics}
 \input{sections/02_persistent_segtree}

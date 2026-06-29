@@ -1,8 +1,5 @@
-\markboth{GEOMETRY}{GEOMETRY}\label{sec:11}
-\switchcolumn
-
-\textbf{Geometry Formulas}
-
+\section{Geometry \texorpdfstring{\&}{&} Misc}
+\subsection{Geometry Formulas}
 Triangle:
 
 Side length $a, b, c$
@@ -91,12 +88,8 @@ Segment Area (Area of the part cut off by a chord): $Area = \frac{1}{2} r^2 (\th
   \item Surface Area: $4\pi^2 Rr$
   \item Volume: $2\pi^2 Rr^2$, where $R$ is the distance from the center of the tube to the center of the torus, and $r$ is the radius of the tube.
 \end{itemize}
-
-\switchcolumn
-
-\textbf{Closest pair of points:}
-
-\begin{lstlisting}
+\subsection{Closest Pair of Points}
+\begin{minted}{c++}
 struct Res {
   int64_t d;
   P a, b;
@@ -141,9 +134,8 @@ vector<P>& tmp, int l, int r) {
   }
   return res;
 }
-\end{lstlisting}
-
-\begin{lstlisting}
+\end{minted}
+\begin{minted}{c++}
 long double L, W;
 if(!(cin >> L >> W)) return 0;
 // hypotenuse of each right triangle
@@ -163,9 +155,8 @@ long double dy = y1 - y2;
 long double D = sqrtl(dx*dx + dy*dy);
 cout << fixed << setprecision(6) << (double)D
 << "\n";
-\end{lstlisting}
-
-\begin{lstlisting}
+\end{minted}
+\begin{minted}{c++}
 long double r1, r2, r3;
 cin >> r1 >> r2 >> r3;
 // side-lengths of triangle ABC
@@ -195,10 +186,9 @@ cout << fixed << setprecision(6) <<
 (double)blackArea << "\n";
 return 0;
 }
-\end{lstlisting}
-
-\textbf{Intersecting Point of Two Lines Given as Pair of 2 Points}
-\begin{lstlisting}
+\end{minted}
+\subsection{Line Intersection}
+\begin{minted}{c++}
 // Intersecting point of two lines (a1-a2, b1-b2)
 using P = pair<ll,ll>;
 auto cross = [&](P a, P b){ return
@@ -229,12 +219,9 @@ long double u = (long double)cross(dc, da) / (long
 double)D;
 if (t < 0 || t > 1 || u < 0 || u > 1) return {};
 // no segment intersection
-\end{lstlisting}
-
-\switchcolumn
-
-\textbf{Polygon:}
-\begin{lstlisting}
+\end{minted}
+\subsection{Polygon Operations}
+\begin{minted}{c++}
 const ld EPS = 1e-9;
 const ld PI = acos(-1.0);
 int sgn(ld x) { return (x > EPS) - (x < -EPS); }
@@ -271,9 +258,8 @@ struct P {
     return P(x*cos(a) - y*sin(a),
     x*sin(a) + y*cos(a)); }
 };
-\end{lstlisting}
-
-\begin{lstlisting}
+\end{minted}
+\begin{minted}{c++}
 bool collinear(P &a, P &b, P &c) {
   return (b - a) * (c - a) == 0;
 }
@@ -304,9 +290,8 @@ ld dist_pt_seg(P a, P b, P c) {
   if (((c - b) ^ (a - b)) <= 0) return (c - b).abs();
   return dist_pt_line(a, b, c);
 }
-\end{lstlisting}
-
-\begin{lstlisting}
+\end{minted}
+\begin{minted}{c++}
 // Check if P is on segment AB
 bool on_seg(P a, P b, P p) {
   return !sgn((b - a) * (p - a)) &&
@@ -334,9 +319,8 @@ long double polygon_area(vector<P> &p) {
     area += p[i] * p[(i + 1) % n];
   return abs(area) / 2;
 }
-\end{lstlisting}
-
-\begin{lstlisting}
+\end{minted}
+\begin{minted}{c++}
 vector<P> convexHull(vector<P> p) {
   int n = p.size(), k = 0;
   if (n <= 2) return p;
@@ -376,10 +360,9 @@ ld dist_point_line(P a, P b, P c) {
   ld base = hypotl(b.x - a.x, b.y - a.y);
   return area2 / base;
 }
-\end{lstlisting}
-
-\textbf{MO:}
-\begin{lstlisting}
+\end{minted}
+\subsection{Mo's Algorithm}
+\begin{minted}{c++}
 sort(cu.begin(), cu.end(), [&](auto &x, auto &y){
   if (x.l / B != y.l / B) return x.l / B < y.l / B;
   return (x.l / B) % 2 ? x.r > y.r : x.r < y.r;
@@ -389,10 +372,9 @@ while (R < r) add(++R);
 while (L > l) add(--L);
 while (R > r) rem(R--);
 while (L < l) rem(L++);
-\end{lstlisting}
-
-\textbf{Fast Factorization (Maybe not prime)}
-\begin{lstlisting}
+\end{minted}
+\subsection{Fast Factorization (Pollard Rho)}
+\begin{minted}{c++}
 #define ull uint64_t
 struct Montgomery {
   ull n, nr;
@@ -442,6 +424,94 @@ int32_t main() {
   }
   return 0;
 }
-\end{lstlisting}
-
-OR convolution = SOS DP
+\end{minted}
+\subsection{Point and Vector}
+\begin{minted}{c++}
+const double EPS = 1e-9;
+struct Point {
+  double x, y;
+  Point operator+(const Point& other) const {
+    return {x + other.x, y + other.y}; }
+  Point operator-(const Point& other) const {
+    return {x - other.x, y - other.y}; }
+  Point operator*(double s) const { return {x * s,
+  y * s}; }
+  Point operator/(double s) const { return {x / s,
+  y / s}; }
+  bool operator<(const Point& other) const {
+    if (abs(x - other.x) > EPS) return x < other.x;
+    return y < other.y - EPS;
+  }
+  bool operator==(const Point& other) const {
+    return abs(x - other.x) < EPS && abs(y -
+    other.y) < EPS;
+  }
+};
+typedef Point Vector;
+double dot(Vector a, Vector b) { return a.x * b.x +
+a.y * b.y; }
+double norm_sq(Vector a) { return dot(a, a); }
+double length(Vector a) { return
+sqrt(norm_sq(a)); }
+double cross(Vector a, Vector b) { return a.x * b.y
+- a.y * b.x; }
+\end{minted}
+\begin{minted}{c++}
+// Returns: > 0 for Left Turn, < 0 for Right Turn,
+// 0 for Collinear
+double orientation(Point p, Point a, Point b) {
+  return cross(a - p, b - p);
+}
+double distToLine(Point p, Point a, Point b) {
+  return abs(cross(p - a, b - a)) / length(b - a);
+}
+double distToSegment(Point p, Point a, Point b) {
+  if (dot(p - a, b - a) < 0) return length(p - a);
+  if (dot(p - b, a - b) < 0) return length(p - b);
+  return distToLine(p, a, b);
+}
+double polygonArea(const vector<Point>& p) {
+  double area = 0;
+  for (int i = 0; i < (int)p.size(); i++) {
+    area += cross(p[i], p[(i + 1) % p.size()]);
+  }
+  return abs(area) / 2.0;
+}
+\end{minted}
+\begin{minted}{c++}
+void convex_hull(vector<pt>& a, bool
+include_collinear = false) {
+  pt p0 = *min_element(a.begin(), a.end(), [](pt
+  a, pt b) {
+    return make_pair(a.y, a.x) < make_pair(b.y,
+    b.x);
+  });
+  sort(a.begin(), a.end(), [&p0](const pt& a, const
+  pt& b) {
+    int o = orientation(p0, a, b);
+    if (o == 0)
+      return (p0.x-a.x)*(p0.x-a.x) +
+      (p0.y-a.y)*(p0.y-a.y)
+      < (p0.x-b.x)*(p0.x-b.x) +
+      (p0.y-b.y)*(p0.y-b.y);
+    return o < 0;
+  });
+  if (include_collinear) {
+    int i = (int)a.size()-1;
+    while (i >= 0 && collinear(p0, a[i], a.back()))
+      i--;
+    reverse(a.begin()+i+1, a.end());
+  }
+  vector<pt> st;
+  for (int i = 0; i < (int)a.size(); i++) {
+    while (st.size() > 1 && !cw(st[st.size()-2],
+    st.back(), a[i], include_collinear))
+      st.pop_back();
+    st.push_back(a[i]);
+  }
+  if (include_collinear == false && st.size() == 2
+  && st[0] == st[1])
+    st.pop_back();
+  a = st;
+}
+\end{minted}

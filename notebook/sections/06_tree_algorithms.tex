@@ -1,6 +1,6 @@
-\markboth{TREE}{TREE}\label{sec:06}
-\textbf{Binary Lifting}
-\begin{lstlisting}
+\section{Tree}
+\subsection{Binary Lifting}
+\begin{minted}{c++}
 int up[200001][20];
 vector<vector<int>> tree(200001);
 void binary_lifting(int src, int par) {
@@ -22,10 +22,9 @@ int lift_node(int node, int k) {
     if (k >= (1 << i))
       return lift_node(up[node][i], k-(1<<i));
 }
-\end{lstlisting}
-
-\textbf{Tree Flattening (Euler Tour)}
-\begin{lstlisting}
+\end{minted}
+\subsection{Tree Flattening (Euler Tour)}
+\begin{minted}{c++}
 void eularDFS(ll node, ll par, ll arr[], vector<ll>&
 flatTree, vector<ll> tree[], pair<ll, ll>
 subTreeRange[], ll& timer)
@@ -45,11 +44,9 @@ void solve() {
   eularDFS(1, 0, arr, flatTree, tree,
   subTreeRange, timer);
 }
-\end{lstlisting}
-
-\textbf{Heavy Light Decomposition (HLD on Tree)}
-// u to v range query
-\begin{lstlisting}
+\end{minted}
+\subsection{Heavy Light Decomposition (HLD)}
+\begin{minted}{c++}
 struct HLD {
   int n, cur_pos = 0;
   vector<int> arr, parent, size, depth, heavy,
@@ -89,11 +86,8 @@ struct HLD {
       if (v != parent[u] && v != heavy[u])
         decompose(v, v);
   }
-\end{lstlisting}
-
-\switchcolumn
-
-\begin{lstlisting}
+\end{minted}
+\begin{minted}{c++}
   int query(int u, int v) { // Range Sum Query
     int res = 0;
     while (head[u] != head[v]) {
@@ -116,10 +110,9 @@ struct HLD {
     arr[idx] = value;
   }
 };
-\end{lstlisting}
-
-\textbf{Centroid Decomposition}
-\begin{lstlisting}
+\end{minted}
+\subsection{Centroid Decomposition}
+\begin{minted}{c++}
 vector<vector<int>> adj;
 vector<bool> is_removed;
 vector<int> subtree_size;
@@ -154,10 +147,9 @@ void build_centroid_decomp(int node = 0) {
     build_centroid_decomp(child);
   }
 }
-\end{lstlisting}
-
-\textit{// Ahsan's}
-\begin{lstlisting}
+\end{minted}
+\subsection{Centroid Decomposition (Ahsan's)}
+\begin{minted}{c++}
 int tot = 0;
 vector<int> sz(n, 1), removed(n, 0), cenpar(n, -1);
 auto dfs_sz = [&](auto &&self, int node, int pr) ->
@@ -191,12 +183,9 @@ pr) -> void {
   }
 };
 decompose(decompose, 0, -1);
-\end{lstlisting}
-
-\switchcolumn
-
-\textbf{Tree}
-\begin{lstlisting}
+\end{minted}
+\subsection{LCA and Distance}
+\begin{minted}{c++}
 vector<vector<int>>t,parents;
 vector<int>level;
 int mx;
@@ -246,52 +235,4 @@ int main(){
     }
   }
 }
-\end{lstlisting}
-
-\textbf{String Double Hashing}
-\begin{lstlisting}
-ll mod1 = 127657753, mod2 = 987654319, p1 = 31,
-p2 = 37;
-ll invp1 = ModPow(p1, mod1 - 2, mod1), invp2 =
-ModPow(p2, mod2 - 2, mod2);
-vector<pair<ll, ll>> pPow(1, {1, 1}), iPow(1, {1,
-1});
-void genP(ll n) {
-  while ((ll)pPow.size() <= n) {
-    pPow.push_back({pPow.back().xx * p1 %
-    mod1, pPow.back().yy * p2 % mod2});
-    iPow.push_back({iPow.back().xx * invp1 %
-    mod1, iPow.back().yy * invp2 % mod2});
-  }
-}
-struct Hash {
-  int n = 0;
-  vector<pair<ll, ll>> sHash;
-  void genHash(string& s) {
-    sHash.resize(n + 1, {0, 0}); // 0-indexed
-    for (int i = 0; i < n; i++) {
-      sHash[i + 1].xx = (sHash[i].xx + (s[i] - 'a' +
-      1) * pPow[i].xx) % mod1;
-      sHash[i + 1].yy = (sHash[i].yy + (s[i] - 'a' +
-      1) * pPow[i].yy) % mod2;
-    }
-  }
-  pair<ll, ll> getHash(int l, int r) {
-    ll h1 = (sHash[r + 1].xx - sHash[l].xx + mod1)
-    % mod1 * iPow[l].xx % mod1;
-    ll h2 = (sHash[r + 1].yy - sHash[l].yy + mod2)
-    % mod2 * iPow[l].yy % mod2;
-    return {h1, h2}; // 0-indexed
-  }
-  pair<ll, ll> getHash() {
-    return sHash[n]; // Get the hash of the whole
-    // string
-  }
-  Hash(string& s) {
-    n = s.size();
-    genP(n), genHash(s);
-  }
-};
-\end{lstlisting}
-
-\switchcolumn
+\end{minted}

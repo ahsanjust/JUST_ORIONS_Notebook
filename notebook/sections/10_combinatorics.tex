@@ -1,8 +1,6 @@
-\markboth{COMBINATORICS}{COMBINATORICS}\label{sec:10}
-\switchcolumn
-
-\textbf{Burnside's Lemma/Polya Enumeration}
-\begin{lstlisting}
+\section{Combinatorics}
+\subsection{Burnside's Lemma / Polya Enumeration}
+\begin{minted}{c++}
 using Permutation = vector<int>;
 void operator*=(Permutation& p, Permutation
 const& q) {
@@ -50,9 +48,8 @@ int solve(int n, int m) {
   }
   return sum / s.size();
 }
-\end{lstlisting}
-
-\textbf{Exclusion DP}
+\end{minted}
+\subsection{Exclusion DP}
 There is only difference to calculate $f[i]$ for different problems,
 
 for ordered pair means $(a, b)$ and $(b, a)$ are not same then $f[i] = d[i] \cdot d[i]$;
@@ -76,10 +73,8 @@ for $k$-tuples:
 here $d[i]$ = number of elements divisible by $i$.
 
 and $C$ denotes combination
-
-\textbf{Bishop Placement}
-/* Number of ways to place $K$ bishops on an $N \times N$ chessboard so that no two bishops attack each other. */
-\begin{lstlisting}
+\subsection{Bishop Placement}
+\begin{minted}{c++}
 int bishop_placements(int N, int K)
 {
   if (K > 2 * N - 1)
@@ -98,108 +93,13 @@ int bishop_placements(int N, int K)
     ans += D[N*2-1][i] * D[N*2-2][K-i];
   return ans;
 }
-\end{lstlisting}
-
-\textbf{Handling Precision (EPS)}
-\begin{lstlisting}
+\end{minted}
+\subsection{Handling Precision (EPS)}
+\begin{minted}{c++}
 const double EPS = 1e-9;
 bool equal(double a, double b) { return abs(a - b)
 < EPS; }
 bool lessThan(double a, double b) { return a < b - EPS; }
 bool greaterThan(double a, double b) { return a >
 b + EPS; }
-\end{lstlisting}
-
-\textbf{Point and Vector}
-\begin{lstlisting}
-const double EPS = 1e-9;
-struct Point {
-  double x, y;
-  Point operator+(const Point& other) const {
-    return {x + other.x, y + other.y}; }
-  Point operator-(const Point& other) const {
-    return {x - other.x, y - other.y}; }
-  Point operator*(double s) const { return {x * s,
-  y * s}; }
-  Point operator/(double s) const { return {x / s,
-  y / s}; }
-  bool operator<(const Point& other) const {
-    if (abs(x - other.x) > EPS) return x < other.x;
-    return y < other.y - EPS;
-  }
-  bool operator==(const Point& other) const {
-    return abs(x - other.x) < EPS && abs(y -
-    other.y) < EPS;
-  }
-};
-typedef Point Vector;
-double dot(Vector a, Vector b) { return a.x * b.x +
-a.y * b.y; }
-double norm_sq(Vector a) { return dot(a, a); }
-double length(Vector a) { return
-sqrt(norm_sq(a)); }
-double cross(Vector a, Vector b) { return a.x * b.y
-- a.y * b.x; }
-\end{lstlisting}
-
-\begin{lstlisting}
-// Returns: > 0 for Left Turn, < 0 for Right Turn,
-// 0 for Collinear
-double orientation(Point p, Point a, Point b) {
-  return cross(a - p, b - p);
-}
-double distToLine(Point p, Point a, Point b) {
-  return abs(cross(p - a, b - a)) / length(b - a);
-}
-double distToSegment(Point p, Point a, Point b) {
-  if (dot(p - a, b - a) < 0) return length(p - a);
-  if (dot(p - b, a - b) < 0) return length(p - b);
-  return distToLine(p, a, b);
-}
-double polygonArea(const vector<Point>& p) {
-  double area = 0;
-  for (int i = 0; i < (int)p.size(); i++) {
-    area += cross(p[i], p[(i + 1) % p.size()]);
-  }
-  return abs(area) / 2.0;
-}
-\end{lstlisting}
-
-\begin{lstlisting}
-void convex_hull(vector<pt>& a, bool
-include_collinear = false) {
-  pt p0 = *min_element(a.begin(), a.end(), [](pt
-  a, pt b) {
-    return make_pair(a.y, a.x) < make_pair(b.y,
-    b.x);
-  });
-  sort(a.begin(), a.end(), [&p0](const pt& a, const
-  pt& b) {
-    int o = orientation(p0, a, b);
-    if (o == 0)
-      return (p0.x-a.x)*(p0.x-a.x) +
-      (p0.y-a.y)*(p0.y-a.y)
-      < (p0.x-b.x)*(p0.x-b.x) +
-      (p0.y-b.y)*(p0.y-b.y);
-    return o < 0;
-  });
-  if (include_collinear) {
-    int i = (int)a.size()-1;
-    while (i >= 0 && collinear(p0, a[i], a.back()))
-      i--;
-    reverse(a.begin()+i+1, a.end());
-  }
-  vector<pt> st;
-  for (int i = 0; i < (int)a.size(); i++) {
-    while (st.size() > 1 && !cw(st[st.size()-2],
-    st.back(), a[i], include_collinear))
-      st.pop_back();
-    st.push_back(a[i]);
-  }
-  if (include_collinear == false && st.size() == 2
-  && st[0] == st[1])
-    st.pop_back();
-  a = st;
-}
-\end{lstlisting}
-
+\end{minted}

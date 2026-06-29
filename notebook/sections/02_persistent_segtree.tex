@@ -1,6 +1,6 @@
-\markboth{SEGTREE / BIT}{SEGTREE / BIT}\label{sec:02}
-\textbf{Persistent Segment Tree}
-\begin{lstlisting}
+\section{Segtree / BIT}
+\subsection{Persistent Segment Tree}
+\begin{minted}{c++}
 struct PST {
   struct Node { int l, r, val; };
   vector<Node> t;
@@ -65,10 +65,8 @@ int main() {
   }
   return 0;
 }
-\end{lstlisting}
-%the code returns k-th number in a range l to r if
-%the range were sorted
-\begin{lstlisting}
+\end{minted}
+\begin{minted}{c++}
 int V[N], root[N], a[N];
 int32_t main() {
   map<int, int>mp;
@@ -89,13 +87,10 @@ int32_t main() {
   }
   return 0;
 }
-\end{lstlisting}
-
-\switchcolumn
-
-\textbf{Fenwick Tree}
+\end{minted}
+\subsection{Fenwick Tree}
 Point update and range query.
-\begin{lstlisting}
+\begin{minted}{c++}
 template<typename T>
 struct BIT {
   int n;
@@ -108,11 +103,10 @@ struct BIT {
     += bit[i]; return r; }
   T sum(int l, int r) { return sum(r) - sum(l - 1); }
 };
-\end{lstlisting}
+\end{minted}
 Usage: \texttt{BIT<ll> fenw(5);}
-
-\textit{//Fenwick 2D}
-\begin{lstlisting}
+\subsection{Fenwick 2D}
+\begin{minted}{c++}
 struct BIT2D {
   int n, m;
   vector<vector<ll>> bit;
@@ -136,17 +130,16 @@ struct BIT2D {
     y1 - 1) + sum(x1 - 1, y1 - 1);
   }
 };
-\end{lstlisting}
-\begin{lstlisting}
+\end{minted}
+\begin{minted}{c++}
 BIT2D fenw2(4, 4);
 fenw2.add(1, 1, 5);
 fenw2.add(3, 2, 7);
 cout << fenw2.query(1, 1, 3, 3) << "\n"; // sum
 // inside rectangle [(1,1)-(3,3)]
-\end{lstlisting}
-
-Range update and range query.
-\begin{lstlisting}
+\end{minted}
+\subsection{BIT Range Update \texorpdfstring{\&}{&} Range Query}
+\begin{minted}{c++}
 using ll = long long;
 ll bit1[200005] ,bit2[200005],n,m;
 void update(ll bit[],ll i,ll val){
@@ -173,9 +166,7 @@ ll prefix_sum(ll i){
 ll range_sum(ll l,ll r){
   return prefix_sum(r)-prefix_sum(l-1);
 }
-\end{lstlisting}
+\end{minted}
 \texttt{range\_update(l,r,val);}\\
 \texttt{range\_sum(l,r);}
-
-\switchcolumn
 

@@ -1,6 +1,6 @@
-\markboth{STRING}{STRING}\label{sec:07}
-\textbf{KMP}
-\begin{lstlisting}
+\section{String}
+\subsection{KMP}
+\begin{minted}{c++}
 vector<int> getLps(const string &t) {
   int n = t.size();
   vector<int> pi(n, 0);
@@ -16,10 +16,9 @@ vector<int> getLps(const string &t) {
   }
   return pi;
 }
-\end{lstlisting}
-
-\textbf{Z-Algorithm}
-\begin{lstlisting}
+\end{minted}
+\subsection{Z-Algorithm}
+\begin{minted}{c++}
 vector<int> z_function(string& s)
 {
   int n = s.size();
@@ -35,10 +34,9 @@ vector<int> z_function(string& s)
   }
   return z;
 }
-\end{lstlisting}
-
-\textbf{Manacher's Algorithm}
-\begin{lstlisting}
+\end{minted}
+\subsection{Manacher's Algorithm}
+\begin{minted}{c++}
 struct Manacher {
   vector<int> p[2];
   // p[1][i] = (max odd length palindrome
@@ -67,12 +65,9 @@ struct Manacher {
     return 2 * p[len % 2][mid] + len % 2 >= len;
   }
 };
-\end{lstlisting}
-
-\switchcolumn
-
-\textbf{Suffix Array}
-\begin{lstlisting}
+\end{minted}
+\subsection{Suffix Array}
+\begin{minted}{c++}
 struct SuffixArray {
   vector<int> sa, rank, lcp;
   SuffixArray(const string &s, int lim = 256) {
@@ -124,8 +119,8 @@ struct SuffixArray {
     }
   }
 };
-\end{lstlisting}
-\begin{lstlisting}
+\end{minted}
+\begin{minted}{c++}
 int main() {
   string s = "banana";
   SuffixArray sa(s);
@@ -136,14 +131,9 @@ int main() {
   for (int i = 1; i < s.size(); i++)
     cout << sa.lcp[i] << ' ';
 }
-\end{lstlisting}
-
-\switchcolumn
-
-\textbf{Aho-Corasick}
-//The Aho-Corasick algorithm allows us to quickly
-//search for multiple patterns in a text.
-\begin{lstlisting}
+\end{minted}
+\subsection{Aho-Corasick}
+\begin{minted}{c++}
 const int K = 26;
 struct Vertex {
   vector<int>next_char, go;
@@ -203,9 +193,8 @@ void add_links() {
     }
   }
 }
-\end{lstlisting}
-
-\begin{lstlisting}
+\end{minted}
+\begin{minted}{c++}
 int main() {
   vector<string> patterns = {"a", "ab", "bab", "bc",
   "bca", "c", "caa"};
@@ -236,12 +225,54 @@ int main() {
     }
   }
 }
-\end{lstlisting}
-
-\switchcolumn
-
-\textbf{Trie}
-\begin{lstlisting}
+\end{minted}
+\subsection{String Double Hashing}
+\begin{minted}{c++}
+ll mod1 = 127657753, mod2 = 987654319, p1 = 31,
+p2 = 37;
+ll invp1 = ModPow(p1, mod1 - 2, mod1), invp2 =
+ModPow(p2, mod2 - 2, mod2);
+vector<pair<ll, ll>> pPow(1, {1, 1}), iPow(1, {1,
+1});
+void genP(ll n) {
+  while ((ll)pPow.size() <= n) {
+    pPow.push_back({pPow.back().xx * p1 %
+    mod1, pPow.back().yy * p2 % mod2});
+    iPow.push_back({iPow.back().xx * invp1 %
+    mod1, iPow.back().yy * invp2 % mod2});
+  }
+}
+struct Hash {
+  int n = 0;
+  vector<pair<ll, ll>> sHash;
+  void genHash(string& s) {
+    sHash.resize(n + 1, {0, 0}); // 0-indexed
+    for (int i = 0; i < n; i++) {
+      sHash[i + 1].xx = (sHash[i].xx + (s[i] - 'a' +
+      1) * pPow[i].xx) % mod1;
+      sHash[i + 1].yy = (sHash[i].yy + (s[i] - 'a' +
+      1) * pPow[i].yy) % mod2;
+    }
+  }
+  pair<ll, ll> getHash(int l, int r) {
+    ll h1 = (sHash[r + 1].xx - sHash[l].xx + mod1)
+    % mod1 * iPow[l].xx % mod1;
+    ll h2 = (sHash[r + 1].yy - sHash[l].yy + mod2)
+    % mod2 * iPow[l].yy % mod2;
+    return {h1, h2}; // 0-indexed
+  }
+  pair<ll, ll> getHash() {
+    return sHash[n]; // Get the hash of the whole
+    // string
+  }
+  Hash(string& s) {
+    n = s.size();
+    genP(n), genHash(s);
+  }
+};
+\end{minted}
+\subsection{Trie (Binary)}
+\begin{minted}{c++}
 // Initialize: Trie T;
 // Insert Value: T.add(val, 1);
 // Delete Value: T.add(val, -1);
@@ -301,5 +332,4 @@ struct Trie {
     }
     return ans;
   }
-\end{lstlisting}
-
+\end{minted}

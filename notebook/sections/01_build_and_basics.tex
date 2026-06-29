@@ -1,6 +1,6 @@
-\markboth{SETUP \& BASICS}{SETUP \& BASICS}\label{sec:01}
-\textbf{\Large Sublime build(linux):}
-\begin{lstlisting}
+\section{Setup \texorpdfstring{\&}{&} Basics}
+\subsection{Sublime Build (Linux)}
+\begin{minted}{c++}
 {
   "shell": true,
   "cmd": "g++ -std=c++17 '${file}' -o
@@ -10,10 +10,9 @@
   "working_dir": "${file_path}",
   "selector": "source.cpp"
 }
-\end{lstlisting}
-
-\textbf{Windows:}
-\begin{lstlisting}
+\end{minted}
+\subsection{Sublime Build (Windows)}
+\begin{minted}{c++}
 {
   "cmd": ["g++.exe",
   "-std=c++17", "${file}",
@@ -25,10 +24,9 @@
   "working_dir":"$file_path",
   "selector":"source.cpp"
 }
-\end{lstlisting}
-
-\textbf{Nothing}
-\begin{lstlisting}
+\end{minted}
+\subsection{Basic Setup}
+\begin{minted}{c++}
 #pragma GCC optimize("Ofast")
 ios_base::sync_with_stdio(false), cin.tie(NULL),
 cout.tie(NULL);
@@ -43,12 +41,11 @@ int)chrono::steady_clock::now().time_since_epoch
 ().count());
 int64_t Random(int64_t l, int64_t r) { return (l +
 (rnd() % (r - l + 1))); }
-\end{lstlisting}
+\end{minted}
 
 $\sum$ coprime of $(x) = (x \cdot \phi(x))/2$.
-
-\textbf{PBDS}
-\begin{lstlisting}
+\subsection{PBDS}
+\begin{minted}{c++}
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
 using namespace __gnu_pbds;
@@ -65,22 +62,17 @@ tree_order_statistics_node_update>;
 // idx-1 will give highest value which is strictly
 // less than x
 // for upper_bound->do the same with (x+1)
-\end{lstlisting}
-
-\textit{Custom cmp pbds:}
-
-\begin{lstlisting}
+\end{minted}
+\subsection{PBDS Custom Comparator}
+\begin{minted}{c++}
 struct cmp {bool operator() (const int &a,const int
 &b){return a <= b;}};
 typedef
 tree<int,null_type,cmp,rb_tree_tag,tree_order_s
 tatistics_node_update> ordered_set;
-\end{lstlisting}
-
-\switchcolumn
-
-\textbf{\textit{GP Hash Table}}
-\begin{lstlisting}
+\end{minted}
+\subsection{GP Hash Table}
+\begin{minted}{c++}
 struct chash {
   static uint64_t splitmix64(uint64_t x)
   {
@@ -98,10 +90,9 @@ struct chash {
   }
 };
 gp_hash_table<ll, ll, chash> mp;
-\end{lstlisting}
-
-\textbf{DSU}
-\begin{lstlisting}
+\end{minted}
+\subsection{DSU}
+\begin{minted}{c++}
 struct DSU{
   vector<int> p, rank, setSize;
   int numSets;
@@ -132,6 +123,4 @@ struct DSU{
     --numSets;
   }
 };
-\end{lstlisting}
-
-\switchcolumn
+\end{minted}
