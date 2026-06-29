@@ -18,6 +18,7 @@ Thumbs.db
 *.synctex.gz
 *.fls
 *.fdb_latexmk
+*.pyg
 _minted-*/
 
 # PDF outputs (keep original reference PDF)
