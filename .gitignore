@@ -1,4 +1,11 @@
+# Editor / tool junk
 .aider*
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
 
 # LaTeX build artifacts
 *.aux
@@ -9,6 +16,9 @@
 *.bbl
 *.blg
 *.synctex.gz
+*.fls
+*.fdb_latexmk
+_minted-*/
 
 # PDF outputs (keep original reference PDF)
 notebook/main.pdf

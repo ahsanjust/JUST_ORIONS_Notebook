@@ -46,7 +46,10 @@ notebook/
 
 ## Build
 
-Compiles to 23 pages (matching original) with:
+Compiles to ~21 pages with:
 ```bash
-cd notebook && pdflatex main.tex
+cd notebook && pdflatex -shell-escape main.tex
 ```
+
+> Note: Uses `minted` package — requires `-shell-escape` flag and `pygments` installed.
+> Index page (`00_index.tex`) was removed in commit `a706ca1` (TOC now covers navigation).
