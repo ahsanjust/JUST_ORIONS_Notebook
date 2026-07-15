@@ -8,3 +8,103 @@
 \textbf{Index-k Nim}: Can remove from up to $k$ piles at once. Write sizes in binary. Sum each column. If all column sums $\equiv 0 \pmod{k+1}$, second player wins.
 
 \textbf{Mis\`{e}re Nim} (Last player to move LOSES): If all piles have size 1, Second wins if $N$ is ODD. Otherwise, play like Standard Nim (XOR sum).
+
+\subsection{SOS DP}
+\begin{minted}{c++}
+void zeta_subset(vector<int64_t> &dp, int bits) {
+  for (int b = 0; b < bits; b++)
+    for (int mask = 0; mask < (1 << bits); mask++)
+      if (mask >> b & 1)
+        dp[mask] += dp[mask ^ (1 << b)];
+}
+void zeta_superset(vector<int64_t> &dp, int bits) {
+  for (int b = 0; b < bits; b++)
+    for (int mask = 0; mask < (1 << bits); mask++)
+      if (!(mask >> b & 1))
+        dp[mask] += dp[mask | (1 << b)];
+}
+\end{minted}
+\begin{minted}{c++}
+void Solve() {
+  ll n; cin >> n;
+  vector<ll> arr(n);
+  for (auto& x : arr) cin >> x;
+  ll N = 1 + __lg(*max_element(arr.begin(),
+  arr.end()));
+  vector<ll> sos(1 << N, 0), sos2(1 << N, 0);
+  for (auto it : arr) {
+    sos[it]++;
+    sos2[((1 << N) - 1) ^ it]++;
+  }
+  for (int i = 0; i < N; ++i)
+    for (int mask = 0; mask < (1 << N); ++mask)
+      if (mask & (1 << i))
+        sos[mask] += sos[mask ^ (1 << i)],
+        sos2[mask] += sos2[mask ^ (1 << i)];
+  for (auto& it : arr) {
+    // count y: x|y == x
+    cout << sos[it] << ' ';
+    // count y: x&y == x
+    cout << sos2[((1 << N) - 1) ^ it] << ' ';
+    // count y: x&y != 0
+    cout << n - sos[((1 << N) - 1) ^ it] << ' ';
+  }
+}
+\end{minted}
+\subsection{Sum of Digits up to N}
+\begin{minted}{c++}
+uint64_t sumDigitsUpTo(uint64_t n) {
+  if (n <= 0) return 0;
+  uint64_t sum = 0;
+  for (uint64_t f = 1; f <= n; f *= 10) {
+    uint64_t hi = n / (f * 10);
+    uint64_t cur = (n / f) % 10;
+    uint64_t lo = n % f;
+    sum += hi * 45LL * f;
+    sum += cur * (lo + 1);
+    sum += f * (cur * (cur - 1) / 2);
+  }
+  return sum;
+}
+\end{minted}
+\subsection{Number of Digits up to N}
+\begin{minted}{c++}
+int64_t get(int64_t n) {
+  int64_t base = 1, digits = 1, now = 0;
+  while (base * 10 <= n) {
+    base *= 10;
+    now += (base - (base / 10 == 0 ? 1 :
+           base / 10)) * digits;
+    digits += 1;
+  }
+  n -= (base - 1);
+  now += n * digits;
+  return now;
+}
+\end{minted}
+\subsection{Subset Sum (Bitset)}
+Works when sum of values $\le$ N. TC: O(N/32 * sqrt(N))
+\begin{minted}{c++}
+const int N = 1e6 + 6;
+bitset<N> dp;
+dp.set(0);
+for (auto &[w, c] : comp) {
+  for (int i = 0; 1 << i <= c; ++i) {
+    dp |= dp << (w * (1 << i));
+    c -= 1 << i;
+  }
+  dp |= dp << (w * c);
+}
+dp.test(k) // if sum k is possible
+\end{minted}
+
+OR convolution can be done using SOS DP.
+
+\subsection{All Submasks in $O(3^N)$}
+\begin{minted}{c++}
+for (int mask = 0; mask < 1 << n; mask++) {
+  for (int sub = mask; sub > 0;
+       sub = (sub - 1) & mask) {
+  }
+}
+\end{minted}
