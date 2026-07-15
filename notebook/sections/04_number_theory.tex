@@ -156,6 +156,8 @@ void phi_1_to_n() {
   }
 }
 \end{minted}
+Sum of numbers $\le x$ coprime to $x$: $\displaystyle\sum_{\substack{1 \le i \le x \\ \gcd(i, x) = 1}} i = \frac{x \cdot \phi(x)}{2}$.
+
 \subsection{Miller-Rabin Primality Test}
 \begin{minted}{c++}
 ull pow(ull a, ull t, ull mod) {
