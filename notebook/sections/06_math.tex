@@ -170,22 +170,6 @@ int lis(vector<int> const& a) {
   return ans;
 }
 \end{minted}
-\subsection{LIS up to Every Index}
-\begin{minted}{c++}
-vector<int> longestObstacleCourseAtEachPosition(
-  vector<int>& a) {
-  vector<int> lis, ans;
-  for (auto &it : a) {
-    int indx = upper_bound(lis.begin(), lis.end(),
-               it) - lis.begin();
-    if (indx == (int)lis.size())
-      lis.push_back(it);
-    else lis[indx] = it;
-    ans.push_back(indx + 1);
-  }
-  return ans;
-}
-\end{minted}
 \subsection{Subset Sum (Bitset)}
 Works when sum of values $\le$ N. TC: O(N/32 * sqrt(N))
 \begin{minted}{c++}
