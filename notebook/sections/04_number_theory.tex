@@ -1,0 +1,264 @@
+\section{Number Theory}
+\subsection{GCD Properties}
+In particular, recalling that gcd is a positive integer valued function we obtain that $\gcd(a, b \cdot c) = 1$ if and only if $\gcd(a, b) = 1$ and $\gcd(a, c) = 1$.
+
+15. $\gcd(a_1, \ldots, a_r) = \gcd(\gcd(a_1, \ldots, a_{r-1}), a_r)$ when none $=0$
+
+16. $\gcd(a,b) \cdot \text{lcm}(a,b) = |a \cdot b|$, so for any two numbers LCM is always multiple of GCD.
+
+17. In a Cartesian coordinate system, $\gcd(a, b)$ can be interpreted as the number of segments between points with integral coordinates on the straight line segment joining the points $(0, 0)$ and $(a, b)$.
+
+18. Two numbers are called relatively prime, or coprime, if their greatest common divisor equals 1. For example, 9 and 28 are relatively prime.
+
+19. Any two consecutive integers will be Co-Prime. Ex: 25,26 is co-prime. 5,6 is co-prime and so on.
+
+20. Two or more odd consecutive positive integer GCD is also 1.
+\begin{minted}{c++}
+int gcdFast(int a, int b) {
+  int result;
+  __asm__ __volatile__(
+    "movl %1, %%eax;"
+    "movl %2, %%ebx;"
+    "CONTD: cmpl $0, %%ebx;"
+    "je DONE;"
+    "xorl %%edx, %%edx;"
+    "idivl %%ebx;"
+    "movl %%ebx, %%eax;"
+    "movl %%edx, %%ebx;"
+    "jmp CONTD;"
+    "DONE: movl %%eax, %0;"
+    : "=g"(result)
+    : "g"(a), "g"(b));
+  return result;
+}
+\end{minted}
+\subsection{Extended Euclid and CRT}
+\begin{minted}{c++}
+using T = __int128_t;
+T egcd(T a, T b, T &x, T &y) {
+  T xx = y = 0, yy = x = 1;
+  while (b) {
+    T q = a / b;
+    T t = b; b = a % b; a = t;
+    t = xx; xx = x - q * xx; x = t;
+    t = yy; yy = y - q * yy; y = t;
+  }
+  return a;
+}
+pair<T, T> crt(T a1, T m1, T a2, T m2) {
+  T p, q;
+  T g = egcd(m1, m2, p, q);
+  if (a1 % g != a2 % g) return {0, -1};
+  T m = m1 / g * m2;
+  p = (p % m + m) % m;
+  q = (q % m + m) % m;
+  T x = p * a2 % m * (m1 / g) % m +
+        q * a1 % m * (m2 / g) % m;
+  return {x % m, m};
+}
+\end{minted}
+\subsection{Linear Diophantine Equation}
+Solves $Ax + By = C$. Solutions exist iff
+$g = \gcd(|A|, |B|)$ divides $C$.
+General: $x = x_0 + k \frac{B}{g}$, $y = y_0 - k \frac{A}{g}$.
+\begin{minted}{c++}
+ll extgcd(ll a, ll b, ll &x, ll &y) {
+  if (b == 0) { x = 1; y = 0; return a; }
+  ll x1, y1;
+  ll d = extgcd(b, a % b, x1, y1);
+  x = y1; y = x1 - y1 * (a / b);
+  return d;
+}
+bool find_any_solution(ll a, ll b, ll c,
+ll &x0, ll &y0, ll &g) {
+  g = extgcd(abs(a), abs(b), x0, y0);
+  if (c % g) return false;
+  x0 *= c / g; y0 *= c / g;
+  if (a < 0) x0 = -x0;
+  if (b < 0) y0 = -y0;
+  return true;
+}
+\end{minted}
+\subsection{SPF, Möbius, Primes in O(N)}
+\begin{minted}{c++}
+const int N = 1e6 + 2;
+vector<int> spf(N), mob(N), primes;
+void build() {
+  mob[1] = 1;
+  for (int i = 2; i < N; i++) {
+    if (spf[i] == 0) {
+      spf[i] = i, mob[i] = -1,
+      primes.push_back(i);
+    }
+    for (int j = 0; i * primes[j] < N; j++) {
+      spf[i * primes[j]] = primes[j];
+      if (i % primes[j])
+        mob[i * primes[j]] = mob[i] * mob[primes[j]];
+      else mob[i * primes[j]] = 0;
+      if (primes[j] == spf[i]) break;
+    }
+  }
+}
+\end{minted}
+\subsection{Segmented Sieve}
+\begin{minted}{c++}
+vector<char> segmentedSieve(long long L,
+long long R) {
+  long long lim = sqrt(R);
+  vector<char> mark(lim + 1, false);
+  vector<long long> primes;
+  for (long long i = 2; i <= lim; ++i) {
+    if (!mark[i]) {
+      primes.emplace_back(i);
+      for (long long j = i * i; j <= lim; j += i)
+        mark[j] = true;
+    }
+  }
+  vector<char> isPrime(R - L + 1, true);
+  for (long long i : primes) {
+    ll sm = (L / i) * i;
+    if (sm < L) sm += i;
+    for (long long j = max(i * i, sm); j <= R; j += i)
+      isPrime[j - L] = false;
+  }
+  if (L == 1) isPrime[0] = false;
+  return isPrime;
+}
+\end{minted}
+\subsection{Phi (Euler Totient)}
+\begin{minted}{c++}
+int phi(int n) {
+  int result = n;
+  for (int i = 2; i * i <= n; i++) {
+    if (n % i == 0) {
+      while (n % i == 0) n /= i;
+      result -= result / i;
+    }
+  }
+  if (n > 1) result -= result / n;
+  return result;
+}
+void phi_1_to_n() {
+  phi[1] = 1;
+  for (int i = 2; i < N; i++) {
+    if (phi[i] == 0) {
+      primes.push_back(i);
+      phi[i] = i - 1;
+    }
+    for (int p : primes) {
+      if (i * p >= N) break;
+      if (i % p == 0) {
+        phi[i * p] = phi[i] * p; break;
+      } else {
+        phi[i * p] = phi[i] * (p - 1);
+      }
+    }
+  }
+}
+\end{minted}
+\subsection{Miller-Rabin Primality Test}
+\begin{minted}{c++}
+ull pow(ull a, ull t, ull mod) {
+  ull r = 1;
+  for (; t; t >>= 1, a = (ull)a * a % mod)
+    if (t & 1) r = (ull)r * a % mod;
+  return r;
+}
+bool isprime(ull n) {
+  if (n < 2 || n % 6 % 4 != 1) return (n | 1) == 3;
+  ull A[] = {2, 325, 9375, 28178, 450775,
+  9780504, 1795265022},
+  s = __builtin_ctzll(n - 1), d = n >> s;
+  for (ull a : A) {
+    ull p = pow(a % n, d, n), i = s;
+    while (p != 1 && p != n - 1 && a % n && i--)
+      p = (ull)p * p % n;
+    if (p != n - 1 && i != s) return 0;
+  }
+  return 1;
+}
+\end{minted}
+\subsection{Pollard Rho (Fast Factorization)}
+\begin{minted}{c++}
+#define ull uint64_t
+struct Montgomery {
+  ull n, nr;
+  Montgomery(ull n) {
+    this->n = n, nr = 1;
+    for (int i = 0; i < 6; i++)
+      nr *= 2 - n * nr;
+  }
+  ull reduce(__uint128_t x) const {
+    ull q = ull(x) * nr,
+    m = ((__uint128_t)q * n) >> 64;
+    return (x >> 64) + n - m;
+  }
+  ull multiply(ull x, ull y) {
+    return reduce((__uint128_t)x * y); }
+};
+ull f(ull x, Montgomery& m, ull a) {
+  return m.multiply(x, x) + a; }
+ull diff(ull a, ull b) {
+  return a > b ? a - b : b - a; }
+const int M = 1024;
+const ull SEED = 42;
+ull find_factor(ull n, ull x0 = 2, ull a = 1) {
+  Montgomery m(n);
+  ull x = SEED;
+  for (int l = M; l < (1 << 20); l *= 2) {
+    ull y = x, p = 1;
+    for (int i = 0; i < l; i += M) {
+      for (int j = 0; j < M; j++)
+        x = f(x, m, a), p = m.multiply(p, diff(x, y));
+      if (ull g = gcd(p, n); g != 1) return g;
+    }
+  }
+  return n;
+}
+\end{minted}
+\subsection{Möbius Function and Inversion}
+The Möbius function $\mu(n)$: \\
+\textbullet{} $\mu(n) = 1$ if $n$ is square-free with even number of prime factors. \\
+\textbullet{} $\mu(n) = -1$ if $n$ is square-free with odd number of prime factors. \\
+\textbullet{} $\mu(n) = 0$ if $n$ has a squared prime factor.
+
+\textbf{Properties \& Inversion}: \\
+\textbullet{} $\sum_{d|n} \mu(d) = [n = 1]$ \\
+\textbullet{} $g(n) = \sum_{d|n} f(d) \iff f(n) = \sum_{d|n} \mu(d)g(n/d)$ \\
+\textbullet{} $\phi(n) = \sum_{d|n} \mu(d) \frac{n}{d}$ and $n = \sum_{d|n} d \cdot \mu\left(\frac{n}{d}\right)$ \\
+\textbullet{} $\frac{n}{\phi(n)} = \sum_{d|n} \frac{\mu(d)}{d}$
+
+\textbf{GCD Sums}: \\
+\textbullet{} $\sum_{i=1}^n [\gcd(i, n) = k] = \phi\left(\frac{n}{k}\right)$ \\
+\textbullet{} $\sum_{i=1}^n \gcd(i, n) = \sum_{d|n} d \cdot \phi\left(\frac{n}{d}\right)$ \\
+\textbullet{} $\sum_{i=1}^n \frac{1}{\gcd(i,n)} = \frac{1}{n} \sum_{d|n} d \cdot \phi(d)$ \\
+\textbullet{} $\sum_{i=1}^n \frac{i}{\gcd(i,n)} = \frac{1}{2} \sum_{d|n} d \cdot \phi(d)$
+
+\subsection{GCD and LCM Properties}
+\textbullet{} $\gcd(a, b) = \gcd(b, a \bmod b)$ \\
+\textbullet{} If $a | (b \cdot c)$ and $\gcd(a, b) = d$, then $(a/d) | c$ \\
+\textbullet{} $\gcd(a, \text{lcm}(b,c)) = \text{lcm}(\gcd(a,b), \gcd(a,c))$ \\
+\textbullet{} $\gcd(n^a - 1, n^b - 1) = n^{\gcd(a,b)} - 1$
+
+\subsection{Gauss Circle Theorem}
+Lattice points inside $m^2 + n^2 \le r^2$: \\
+$N(r) = 1 + 4 \sum_{i=0}^\infty \left( \lfloor \frac{r^2}{4i+1} \rfloor - \lfloor \frac{r^2}{4i+3} \rfloor \right)$
+
+\subsection{Math Formula Cheatsheet}
+\textbf{Geometric Series}: \\
+\textbullet{} $\sum_{i=a}^b c^i = \frac{c^{b+1} - c^a}{c - 1}$ $(c \neq 1)$ \\
+\textbullet{} $\sum_{i=0}^n c^i = \frac{c^{n+1}-1}{c-1}$ $(c \neq 1)$ \\
+\textbullet{} $\sum_{i=0}^\infty c^i = \frac{1}{1-c}$ $(|c| < 1)$
+
+\textbf{Sums of Powers}: \\
+\textbullet{} $\sum_{i=1}^n i = \frac{n(n+1)}{2}$ \\
+\textbullet{} $\sum_{i=1}^n i^2 = \frac{n(n+1)(2n+1)}{6}$ \\
+\textbullet{} $\sum_{i=1}^n i^3 = \frac{n^2(n+1)^2}{4}$ \\
+\textbullet{} $\sum_{i=1}^n i^4 = \frac{n(n+1)(2n+1)(3n^2+3n-1)}{30}$
+
+\textbf{Harmonic Sums}: \\
+\textbullet{} $H_n = \sum_{i=1}^n \frac{1}{i}$ \\
+\textbullet{} $\sum_{i=1}^n i H_i = \frac{n(n+1)}{2} H_n - \frac{n(n-1)}{4}$
+
+\textbf{Combinatorial Sum}: \\
+\textbullet{} $\sum_{k=0}^n \binom{r+k}{k} = \binom{r+n+1}{n}$

@@ -1,0 +1,519 @@
+\section{Graph Theory}
+\subsection{Graph Condense (Kosaraju SCC)}
+\begin{minted}{c++}
+struct SCC {
+  int n, comps;
+  vector<vector<int>> adj, rev_adj, scc_adj;
+  vector<int> order, comp;
+  vector<bool> vis;
+  SCC(int _n) : n(_n), comps(0), adj(_n), rev_adj(_n),
+    comp(_n, -1), vis(_n, false) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(v);
+    rev_adj[v].push_back(u);
+  }
+  void dfs1(int u) {
+    vis[u] = true;
+    for (int v : adj[u]) if (!vis[v]) dfs1(v);
+    order.push_back(u);
+  }
+  void dfs2(int u, int id) {
+    comp[u] = id;
+    for (int v : rev_adj[u])
+      if (comp[v] == -1) dfs2(v, id);
+  }
+  void build() {
+    for (int i = 0; i < n; i++) if (!vis[i]) dfs1(i);
+    reverse(order.begin(), order.end());
+    for (int u : order) {
+      if (comp[u] == -1) dfs2(u, comps++);
+    }
+    scc_adj.resize(comps);
+    for (int u = 0; u < n; u++) {
+      for (int v : adj[u]) {
+        if (comp[u] != comp[v])
+          scc_adj[comp[u]].push_back(comp[v]);
+      }
+    }
+  }
+};
+\end{minted}
+\subsection{Articulation Points \texorpdfstring{\&}{&} Bridges}
+\begin{minted}{c++}
+struct Articulation {
+  int n, timer;
+  vector<vector<int>> adj;
+  vector<int> tin, low;
+  vector<bool> is_art;
+  vector<pair<int, int>> bridges;
+  Articulation(int _n) : n(_n), timer(0), adj(_n),
+    tin(_n, -1), low(_n, -1), is_art(_n, false) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  void dfs(int u, int p = -1) {
+    tin[u] = low[u] = timer++;
+    int children = 0;
+    for (int v : adj[u]) {
+      if (v == p) continue;
+      if (tin[v] != -1) {
+        low[u] = min(low[u], tin[v]);
+      } else {
+        children++;
+        dfs(v, u);
+        low[u] = min(low[u], low[v]);
+        if (low[v] >= tin[u] && p != -1)
+          is_art[u] = true;
+        if (low[v] > tin[u])
+          bridges.push_back({min(u,v), max(u,v)});
+      }
+    }
+    if (p == -1 && children > 1) is_art[u] = true;
+  }
+  void build() {
+    for (int i = 0; i < n; i++)
+      if (tin[i] == -1) dfs(i);
+  }
+};
+\end{minted}
+\subsection{Hopcroft-Karp (Bipartite Matching)}
+\begin{minted}{c++}
+struct HopcroftKarp {
+  int n, m;
+  vector<vector<int>> g;
+  vector<int> dist, pairU, pairV;
+  static const int INF = 1e9;
+  HopcroftKarp(int n_ = 0, int m_ = 0) {
+    n = n_; m = m_;
+    g.assign(n, {});
+    pairU.assign(n, -1);
+    pairV.assign(m, -1);
+    dist.assign(n, 0);
+  }
+  void add_edge(int u, int v) { g[u].push_back(v); }
+  bool bfs() {
+    queue<int> q;
+    for (int u = 0; u < n; ++u) {
+      if (pairU[u] == -1) {
+        dist[u] = 0; q.push(u);
+      } else dist[u] = INF;
+    }
+    bool foundAug = false;
+    while (!q.empty()) {
+      int u = q.front(); q.pop();
+      for (int v : g[u]) {
+        int u2 = pairV[v];
+        if (u2 == -1) foundAug = true;
+        else if (dist[u2] == INF) {
+          dist[u2] = dist[u] + 1; q.push(u2);
+        }
+      }
+    }
+    return foundAug;
+  }
+  bool dfs(int u) {
+    for (int v : g[u]) {
+      int u2 = pairV[v];
+      if (u2 == -1 || (dist[u2] == dist[u] + 1
+      && dfs(u2))) {
+        pairU[u] = v; pairV[v] = u; return true;
+      }
+    }
+    dist[u] = INF; return false;
+  }
+  int max_matching() {
+    int matching = 0;
+    while (bfs()) {
+      for (int u = 0; u < n; ++u)
+        if (pairU[u] == -1 && dfs(u)) ++matching;
+    }
+    return matching;
+  }
+  vector<pair<int,int>> matching_edges() const {
+    vector<pair<int,int>> res;
+    for (int v = 0; v < m; ++v)
+      if (pairV[v] != -1)
+        res.emplace_back(pairV[v], v);
+    return res;
+  }
+};
+\end{minted}
+\subsection{Dinic's Algorithm (Max Flow)}
+\begin{minted}{c++}
+const int64_t inf = 1LL << 61;
+struct Dinic {
+  struct edge { int to, rev;
+    int64_t flow, w; };
+  int n, s, t;
+  vector<int> d, done;
+  vector<vector<edge>> g;
+  Dinic() {}
+  Dinic(int _n) { n = _n + 10, g.resize(n); }
+  void add_edge(int u, int v, int64_t w) {
+    edge a = {v, (int)g[v].size(), 0, w};
+    edge b = {u, (int)g[u].size(), 0, 0};
+    g[u].push_back(a), g[v].push_back(b);
+  }
+  bool bfs() {
+    d.assign(n, -1), d[s] = 0;
+    queue<int> Q; Q.push(s);
+    while (Q.size()) {
+      int u = Q.front(); Q.pop();
+      for (auto &e : g[u]) {
+        int v = e.to;
+        if (!~d[v] && e.flow < e.w)
+          d[v] = d[u] + 1, Q.push(v);
+      }
+    }
+    return d[t] != -1;
+  }
+  int64_t dfs(int u, int64_t flow) {
+    if (u == t) return flow;
+    for (int &i = done[u]; i < (int)g[u].size(); i++) {
+      edge &e = g[u][i];
+      if (e.w <= e.flow) continue;
+      int v = e.to;
+      if (d[v] == d[u] + 1) {
+        int64_t nw = dfs(v, min(flow, e.w - e.flow));
+        if (nw > 0) {
+          e.flow += nw;
+          g[v][e.rev].flow -= nw;
+          return nw;
+        }
+      }
+    }
+    return 0;
+  }
+  int64_t max_flow(int _s, int _t) {
+    s = _s, t = _t;
+    int64_t flow = 0;
+    while (bfs()) {
+      done.assign(n, 0);
+      while (int64_t nw = dfs(s, inf)) flow += nw;
+    }
+    return flow;
+  }
+};
+\end{minted}
+\subsection{Biconnected Comp. \texorpdfstring{\&}{&} Bridge Tree}
+\begin{minted}{c++}
+struct BCC {
+  int n, timer, comps;
+  vector<vector<int>> adj, tree;
+  vector<int> tin, low, comp;
+  vector<bool> is_bridge, vis;
+  vector<pair<int, int>> edges;
+  BCC(int _n) : n(_n), timer(0), comps(0), adj(_n),
+    tin(_n, -1), low(_n, -1), comp(_n, -1),
+    vis(_n, false) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(edges.size());
+    adj[v].push_back(edges.size());
+    edges.push_back({u, v});
+    is_bridge.push_back(false);
+  }
+  void dfs(int u, int p = -1) {
+    vis[u] = true;
+    tin[u] = low[u] = timer++;
+    for (int id : adj[u]) {
+      int v = edges[id].first ^
+              edges[id].second ^ u;
+      if (v == p) continue;
+      if (vis[v]) low[u] = min(low[u], tin[v]);
+      else {
+        dfs(v, u);
+        low[u] = min(low[u], low[v]);
+        if (low[v] > tin[u]) is_bridge[id] = true;
+      }
+    }
+  }
+  void build_tree() {
+    for (int i = 0; i < n; i++) if (!vis[i]) dfs(i);
+    vector<int> q;
+    for (int i = 0; i < n; i++) {
+      if (comp[i] != -1) continue;
+      q.push_back(i); comp[i] = comps++;
+      while (!q.empty()) {
+        int u = q.back(); q.pop_back();
+        for (int id : adj[u]) {
+          int v = edges[id].first ^
+                  edges[id].second ^ u;
+          if (comp[v] == -1 && !is_bridge[id]) {
+            comp[v] = comp[u]; q.push_back(v);
+          }
+        }
+      }
+    }
+    tree.resize(comps);
+    for (int i = 0; i < (int)edges.size(); i++) {
+      if (is_bridge[i]) {
+        int u = comp[edges[i].first],
+            v = comp[edges[i].second];
+        tree[u].push_back(v);
+        tree[v].push_back(u);
+      }
+    }
+  }
+};
+\end{minted}
+\subsection{Binary Lifting (LCA \texorpdfstring{\&}{&} K-th Ancestor)}
+\begin{minted}{c++}
+struct LCA {
+  int n, LOG;
+  vector<vector<int>> adj, up;
+  vector<int> depth;
+  LCA(int _n) : n(_n), LOG(__lg(_n) + 2), adj(_n),
+    up(_n, vector<int>(LOG, -1)), depth(_n, 0) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  void dfs(int u, int p = -1, int d = 0) {
+    up[u][0] = p;
+    depth[u] = d;
+    for (int i = 1; i < LOG; i++) {
+      if (up[u][i - 1] != -1)
+        up[u][i] = up[up[u][i - 1]][i - 1];
+    }
+    for (int v : adj[u])
+      if (v != p) dfs(v, u, d + 1);
+  }
+  int lift(int u, int k) {
+    for (int i = 0; i < LOG; i++) {
+      if ((k >> i) & 1) u = up[u][i];
+      if (u == -1) break;
+    }
+    return u;
+  }
+  int query(int u, int v) {
+    if (depth[u] < depth[v]) swap(u, v);
+    u = lift(u, depth[u] - depth[v]);
+    if (u == v) return u;
+    for (int i = LOG - 1; i >= 0; i--) {
+      if (up[u][i] != up[v][i]) {
+        u = up[u][i]; v = up[v][i];
+      }
+    }
+    return up[u][0];
+  }
+};
+\end{minted}
+\subsection{Tree Flattening (Euler Tour)}
+\begin{minted}{c++}
+struct EulerTour {
+  int n, timer;
+  vector<vector<int>> adj;
+  vector<int> in, out, flat;
+  EulerTour(int _n) : n(_n), timer(0), adj(_n + 1),
+    in(_n + 1), out(_n + 1) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  void dfs(int u, int p = 0) {
+    in[u] = ++timer;
+    flat.push_back(u);
+    for (int v : adj[u])
+      if (v != p) dfs(v, u);
+    out[u] = timer;
+  }
+  void build(int root = 1) { dfs(root); }
+};
+\end{minted}
+\subsection{Heavy Light Decomposition (HLD)}
+\begin{minted}{c++}
+struct HLD {
+  int n, cur_pos = 1;
+  vector<int> arr, parent, size, depth, heavy,
+  head, pos;
+  vector<vector<int>> adj;
+  BIT<ll> segtree;
+  HLD(int n) : n(n), arr(n + 1), parent(n + 1),
+  size(n + 2), depth(n + 2), heavy(n + 2, 0),
+  head(n + 2), pos(n + 2), adj(n + 2),
+  segtree(BIT<ll>(n + 2)) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(v), adj[v].push_back(u);
+  }
+  void dfs(int u, int p) {
+    parent[u] = p; size[u] = 1;
+    int max_sz = 0;
+    for (int v : adj[u]) {
+      if (v == p) continue;
+      depth[v] = depth[u] + 1;
+      dfs(v, u);
+      size[u] += size[v];
+      if (size[v] > max_sz)
+        max_sz = size[v], heavy[u] = v;
+    }
+  }
+  void decompose(int u, int h) {
+    head[u] = h; pos[u] = cur_pos++;
+    segtree.add(pos[u], arr[u]);
+    if (heavy[u]) decompose(heavy[u], h);
+    for (int v : adj[u])
+      if (v != parent[u] && v != heavy[u])
+        decompose(v, v);
+  }
+  int query(int u, int v) {
+    int res = 0;
+    while (head[u] != head[v]) {
+      if (depth[head[u]] < depth[head[v]])
+        swap(u, v);
+      res += segtree.sum(pos[head[u]], pos[u]);
+      u = parent[head[u]];
+    }
+    if (depth[u] > depth[v]) swap(u, v);
+    res += segtree.sum(pos[u], pos[v]);
+    return res;
+  }
+  void addVal(int idx, int delta) {
+    segtree.add(pos[idx], delta);
+    arr[idx] += delta;
+  }
+  void editVal(int idx, int value) {
+    segtree.add(pos[idx], value - arr[idx]);
+    arr[idx] = value;
+  }
+};
+\end{minted}
+\subsection{Centroid Decomposition}
+\begin{minted}{c++}
+vector<vector<int>> adj;
+vector<bool> is_removed;
+vector<int> subtree_size;
+int get_subtree_size(int node, int parent = -1) {
+  subtree_size[node] = 1;
+  for (int child : adj[node]) {
+    if (child == parent || is_removed[child])
+      continue;
+    subtree_size[node] +=
+    get_subtree_size(child, node);
+  }
+  return subtree_size[node];
+}
+int get_centroid(int node, int tree_size,
+int parent = -1) {
+  for (int child : adj[node]) {
+    if (child == parent || is_removed[child])
+      continue;
+    if (subtree_size[child] * 2 > tree_size)
+      return get_centroid(child, tree_size, node);
+  }
+  return node;
+}
+void build_centroid_decomp(int node = 0) {
+  int centroid = get_centroid(node,
+  get_subtree_size(node));
+  // do something with centroid
+  is_removed[centroid] = true;
+  for (int child : adj[centroid]) {
+    if (is_removed[child]) continue;
+    build_centroid_decomp(child);
+  }
+}
+\end{minted}
+\subsection{Centroid Decomposition (Ahsan's)}
+\begin{minted}{c++}
+int tot = 0;
+vector<int> sz(n, 1), removed(n, 0), cenpar(n, -1);
+auto dfs_sz = [&](auto &&self, int node, int pr)
+-> void {
+  tot += 1; sz[node] = 1;
+  for (auto &son : g[node]) {
+    if (son == pr || removed[son]) continue;
+    self(self, son, node);
+    sz[node] += sz[son];
+  }
+};
+auto find_cen = [&](auto &&self, int node, int pr)
+-> int {
+  for (auto &son : g[node]) {
+    if (son == pr || removed[son]) continue;
+    if (sz[son] > tot / 2)
+      return self(self, son, node);
+  }
+  return node;
+};
+auto decompose = [&](auto &&self, int node, int pr)
+-> void {
+  tot = 0; dfs_sz(dfs_sz, node, pr);
+  int cen = find_cen(find_cen, node, pr);
+  removed[cen] = 1; cenpar[cen] = pr;
+  for (auto &son : g[cen]) {
+    if (son == pr || removed[son]) continue;
+    self(self, son, cen);
+  }
+};
+decompose(decompose, 0, -1);
+\end{minted}
+\subsection{LCA and Distance}
+\begin{minted}{c++}
+vector<vector<int>> t, parents;
+vector<int> level;
+int mx;
+void dfs(int node, int parent, int cLevel) {
+  level[node] = cLevel;
+  parents[0][node] = parent;
+  for (auto &x : t[node])
+    if (x != parent) dfs(x, node, cLevel + 1);
+}
+int kthParent(int a, int k) {
+  for (int i = 0; i < mx; i++) {
+    if (a == -1) return a;
+    if (k & (1 << i)) a = parents[i][a];
+  }
+  return a;
+}
+int lca(int a, int b) {
+  if (level[a] > level[b])
+    a = kthParent(a, level[a] - level[b]);
+  else b = kthParent(b, level[b] - level[a]);
+  if (a == b) return a;
+  for (int i = mx - 1; i >= 0; i--) {
+    if (parents[i][a] != parents[i][b]) {
+      a = parents[i][a]; b = parents[i][b];
+    }
+  }
+  return parents[0][a];
+}
+int distance(int a, int b) {
+  return level[a] + level[b] - 2 * level[lca(a, b)];
+}
+\end{minted}
+\subsection{DSU on Tree (Sack)}
+$O(N \log N)$ offline subtree queries.
+\begin{minted}{c++}
+int timer = 0;
+vector<int> sz, in, out, flat, big;
+void dfs_sz(int u, int p) {
+  sz[u] = 1, big[u] = 0, in[u] = ++timer,
+  flat[timer] = u;
+  for (int v : adj[u]) {
+    if (v != p) {
+      dfs_sz(v, u);
+      sz[u] += sz[v];
+      if (sz[v] > sz[big[u]]) big[u] = v;
+    }
+  }
+  out[u] = timer;
+}
+void add(int u, int val) { /* update DS */ }
+void dfs_sack(int u, int p, bool keep) {
+  for (int v : adj[u])
+    if (v != p && v != big[u]) dfs_sack(v, u, 0);
+  if (big[u]) dfs_sack(big[u], u, 1);
+  for (int v : adj[u])
+    if (v != p && v != big[u])
+      for (int i = in[v]; i <= out[v]; i++)
+        add(flat[i], 1);
+  add(u, 1);
+  // answer queries for subtree u here
+  if (!keep)
+    for (int i = in[u]; i <= out[u]; i++)
+      add(flat[i], -1);
+}
+// Init: sz/in/out/flat/big.assign(n+1, 0);
+// dfs_sz(1, 0); dfs_sack(1, 0, 1);
+\end{minted}

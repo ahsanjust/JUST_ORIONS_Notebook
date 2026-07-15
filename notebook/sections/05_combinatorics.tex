@@ -1,0 +1,175 @@
+\section{Combinatorics}
+\subsection{Burnside's Lemma / Polya Enumeration}
+\begin{minted}{c++}
+using Permutation = vector<int>;
+void operator*=(Permutation& p, Permutation
+const& q) {
+  Permutation copy = p;
+  for (int i = 0; i < p.size(); i++)
+    p[i] = copy[q[i]];
+}
+int count_cycles(Permutation p) {
+  int cnt = 0;
+  for (int i = 0; i < p.size(); i++) {
+    if (p[i] != -1) {
+      cnt++;
+      for (int j = i; p[j] != -1;) {
+        int next = p[j]; p[j] = -1; j = next;
+      }
+    }
+  }
+  return cnt;
+}
+int solve(int n, int m) {
+  Permutation p(n*m), p1(n*m), p2(n*m), p3(n*m);
+  for (int i = 0; i < n*m; i++) {
+    p[i] = i;
+    p1[i] = (i % n + 1) % n + i / n * n;
+    p2[i] = (i / n + 1) % m * n + i % n;
+    p3[i] = (m - 1 - i / n) * n + (n - 1 - i % n);
+  }
+  set<Permutation> s;
+  for (int i1 = 0; i1 < n; i1++) {
+    for (int i2 = 0; i2 < m; i2++) {
+      for (int i3 = 0; i3 < 2; i3++) {
+        s.insert(p); p *= p3;
+      }
+      p *= p2;
+    }
+    p *= p1;
+  }
+  int sum = 0;
+  for (Permutation const& p : s)
+    sum += 1 << count_cycles(p);
+  return sum / s.size();
+}
+\end{minted}
+\subsection{Exclusion DP}
+Only difference is $f[i]$ calculation:
+\textbf{Ordered pairs} $(a,b)$, $(a,b) \neq (b,a)$: $f[i] = d[i] \cdot d[i]$ \\
+\textbf{Unordered (with rep)}: $f[i] = d[i](d[i]+1)/2$ \\
+\textbf{Unordered (no rep)}: $f[i] = d[i](d[i]-1)/2$ \\
+\textbf{Ordered $k$-tuples}: $f[i] = (d[i])^k$ \\
+\textbf{Unordered (no rep)}: $f[i] = \binom{d[i]}{k}$ \\
+\textbf{Unordered (with rep)}: $f[i] = \binom{d[i]+k-1}{k}$
+
+\subsection{Bishop Placement}
+\begin{minted}{c++}
+int bishop_placements(int N, int K) {
+  if (K > 2 * N - 1) return 0;
+  auto squares = [&](int i) {
+    if (i > N) return 2 * N - i;
+    return i;
+  };
+  vector<vector<int>> D(N * 2, vector<int>(K + 1));
+  for (int i = 0; i < N * 2; ++i) D[i][0] = 1;
+  D[1][1] = 1;
+  for (int i = 2; i < N * 2; ++i)
+    for (int j = 1; j <= K; ++j)
+      D[i][j] = D[i-2][j] + D[i-2][j-1] *
+                (squares(i) - j + 1);
+  int ans = 0;
+  for (int i = 0; i <= K; ++i)
+    ans += D[N*2-1][i] * D[N*2-2][K-i];
+  return ans;
+}
+\end{minted}
+\subsection{Stirling Numbers of the 1st Kind $S_1(n,k)$}
+Permutations of $n$ elements with exactly $k$ cycles. \\
+\textbullet{} Recurrence: $S_1(n,k) = S_1(n-1,k-1) + (n-1)S_1(n-1,k)$ \\
+\textbullet{} Total sum: $\sum_{k=0}^n S_1(n,k) = n!$ \\
+\textbullet{} EGF: $(-\ln(1-x))^k / k!$
+
+\subsection{Stirling Numbers of the 2nd Kind $S_2(n,k)$}
+Partition $n$ elements into $k$ non-empty sets. \\
+\textbullet{} Recurrence: $S_2(n,k) = S_2(n-1,k-1) + k \cdot S_2(n-1,k)$ \\
+\textbullet{} Formula: $S_2(n,k) = \frac{1}{k!} \sum_{i=0}^k (-1)^{k-i} \binom{k}{i} i^n$ \\
+\textbullet{} EGF: $(\exp(x)-1)^k / k!$
+
+\subsection{Bell Numbers $B(n)$}
+Total ways to partition a set of $n$ elements. \\
+\textbullet{} $B(n) = \sum_{k=0}^n S_2(n,k)$ \\
+\textbullet{} $B(n+1) = \sum_{k=0}^n \binom{n}{k} B(k)$ \\
+\textbullet{} EGF: $\exp(\exp(x)-1)$
+
+\subsection{Catalan Numbers $C_n$}
+Seq: 1, 1, 2, 5, 14, 42, 132, 429, 1430, 4862 \dots \\
+\textbullet{} Formula: $C_n = \frac{1}{n+1} \binom{2n}{n} = \binom{2n}{n} - \binom{2n}{n+1}$ \\
+\textbullet{} Recurrence: $C_{n+1} = \sum_{i=0}^n C_i C_{n-i}$ \\
+\textbullet{} OGF: $\frac{1-\sqrt{1-4x}}{2x}$ \\
+\textbullet{} Applications: Correct bracket seqs, polygon triangulations,
+non-crossing chords, paths $(0,0) \to (n,n)$ below diagonal,
+full binary trees, Dyck words.
+
+\subsection{Eulerian Numbers $E(n,k)$}
+Permutations with exactly $k$ ascents. \\
+\textbullet{} Recurrence: $E(n,k) = (n-k)E(n-1,k-1) + (k+1)E(n-1,k)$ \\
+\textbullet{} Formula: $E(n,k) = \sum_{j=0}^k (-1)^j \binom{n+1}{j} (k+1-j)^n$ \\
+\textbullet{} $E(n,k) = E(n, n-1-k)$
+
+\subsection{Derangements $D(n)$}
+Permutations where $\pi(i) \neq i$. \\
+Seq: 1, 0, 1, 2, 9, 44, 265, 1854 \dots \\
+\textbullet{} Recurrence: $D(n) = (n-1)(D(n-1) + D(n-2))$ \\
+\textbullet{} Formula: $D(n) = n! \sum_{k=0}^n \frac{(-1)^k}{k!} \approx \frac{n!}{e}$ \\
+\textbullet{} EGF: $\frac{e^{-x}}{1-x}$ \\
+\textbullet{} Code:
+\begin{minted}{c++}
+if (n > 0) D[1] = 0;
+if (n > 1) D[2] = 1;
+for (int i = 3; i <= n; i++)
+  D[i] = (i - 1) * (D[i - 1] + D[i - 2]);
+\end{minted}
+
+\subsection{Partition Numbers $P(n,k)$}
+Ways to write $n$ as sum of exactly $k$ positive ints. \\
+\textbullet{} Recurrence: $P(n,k) = P(n-1,k-1) + P(n-k,k)$ \\
+\textbullet{} Total partitions: $P(n) = \sum_{k=0}^n P(n,k)$ \\
+Seq: 1, 1, 2, 3, 5, 7, 11, 15, 22, 30 \dots
+
+\subsection{Lucas Theorem}
+\begin{minted}{c++}
+long long lucas(long long n, long long r) {
+  if (r == 0) return 1;
+  return lucas(n / MOD, r / MOD) *
+         nCr(n % MOD, r % MOD) % MOD;
+}
+\end{minted}
+
+\subsection{Binomial Coefficient Properties}
+\[
+\binom{n}{k} = \binom{n}{n-k} \quad
+\binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k}
+\]
+\[
+\sum_{k=0}^n \binom{n}{k} = 2^n \quad
+\sum_{k=0}^m \binom{n-1}{k-1} = \binom{n+m+1}{m}
+\]
+\[
+\binom{n}{0} + \binom{n}{2} + \binom{n}{4} + \ldots = 2^{n-1}
+\]
+\[
+1\binom{n}{1} + 2\binom{n}{2} + \ldots + n\binom{n}{n} = n \cdot 2^{n-1}
+\]
+Connection With Fibonacci numbers:
+\[
+\binom{n}{0} + \binom{n-1}{1} + \ldots + \binom{n-k}{k} + \ldots = F_{n+1}
+\]
+
+\subsection{Stars and Bars}
+$C(n + k - 1, k)$
+
+\subsection{Generating Functions}
+\textbullet{} OGF: $A(x) = \sum_{i \ge 0} a_i x^i$ \\
+\textbullet{} $xA'(x) \Rightarrow n a_n$,
+$A(x)B(x) \Rightarrow \sum_{i=0}^n a_i b_{n-i}$ \\
+\textbullet{} EGF: $A(x) = \sum_{i \ge 0} a_i \frac{x^i}{i!}$ \\
+\textbullet{} $A'(x) \Rightarrow a_{n+1}$,
+$xA(x) \Rightarrow n a_n$,
+$A(x)B(x) \Rightarrow \sum_{i=0}^n \binom{n}{i} a_i b_{n-i}$
+
+\subsection{Bernoulli Numbers \& Faulhaber's}
+\textbullet{} Recurrence: $B_n = -\frac{1}{n+1} \sum_{k=0}^{n-1} \binom{n+1}{k} B_k$ \\
+\textbullet{} EGF: $\frac{x}{e^x-1}$ \\
+\textbullet{} Sum of powers:
+$\sum_{k=1}^n k^c = \frac{1}{c+1} \sum_{k=0}^c (-1)^k \binom{c+1}{k} B_k n^{c+1-k}$
