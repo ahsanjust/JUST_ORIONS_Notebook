@@ -33,12 +33,16 @@ struct Trie {
   }
   int count_xor_less(int x, int k) {
     int u = 0, ans = 0;
-    for (int i = B - 1; i >= 0 && u; --i) {
+    for (int i = B - 1; i >= 0; --i) {
       int d = (x >> i) & 1;
       if ((k >> i) & 1) {
         if (nxt[u][d]) ans += cnt[nxt[u][d]];
+        if (!nxt[u][d ^ 1]) break;
         u = nxt[u][d ^ 1];
-      } else u = nxt[u][d];
+      } else {
+        if (!nxt[u][d]) break;
+        u = nxt[u][d];
+      }
     }
     return ans;
   }

@@ -72,15 +72,15 @@ struct EulerTour {
 \subsection{Heavy Light Decomposition (HLD)}
 \begin{minted}{c++}
 struct HLD {
-  int n, cur_pos = 0;
+  int n, cur_pos = 1; // 1-indexed BIT
   vector<int> arr, parent, size, depth, heavy,
   head, pos;
   vector<vector<int>> adj;
-  FenwickTree segtree;
+  BIT<ll> segtree;
   HLD(int n) : n(n), arr(n + 1), parent(n + 1),
-  size(n + 1), depth(n + 1), heavy(n + 1, 0), head(n +
-  1) , pos(n + 1) , adj(n + 1),
-  segtree(FenwickTree(n + 1)){ }
+  size(n + 2), depth(n + 2), heavy(n + 2, 0), head(n +
+  2) , pos(n + 2) , adj(n + 2),
+  segtree(BIT<ll>(n + 2)){ }
   void add_edge(int u, int v) {
     adj[u].push_back(v), adj[v].push_back(u);
   }
