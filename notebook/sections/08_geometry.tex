@@ -112,28 +112,6 @@ long double blackArea = T - sectorSum;
 cout << fixed << setprecision(6) <<
 (double)blackArea << "\n";
 \end{minted}
-\subsection{Line Intersection}
-\begin{minted}{c++}
-using P = pair<ll,ll>;
-auto cross = [&](P a, P b) {
-  return (__int128)a.first*b.second -
-         (__int128)a.second*b.first; };
-auto intersect = [&](P a1, P a2, P b1, P b2)
-  -> optional<pair<long double,long double>> {
-  P da = {a2.first - a1.first,
-          a2.second - a1.second};
-  P db = {b2.first - b1.first,
-          b2.second - b1.second};
-  P dc = {b1.first - a1.first,
-          b1.second - a1.second};
-  __int128 D = cross(da, db);
-  if (!D) return {};
-  long double t = (long double)cross(dc, db) /
-                  (long double)D;
-  return {{a1.first + da.first * t,
-           a1.second + da.second * t}};
-};
-\end{minted}
 \subsection{Polygon Operations}
 \begin{minted}{c++}
 const ld EPS = 1e-9;
