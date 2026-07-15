@@ -137,23 +137,18 @@ long long lucas(long long n, long long r) {
 \end{minted}
 
 \subsection{Binomial Coefficient Properties}
+\begin{align*}
+\binom{n}{k} &= \binom{n}{n-k} \\[2pt]
+\binom{n}{k} &= \binom{n-1}{k-1} + \binom{n-1}{k} \\[2pt]
+\sum_{k=0}^{n} \binom{n}{k} &= 2^{n} \\[2pt]
+\sum_{k=0}^{m} \binom{n-1}{k-1} &= \binom{n+m+1}{m} \\[2pt]
+\binom{n}{0} + \binom{n}{2} + \binom{n}{4} + \cdots &= 2^{n-1} \\[2pt]
+1\binom{n}{1} + 2\binom{n}{2} + \cdots + n\binom{n}{n} &= n \cdot 2^{n-1}
+\end{align*}
+
+Connection with Fibonacci numbers:
 \[
-\binom{n}{k} = \binom{n}{n-k} \quad
-\binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k}
-\]
-\[
-\sum_{k=0}^n \binom{n}{k} = 2^n \quad
-\sum_{k=0}^m \binom{n-1}{k-1} = \binom{n+m+1}{m}
-\]
-\[
-\binom{n}{0} + \binom{n}{2} + \binom{n}{4} + \ldots = 2^{n-1}
-\]
-\[
-1\binom{n}{1} + 2\binom{n}{2} + \ldots + n\binom{n}{n} = n \cdot 2^{n-1}
-\]
-Connection With Fibonacci numbers:
-\[
-\binom{n}{0} + \binom{n-1}{1} + \ldots + \binom{n-k}{k} + \ldots = F_{n+1}
+\binom{n}{0} + \binom{n-1}{1} + \cdots + \binom{n-k}{k} + \cdots = F_{n+1}
 \]
 
 \subsection{Stars and Bars}
