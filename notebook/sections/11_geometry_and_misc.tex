@@ -1,5 +1,6 @@
 \section{Geometry \texorpdfstring{\&}{&} Misc}
 \subsection{Geometry Formulas}
+
 Triangle:
 
 Side length $a, b, c$
@@ -413,17 +414,6 @@ ull find_factor(ull n, ull x0 = 2, ull a = 1)
   }
   return n;
 }
-int32_t main() {
-  ll n;
-  cin >> n;
-  ll factor = find_factor(n);
-  if (factor != 1) {
-    cout << "Factor found: " << factor << endl;
-  } else {
-    cout << "No factor found" << endl;
-  }
-  return 0;
-}
 \end{minted}
 \subsection{Point and Vector}
 \begin{minted}{c++}
@@ -515,3 +505,41 @@ include_collinear = false) {
   a = st;
 }
 \end{minted}
+\subsection{Handling Precision (EPS)}
+\begin{minted}{c++}
+const double EPS = 1e-9;
+bool equal(double a, double b) { return abs(a - b)
+< EPS; }
+bool lessThan(double a, double b) { return a < b - EPS; }
+bool greaterThan(double a, double b) { return a >
+b + EPS; }
+\end{minted}
+\subsection{Geometry Theorems \texorpdfstring{\&}{\&} Game Theory}
+
+\textbf{Pick's Theorem}: For a simple polygon with integer coordinates:
+Area $A = I + \frac{B}{2} - 1$, where $I$ = interior lattice points, $B$ = boundary lattice points.
+
+\textbf{Brahmagupta's Formula}: Area of a cyclic quadrilateral (vertices on a circle) with sides $a, b, c, d$:
+$S = \sqrt{(s-a)(s-b)(s-c)(s-d)}$ where $s = \frac{a+b+c+d}{2}$.
+
+\textbf{Bretschneider's Formula}: Area of any general quadrilateral:
+$S = \sqrt{(s-a)(s-b)(s-c)(s-d) - abcd \cos^2\theta}$ where $\theta$ is half the sum of two opposite angles.
+
+\textbf{Fermat Point}: Point minimizing sum of distances to triangle vertices.
+If no angle $> 120^\circ$, sum is $\sqrt{(a^2+b^2+c^2 + 4\sqrt{3}\times \text{Area})/2}$. Otherwise, it's the vertex with the angle $> 120^\circ$.
+
+\textbf{Simpson's Rule (Integration)}:
+$\int_a^b f(x) dx \approx \frac{h}{3} [f(x_0) + f(x_n) + 4\sum f(x_{2i+1}) + 2\sum f(x_{2i})]$. Max error: $\frac{M(b-a)}{180}h^4$.
+
+\textbf{Pythagorean Triples}: Generate coprime $a^2+b^2=c^2$:
+$a = 2st, b = s^2-t^2, c = s^2+t^2$ for $s>t>0$, $\gcd(s,t)=1$, $s \not\equiv t \pmod 2$.
+
+\textbf{Euler's Totient Theorem}:
+If $\gcd(a,n)=1$, $a^{\phi(n)} \equiv 1 \pmod n$. For any $a,n$, $a^n \equiv a^{n-\phi(n)} \pmod n$.
+For $m \ge \log_2 n$, $a^m \equiv a^{(m \bmod \phi(n)) + \phi(n)} \pmod n$.
+
+\textbf{Nim Game \& Combinatorial Games}:
+- \textbf{Standard Nim}: XOR sum of piles $= 0 \implies$ Second player wins. $\neq 0 \implies$ First player wins.
+- \textbf{Subtraction Game}: Can only take up to $k$ stones. XOR sum of $(pile_i \bmod (k+1))$.
+- \textbf{Index-k Nim}: Can remove from up to $k$ piles at once. Write sizes in binary. Sum each column. If all column sums $\equiv 0 \pmod{k+1}$, second player wins.
+- \textbf{Mis\`{e}re Nim} (Last player to move LOSES): If all piles have size 1, Second wins if $N$ is ODD. Otherwise, play like Standard Nim (XOR sum).

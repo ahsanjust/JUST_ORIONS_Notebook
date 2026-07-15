@@ -1,105 +1,80 @@
 \section{Graph}
-\subsection{Graph Condense (Kosaraju)}
+\subsection{Graph Condense (Kosaraju SCC)}
 \begin{minted}{c++}
-vector<bool>visited;
-void dfs(int v, vector<vector<int>> const& g,
-vector<int>& output) {
-  visited[v] = true;
-  for (auto u : g[v])
-    if (!visited[u])
-      dfs(u, g, output);
-  output.push_back(v);
-}
-void strongly_connected_components(
-  vector<vector<int>> const& g,
-  vector<vector<int>>& components,
-  vector<vector<int>>& g_cond,
-  vector<int>& roots
-){
-  int n = sz(g);
-  components.clear(); g_cond.clear();
-  vector<int> order;
-  visited.assign(n, false);
-  for (int i = 0; i < n; ++i)
-    if (!visited[i])
-      dfs(i, g, order);
-  vector<vector<int>> g_rev(n);
-  for (int v = 0; v < n; ++v)
-    for (int u : g[v])
-      g_rev[u].push_back(v);
-  visited.assign(n, false);
-  reverse(order.begin(), order.end());
-  roots.assign(n, -1);
-  int component_id = 0;
-  for (int v : order) {
-    if (!visited[v]) {
-      vector<int> component;
-      dfs(v, g_rev, component);
-      for (int u : component)
-        roots[u] = component_id;
-      components.push_back(component);
-      component_id++;
-    }
+struct SCC {
+  int n, comps;
+  vector<vector<int>> adj, rev_adj, scc_adj;
+  vector<int> order, comp;
+  vector<bool> vis;
+  SCC(int _n) : n(_n), comps(0), adj(_n), rev_adj(_n),
+    comp(_n, -1), vis(_n, false) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(v);
+    rev_adj[v].push_back(u);
   }
-  g_cond.assign(component_id, {});
-  for (int v = 0; v < n; ++v) {
-    for (int u : g[v]) {
-      if (roots[v] != roots[u]) {
-        g_cond[roots[v]].push_back(roots[u]);
+  void dfs1(int u) {
+    vis[u] = true;
+    for (int v : adj[u]) if (!vis[v]) dfs1(v);
+    order.push_back(u);
+  }
+  void dfs2(int u, int id) {
+    comp[u] = id;
+    for (int v : rev_adj[u]) if (comp[v] == -1) dfs2(v, id);
+  }
+  void build() {
+    for (int i = 0; i < n; i++) if (!vis[i]) dfs1(i);
+    reverse(order.begin(), order.end());
+    for (int u : order) {
+      if (comp[u] == -1) dfs2(u, comps++);
+    }
+    scc_adj.resize(comps);
+    for (int u = 0; u < n; u++) {
+      for (int v : adj[u]) {
+        if (comp[u] != comp[v]) {
+          scc_adj[comp[u]].push_back(comp[v]);
+        }
       }
     }
   }
-}
+};
 \end{minted}
-\subsection{Articulation Points \texorpdfstring{\&}{&} Bridges}
+\subsection{Articulation Points \texorpdfstring{\&}{\&} Bridges}
 \begin{minted}{c++}
-vector<int> dfs_num, dfs_low, dfs_parent;
-vector<bool>articulation_vertex;
-int dfsNumberCounter, dfsRoot, rootChildren;
-vector<pair<int,int>>bridges;
-const int UNVISITED = -1;
-void articulationPointAndBridge(int u)
-{
-  dfs_num[u] = dfsNumberCounter++;
-  dfs_low[u] = dfs_num[u];
-  for (auto &[v, w] : g[u])
-  {
-    if (dfs_num[v] == UNVISITED)
-    {
-      dfs_parent[v] = u;
-      if (u == dfsRoot)
-        ++rootChildren;
-      articulationPointAndBridge(v);
-      if (dfs_low[v] >= dfs_num[u])
-        articulation_vertex[u] = true;
-      if (dfs_low[v] > dfs_num[u])
-        bridges.push_back({u,v});
-      dfs_low[u] = min(dfs_low[u], dfs_low[v]);
+struct Articulation {
+  int n, timer;
+  vector<vector<int>> adj;
+  vector<int> tin, low;
+  vector<bool> is_art;
+  vector<pair<int, int>> bridges;
+  Articulation(int _n) : n(_n), timer(0), adj(_n),
+    tin(_n, -1), low(_n, -1), is_art(_n, false) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  void dfs(int u, int p = -1) {
+    tin[u] = low[u] = timer++;
+    int children = 0;
+    for (int v : adj[u]) {
+      if (v == p) continue;
+      if (tin[v] != -1) {
+        low[u] = min(low[u], tin[v]);
+      } else {
+        children++;
+        dfs(v, u);
+        low[u] = min(low[u], low[v]);
+        if (low[v] >= tin[u] && p != -1) is_art[u] = true;
+        if (low[v] > tin[u]) bridges.push_back({min(u,v), max(u,v)});
+      }
     }
-    else if (v != dfs_parent[u])
-      dfs_low[u] = min(dfs_low[u],
-      dfs_num[v]);
+    if (p == -1 && children > 1) is_art[u] = true;
   }
-}
-\end{minted}
-\begin{minted}{c++}
-// inside int main()
-bridges.clear();
-dfs_num.assign(n, UNVISITED);
-dfs_low.assign(n, 0);
-dfs_parent.assign(n, -1);
-articulation_vertex.assign(n, false);
-dfsNumberCounter = 0;
-for (int u = 0; u < n; ++u){
-  if (dfs_num[u] == UNVISITED)
-  {
-    dfsRoot = u;
-    rootChildren = 0;
-    articulationPointAndBridge(u);
-    articulation_vertex[dfsRoot] = (rootChildren
-    > 1);
+  void build() {
+    for (int i = 0; i < n; i++) {
+      if (tin[i] == -1) dfs(i);
+    }
   }
-}
+};
 \end{minted}
 \subsection{Hopcroft-Karp (Bipartite Matching)}
 \begin{minted}{c++}
@@ -235,6 +210,62 @@ struct Dinic {
       while (int64_t nw = dfs(s, inf)) flow += nw;
     }
     return flow;
+  }
+};
+\end{minted}
+\subsection{Biconnected Components \texorpdfstring{\&}{\&} Bridge Tree}
+\begin{minted}{c++}
+struct BCC {
+  int n, timer, comps;
+  vector<vector<int>> adj, tree;
+  vector<int> tin, low, comp;
+  vector<bool> is_bridge, vis;
+  vector<pair<int, int>> edges;
+  BCC(int _n) : n(_n), timer(0), comps(0), adj(_n), tin(_n, -1),
+    low(_n, -1), comp(_n, -1), vis(_n, false) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(edges.size());
+    adj[v].push_back(edges.size());
+    edges.push_back({u, v});
+    is_bridge.push_back(false);
+  }
+  void dfs(int u, int p = -1) {
+    vis[u] = true;
+    tin[u] = low[u] = timer++;
+    for (int id : adj[u]) {
+      int v = edges[id].first ^ edges[id].second ^ u;
+      if (v == p) continue;
+      if (vis[v]) low[u] = min(low[u], tin[v]);
+      else {
+        dfs(v, u);
+        low[u] = min(low[u], low[v]);
+        if (low[v] > tin[u]) is_bridge[id] = true;
+      }
+    }
+  }
+  void build_tree() {
+    for (int i = 0; i < n; i++) if (!vis[i]) dfs(i);
+    vector<int> q;
+    for (int i = 0; i < n; i++) {
+      if (comp[i] != -1) continue;
+      q.push_back(i); comp[i] = comps++;
+      while (!q.empty()) {
+        int u = q.back(); q.pop_back();
+        for (int id : adj[u]) {
+          int v = edges[id].first ^ edges[id].second ^ u;
+          if (comp[v] == -1 && !is_bridge[id]) {
+            comp[v] = comp[u]; q.push_back(v);
+          }
+        }
+      }
+    }
+    tree.resize(comps);
+    for (int i = 0; i < edges.size(); i++) {
+      if (is_bridge[i]) {
+        int u = comp[edges[i].first], v = comp[edges[i].second];
+        tree[u].push_back(v); tree[v].push_back(u);
+      }
+    }
   }
 };
 \end{minted}

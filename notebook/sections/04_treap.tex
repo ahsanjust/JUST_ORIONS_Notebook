@@ -1,36 +1,4 @@
 \section{Treap}
-\subsection{Kth Smallest Query}
-\begin{minted}{c++}
-int query(int ci, int st, int end,
-int l, int r, int k)
-{
-  if (st == end)
-    return seg[ci][0];
-  int p = upper_bound(seg[2 * ci + 1].begin(),
-  seg[2 * ci + 1].end(), r)
-  - lower_bound(seg[2 * ci + 1].begin(),
-  seg[2 * ci + 1].end(), l);
-  int mid = (st + end) / 2;
-  if (p >= k)
-    return query(2 * ci + 1, st, mid, l, r, k);
-  else
-    return query(2 * ci + 2, mid + 1, end, l, r, k-p);
-}
-int main()
-{
-  int arr[] = { 3, 1, 5, 2, 4, 7, 8, 6 };
-  int n = sizeof(arr) / sizeof(arr[0]);
-  pair<int, int> B[n];
-  for (int i = 0; i < n; i++) {
-    B[i] = { arr[i], i };
-  }
-  sort(B, B + n);
-  build(0, 0, n - 1, B);
-  cout << "3rd smallest element in range 3 to 7 is:
-  "
-  << arr[query(0, 0, n - 1, 2, 6, 3)] << "\n";
-}
-\end{minted}
 \subsection{Implicit Treap}
 \begin{minted}{c++}
 mt19937

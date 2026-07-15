@@ -40,53 +40,6 @@ struct PST {
     return query(t[pre].r, t[cur].r, m + 1, e, k - cnt);
   }
 };
-int main() {
-  ios::sync_with_stdio(0); cin.tie(0);
-  int n, q;
-  cin >> n >> q;
-  vector<int> a(n + 1), root(n + 1), V;
-  map<int, int> comp;
-  for (int i = 1; i <= n; i++) cin >> a[i],
-  comp[a[i]];
-  int id = 0;
-  V.resize(comp.size() + 1);
-  for (auto& [x, _] : comp) comp[x] = ++id, V[id]
-  = x;
-  PST pst(20 * (n + 1)); // Allocate enough space
-  root[0] = pst.build(1, id);
-  for (int i = 1; i <= n; i++)
-  root[i] = pst.update(root[i - 1], 1, id,
-  comp[a[i]], 1);
-  while (q--) {
-    int l, r, k;
-    cin >> l >> r >> k;
-    cout << V[pst.query(root[l - 1], root[r], 1, id,
-    k)] << '\n';
-  }
-  return 0;
-}
-\end{minted}
-\begin{minted}{c++}
-int V[N], root[N], a[N];
-int32_t main() {
-  map<int, int>mp;
-  int n, q;
-  cin >> n >> q;
-  for(int i = 1; i <= n; i++) cin >> a[i], mp[a[i]];
-  int c = 0;
-  for(auto x : mp) mp[x.first] = ++c, V[c] = x.first;
-  root[0] = t.build(1, n);
-  for(int i = 1; i <= n; i++) {
-    root[i] = t.upd(root[i - 1], 1, n, mp[a[i]], 1);
-  }
-  while(q--) {
-    int l, r, k;
-    cin >> l >> r >> k;
-    cout << V[t.query(root[l - 1], root[r], 1, n, k)]
-    << '\n';
-  }
-  return 0;
-}
 \end{minted}
 \subsection{Fenwick Tree}
 Point update and range query.
@@ -169,4 +122,3 @@ ll range_sum(ll l,ll r){
 \end{minted}
 \texttt{range\_update(l,r,val);}\\
 \texttt{range\_sum(l,r);}
-

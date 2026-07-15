@@ -1,5 +1,5 @@
-\documentclass[8pt, a4paper, onesided]{article}
-\usepackage[left=0.1in,right=0.1in,top=0.25in,bottom=0.1in,headsep=0.05in]{geometry}
+\documentclass[10pt, a4paper, oneside]{article}
+\usepackage[left=0.1in,right=0.1in,top=0.1in,bottom=0.15in,headsep=0in,headheight=0pt]{geometry}
 \usepackage{hyperref}
 \usepackage{fancyhdr}
 \usepackage{xcolor}
@@ -11,93 +11,76 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
-\usepackage{etoolbox}
 
 \usemintedstyle{default}
 
 % ── Column layout ──────────────────────────────────────────────────────────────
 \setlength{\columnsep}{0.4cm}
 \setlength{\columnseprule}{0.1pt}
-
-% ── Global spacing ─────────────────────────────────────────────────────────────
-% Zero global parskip — all spacing controlled explicitly via titlespacing + minted
 \setlength{\parskip}{0pt}
-\setlength{\parindent}{0pt}
-\setlength{\fboxsep}{1pt}
-\setlength{\fboxrule}{0.01pt}
 
-% ── Section / subsection titles ────────────────────────────────────────────────
-\titleformat{\section}{\normalfont\fontsize{10}{12}\bfseries}{\thesection}{0.6em}{}
-\titleformat{\subsection}[hang]{\normalfont\fontsize{9}{11}\bfseries}{\thesubsection}{0.5em}{}
-% above-title / below-title spacing (very tight but no overlap)
-\titlespacing*{\section}    {0pt}{3pt plus 1pt minus 1pt}{1pt plus 0.5pt}
-\titlespacing*{\subsection} {0pt}{2pt plus 1pt minus 0.5pt}{1pt plus 0.5pt}
+\setlength{\fboxsep}{1pt}%
+\setlength{\fboxrule}{0.01pt}%
 
-% ── TOC styling (matches Effervescent) ─────────────────────────────────────────
-\renewcommand\cftsecfont{\fontsize{9}{10}\bfseries\color{red!70!black}}
-\renewcommand\cftsecpagefont{\fontsize{9}{10}\mdseries}
-\renewcommand\cftsubsecfont{\fontsize{7}{8}\mdseries}
-\renewcommand\cftsubsecpagefont{\fontsize{7}{8}\mdseries}
-\renewcommand\cftsecafterpnum{\vspace{-0.4ex}}
+\titleformat{\section}{\normalfont\fontsize{10}{10}\bfseries}{\thesection}{1em}{}[\vspace{-2pt}]
+\titleformat{\subsection}{\normalfont\fontsize{10}{10}\bfseries}{\thesubsection}{0.5em}{}[\vspace{-2pt}]
+\titlespacing*{\section}{0pt}{0pt}{0pt}
+\titlespacing*{\subsection}{0pt}{0pt}{0pt}
+
+%\renewcommand{\ttdefault}{pcr}
+\renewcommand\cftsecfont{\fontsize{10}{11}\bfseries}
+\renewcommand\cftsecpagefont{\fontsize{10}{11}\mdseries}
+\renewcommand\cftsubsecfont{\fontsize{8}{9}\mdseries}
+\renewcommand\cftsubsecpagefont{\fontsize{8}{9}\mdseries}
+\renewcommand\cftsecafterpnum{\vspace{-0.5ex}}
 \renewcommand\cftsubsecafterpnum{\vspace{-0.5ex}}
-\setlength{\cftbeforesecskip}{0.3ex}
-\setlength{\cftbeforesubsecskip}{0pt}
 
-% ── Minted line number style ────────────────────────────────────────────────────
-\renewcommand{\theFancyVerbLine}{%
-  \sffamily\textcolor[rgb]{0.6,0.6,0.6}{\scriptsize\arabic{FancyVerbLine}}}
+\renewcommand{\theFancyVerbLine}{
+  \sffamily\textcolor[rgb]{1.0,0.5,0.5}{\scriptsize\arabic{FancyVerbLine}}}
+  
+\setminted{breaklines, breaksymbolleft=\ensuremath{\hookrightarrow},
+breakafter={,+-*;>=}, breakbefore={</}, tabsize=2, obeytabs, mathescape, framesep=3pt, fontsize=\fontsize{9}{10}}
 
-% ── Minted global settings ─────────────────────────────────────────────────────
-% aboveskip=2pt / belowskip=1pt give tight but non-overlapping spacing
-\setminted{
-  breaklines,
-  breaksymbolleft=\space,
-  breakafter={,+-*;>=},
-  breakbefore={</},
-  tabsize=2,
-  obeytabs,
-  mathescape,
-  frame=topline,
-  framesep=2pt,
-  fontsize=\fontsize{8}{9},
-  baselinestretch=0.95
-}
-% Tight spacing around minted blocks
-\AtBeginEnvironment{minted}{\vspace{1pt}}
-\AfterEndEnvironment{minted}{\vspace{0pt}}
-
-% ── Page headers ───────────────────────────────────────────────────────────────
 \pagestyle{fancy}
-\fancyhead[L]{\small\textbf{JUST\_ORIONS} Team Notebook}
-\fancyhead[R]{\small\thepage}
-\fancyfoot[C]{}
+\fancyhead[L]{}
+\fancyhead[R]{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
 
-\fancypagestyle{plain}{
-  \fancyhead[L]{\small\textbf{JUST\_ORIONS} Team Notebook}
-  \fancyhead[R]{\small\thepage}
-  \fancyfoot[C]{}
+\fancypagestyle{plain}
+{
+\fancyhead[L]{}
+\fancyhead[R]{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
 }
 
 % ── Title ──────────────────────────────────────────────────────────────────────
-\title{\vspace{-2.5ex}\textbf{JUST\_ORIONS} Team Notebook}
+\title{\textbf{JUST\_ORIONS} Team Notebook}
 \author{Jashore University of Science and Technology}
 \date{}
 
-% ── Helpers ────────────────────────────────────────────────────────────────────
-\def\Hrule{\vskip 2pt\hrule\vskip 2pt}
+\graphicspath{ {./images} }
 
-% ── hyperref colors ────────────────────────────────────────────────────────────
-\hypersetup{colorlinks=true, linkcolor=red!70!black, urlcolor=blue!70!black}
+% \input{math/macros.tex}
+
+\def\sfrac#1 #2 {\hbox{$#1 \over #2$}}
+\def\abs{\mathop{\rm abs}\nolimits}
+
+% end of math/macros.tex
+
+
 
 \begin{document}
 \begin{landscape}
 \begin{multicols*}{3}
 
 \maketitle
-\vspace{-7ex}
+\vspace{-3ex}
 \tableofcontents
 \pagestyle{fancy}
-
+ 
+\raggedbottom
 \input{sections/01_build_and_basics}
 \input{sections/02_persistent_segtree}
 \input{sections/03_sparse_table}
@@ -109,7 +92,7 @@
 \input{sections/09_basis_and_dp}
 \input{sections/10_combinatorics}
 \input{sections/11_geometry_and_misc}
-
+\input{sections/12_number_theory}
 \end{multicols*}
 \end{landscape}
 \end{document}

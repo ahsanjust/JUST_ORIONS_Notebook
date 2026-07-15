@@ -260,42 +260,6 @@ for (int mask = 0; mask < 1 << n; mask++) {
   }
 }
 \end{minted}
-\subsection{Max Rectangular Sum}
-\begin{minted}{c++}
-int main() {
-  int n;
-  while (scanf("\%d", &n) != EOF) {
-    int mx = -1280, arr[n + 1][n + 1], linear[n],
-    gsum, csum, qsum[n][n];
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < n; j++) {
-        scanf("\%d", &arr[i][j]);
-        if (j == 0)
-          qsum[i][j] = arr[i][j];
-        else
-          qsum[i][j] = arr[i][j] + qsum[i][j - 1];
-      }
-    }
-    gsum = arr[0][0];
-    for (int j = 0; j < n; j++) {
-      for (int k = j; k < n; k++) {
-        for (int i = 0; i < n; i++) {
-          int temp = qsum[i][k] - qsum[i][j] +
-          arr[i][j];
-          if (i == 0) {
-            csum = temp;
-            continue;
-          }
-          csum = max(temp, csum + temp);
-          gsum = max(csum, gsum);
-        }
-      }
-    }
-    printf("\%d\n", gsum);
-  }
-  return 0;
-}
-\end{minted}
 \subsection{Derangements}
 \begin{minted}{c++}
 if (n > 0) D[1] = 0;
@@ -305,7 +269,7 @@ for (int i = 3; i <= n; i++) {
 }
 \end{minted}
 \subsection{Stars and Bars}
- $C(n + k - 1, k)$;
+$C(n + k - 1, k)$;
 \subsection{Catalan Numbers}
 $n=$ number of pairs: $C(2n, n) - C(2n, n-1)$;
 

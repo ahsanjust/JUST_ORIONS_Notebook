@@ -1,49 +1,73 @@
 \section{Tree}
-\subsection{Binary Lifting}
+\subsection{Binary Lifting (LCA \texorpdfstring{\&}{\&} K-th Ancestor)}
 \begin{minted}{c++}
-int up[200001][20];
-vector<vector<int>> tree(200001);
-void binary_lifting(int src, int par) {
-  up[src][0] = par;
-  for (int i = 1; i <= 19; i++) {
-    if (up[src][i - 1] != -1)
-      up[src][i] = up[up[src][i-1]][i-1];
-    else
-      up[src][i] = -1;
+struct LCA {
+  int n, LOG;
+  vector<vector<int>> adj, up;
+  vector<int> depth;
+  LCA(int _n) : n(_n), LOG(__lg(_n) + 2), adj(_n),
+    up(_n, vector<int>(LOG, -1)), depth(_n, 0) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(v);
+    adj[v].push_back(u);
   }
-  for (int i = 0; i < tree[src].size(); i++)
-    if (tree[src][i] != par)
-      binary_lifting(tree[src][i], src);
-}
-int lift_node(int node, int k) {
-  if (node == -1 || k == 0)
-    return node;
-  for (int i = 19; i >= 0; i--)
-    if (k >= (1 << i))
-      return lift_node(up[node][i], k-(1<<i));
-}
+  void dfs(int u, int p = -1, int d = 0) {
+    up[u][0] = p;
+    depth[u] = d;
+    for (int i = 1; i < LOG; i++) {
+      if (up[u][i - 1] != -1) {
+        up[u][i] = up[up[u][i - 1]][i - 1];
+      }
+    }
+    for (int v : adj[u]) {
+      if (v != p) dfs(v, u, d + 1);
+    }
+  }
+  int lift(int u, int k) {
+    for (int i = 0; i < LOG; i++) {
+      if ((k >> i) & 1) u = up[u][i];
+      if (u == -1) break;
+    }
+    return u;
+  }
+  int query(int u, int v) {
+    if (depth[u] < depth[v]) swap(u, v);
+    u = lift(u, depth[u] - depth[v]);
+    if (u == v) return u;
+    for (int i = LOG - 1; i >= 0; i--) {
+      if (up[u][i] != up[v][i]) {
+        u = up[u][i];
+        v = up[v][i];
+      }
+    }
+    return up[u][0];
+  }
+};
 \end{minted}
 \subsection{Tree Flattening (Euler Tour)}
 \begin{minted}{c++}
-void eularDFS(ll node, ll par, ll arr[], vector<ll>&
-flatTree, vector<ll> tree[], pair<ll, ll>
-subTreeRange[], ll& timer)
-{
-  subTreeRange[node].first = ++timer;
-  flatTree.push_back(arr[node]);
-  for (auto& child : tree[node])
-    if (child != par)
-      eularDFS(child, node, arr, flatTree, tree,
-      subTreeRange, timer);
-  subTreeRange[node].second = timer;
-}
-void solve() {
-  vector<ll> flatTree;
-  pair<ll, ll> subTreeRange[n + 1];
-  ll timer = -1;
-  eularDFS(1, 0, arr, flatTree, tree,
-  subTreeRange, timer);
-}
+struct EulerTour {
+  int n, timer;
+  vector<vector<int>> adj;
+  vector<int> in, out, flat;
+  EulerTour(int _n) : n(_n), timer(0), adj(_n + 1),
+    in(_n + 1), out(_n + 1) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  void dfs(int u, int p = 0) {
+    in[u] = ++timer;
+    flat.push_back(u);
+    for (int v : adj[u]) {
+      if (v != p) dfs(v, u);
+    }
+    out[u] = timer;
+  }
+  void build(int root = 1) {
+    dfs(root);
+  }
+};
 \end{minted}
 \subsection{Heavy Light Decomposition (HLD)}
 \begin{minted}{c++}
@@ -86,8 +110,6 @@ struct HLD {
       if (v != parent[u] && v != heavy[u])
         decompose(v, v);
   }
-\end{minted}
-\begin{minted}{c++}
   int query(int u, int v) { // Range Sum Query
     int res = 0;
     while (head[u] != head[v]) {
@@ -221,18 +243,35 @@ int lca(int a, int b){
 int distance(int a,int b){
   return level[a]+level[b] - 2*level[lca(a,b)];
 }
-int main(){
-  int n;
-  cin>>n;
-  mx = log2(n)+1;
-  //resize and input
-  dfs(1,-1,0);
-  for(int i = 1; i<mx; i++){
-    for(int j = 1; j<=n; j++){
-      int prevParent = parents[i-1][j];
-      if(prevParent!=-1) parents[i][j] =
-      parents[i-1][prevParent];
+\end{minted}
+\subsection{DSU on Tree (Sack)}
+$O(N \log N)$ offline subtree queries.
+\begin{minted}{c++}
+int timer = 0;
+vector<int> sz, in, out, flat, big; // size is N+1
+void dfs_sz(int u, int p) {
+  sz[u] = 1, big[u] = 0, in[u] = ++timer, flat[timer] = u;
+  for (int v : adj[u]) {
+    if (v != p) {
+      dfs_sz(v, u);
+      sz[u] += sz[v];
+      if (sz[v] > sz[big[u]]) big[u] = v;
     }
   }
+  out[u] = timer;
 }
+void add(int u, int val) { /* update data structure */ }
+void dfs_sack(int u, int p, bool keep) {
+  for (int v : adj[u])
+    if (v != p && v != big[u]) dfs_sack(v, u, 0);
+  if (big[u]) dfs_sack(big[u], u, 1);
+  for (int v : adj[u])
+    if (v != p && v != big[u])
+      for (int i = in[v]; i <= out[v]; i++) add(flat[i], 1);
+  add(u, 1);
+  // answer queries for subtree u here
+  if (!keep)
+    for (int i = in[u]; i <= out[u]; i++) add(flat[i], -1);
+}
+// Init: sz/in/out/flat/big.assign(n+1, 0); dfs_sz(1, 0); dfs_sack(1, 0, 1);
 \end{minted}

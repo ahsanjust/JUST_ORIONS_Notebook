@@ -27,6 +27,8 @@
 \end{minted}
 \subsection{Basic Setup}
 \begin{minted}{c++}
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 #pragma GCC optimize("Ofast")
 ios_base::sync_with_stdio(false), cin.tie(NULL),
 cout.tie(NULL);
@@ -42,7 +44,6 @@ int)chrono::steady_clock::now().time_since_epoch
 int64_t Random(int64_t l, int64_t r) { return (l +
 (rnd() % (r - l + 1))); }
 \end{minted}
-
 $\sum$ coprime of $(x) = (x \cdot \phi(x))/2$.
 \subsection{PBDS}
 \begin{minted}{c++}
@@ -123,4 +124,19 @@ struct DSU{
     --numSets;
   }
 };
+\end{minted}
+\subsection{Bit Hacks}
+\begin{minted}{c++}
+// x & -x is the least bit in x
+// iterate over all the subsets of the mask
+for (int s=m; ; s=(s-1)&m) {
+  /* use s */
+  if (s==0) break;
+}
+// c = x&-x, r = x+c; (((r^x) >> 2)/c) | r is the
+// next number after x with the same number of bits set.
+int c = __builtin_popcount(x); // number of ones
+int clz = __builtin_clz(x); // leading zeros
+int ctz = __builtin_ctz(x); // trailing zeros
+// use __builtin_...ll(x) for long long
 \end{minted}

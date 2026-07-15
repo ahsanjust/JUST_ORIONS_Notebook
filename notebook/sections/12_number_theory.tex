@@ -1,0 +1,69 @@
+\section{Number Theory}
+\subsection{Linear Diophantine Equation}
+Solves $Ax + By = C$. Solutions exist iff $g = \gcd(|A|, |B|)$ divides $C$.
+The base solution is $x_0, y_0$. General solutions: $x = x_0 + k \frac{B}{g}$, $y = y_0 - k \frac{A}{g}$.
+\begin{minted}{c++}
+ll extgcd(ll a, ll b, ll &x, ll &y) {
+  if (b == 0) { x = 1; y = 0; return a; }
+  ll x1, y1;
+  ll d = extgcd(b, a % b, x1, y1);
+  x = y1;
+  y = x1 - y1 * (a / b);
+  return d;
+}
+bool find_any_solution(ll a, ll b, ll c, ll &x0, ll &y0, ll &g) {
+  g = extgcd(abs(a), abs(b), x0, y0);
+  if (c % g) return false;
+  x0 *= c / g;
+  y0 *= c / g;
+  if (a < 0) x0 = -x0;
+  if (b < 0) y0 = -y0;
+  return true;
+}
+\end{minted}
+\subsection{Möbius Function and Inversion}
+
+The Möbius function $\mu(n)$ is defined as: \\
+\textbullet{} $\mu(n) = 1$ if $n$ is square-free with an even number of prime factors. \\
+\textbullet{} $\mu(n) = -1$ if $n$ is square-free with an odd number of prime factors. \\
+\textbullet{} $\mu(n) = 0$ if $n$ has a squared prime factor.
+
+\textbf{Properties \& Inversion}: \\
+\textbullet{} \textbf{Sum over divisors}: $\sum_{d|n} \mu(d) = [n = 1]$ \\
+\textbullet{} \textbf{Möbius Inversion}: 
+$g(n) = \sum_{d|n} f(d) \iff f(n) = \sum_{d|n} \mu(d)g(n/d)$ \\
+\textbullet{} \textbf{Euler's Totient}: $\phi(n) = \sum_{d|n} \mu(d) \frac{n}{d}$ and $n = \sum_{d|n} d \cdot \mu\left(\frac{n}{d}\right)$ \\
+\textbullet{} \textbf{Inverse Totient Sum}: $\frac{n}{\phi(n)} = \sum_{d|n} \frac{\mu(d)}{d}$
+
+\textbf{GCD Sums}: \\
+\textbullet{} \textbf{Count pairs} with $\gcd(i, n)=k$: $\sum_{i=1}^n [\gcd(i, n) = k] = \phi\left(\frac{n}{k}\right)$ \\
+\textbullet{} \textbf{Sum of GCDs}: $\sum_{i=1}^n \gcd(i, n) = \sum_{d|n} d \cdot \phi\left(\frac{n}{d}\right)$ \\
+\textbullet{} \textbf{Sum of inverse GCDs}: $\sum_{i=1}^n \frac{1}{\gcd(i,n)} = \frac{1}{n} \sum_{d|n} d \cdot \phi(d)$ \\
+\textbullet{} \textbf{Weighted inverse GCD}: $\sum_{i=1}^n \frac{i}{\gcd(i,n)} = \frac{1}{2} \sum_{d|n} d \cdot \phi(d)$
+\subsection{GCD and LCM Properties}
+\textbullet{} \textbf{Euclidean Algorithm}: $\gcd(a, b) = \gcd(b, a \bmod b)$ \\
+\textbullet{} \textbf{Divisibility rule}: If $a | (b \cdot c)$ and $\gcd(a, b) = d$, then $(a/d) | c$ \\
+\textbullet{} \textbf{Distributivity}: $\gcd(a, \text{lcm}(b,c)) = \text{lcm}(\gcd(a,b), \gcd(a,c))$ \\
+\textbullet{} \textbf{Exponent GCD}: $\gcd(n^a - 1, n^b - 1) = n^{\gcd(a,b)} - 1$
+\subsection{Gauss Circle Theorem}
+Lattice points inside $m^2 + n^2 \le r^2$: \\
+$N(r) = 1 + 4 \sum_{i=0}^\infty \left( \lfloor \frac{r^2}{4i+1} \rfloor - \lfloor \frac{r^2}{4i+3} \rfloor \right)$
+\subsection{Math Formula Cheatsheet}
+
+\textbf{Geometric Series}: \\
+\textbullet{} $\sum_{i=a}^b c^i = \frac{c^{b+1} - c^a}{c - 1}$ \quad $(c \neq 1)$ \\
+\textbullet{} $\sum_{i=0}^n c^i = \frac{c^{n+1}-1}{c-1}$ \quad $(c \neq 1)$ \\
+\textbullet{} $\sum_{i=0}^\infty c^i = \frac{1}{1-c}$ \quad $(|c| < 1)$
+
+\textbf{Sums of Powers}: \\
+\textbullet{} $\sum_{i=1}^n i = \frac{n(n+1)}{2}$ \\
+\textbullet{} $\sum_{i=1}^n i^2 = \frac{n(n+1)(2n+1)}{6}$ \\
+\textbullet{} $\sum_{i=1}^n i^3 = \frac{n^2(n+1)^2}{4}$ \\
+\textbullet{} $\sum_{i=1}^n i^4 = \frac{n(n+1)(2n+1)(3n^2+3n-1)}{30}$
+
+\textbf{Harmonic Sums ($H_n$)}: \\
+\textbullet{} $H_n = \sum_{i=1}^n \frac{1}{i}$ \\
+\textbullet{} $\sum_{i=1}^n i H_i = \frac{n(n+1)}{2} H_n - \frac{n(n-1)}{4}$
+
+\textbf{Combinatorial Sum}: \\
+\textbullet{} \textbf{Hockey-stick Identity}: $\sum_{k=0}^n \binom{r+k}{k} = \binom{r+n+1}{n}$

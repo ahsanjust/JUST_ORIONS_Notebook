@@ -50,29 +50,20 @@ int solve(int n, int m) {
 }
 \end{minted}
 \subsection{Exclusion DP}
-There is only difference to calculate $f[i]$ for different problems,
+There is only difference to calculate $f[i]$ for different problems:
 
-for ordered pair means $(a, b)$ and $(b, a)$ are not same then $f[i] = d[i] \cdot d[i]$;
+\textbf{For ordered pairs} $(a, b)$ where $(a, b) \neq (b, a)$: \\
+$f[i] = d[i] \cdot d[i]$
 
-for unordered pair means $(a, b)$ and $(b, a)$ are same then
+\textbf{For unordered pairs} where $(a, b)$ and $(b, a)$ are the same: \\
+\textbullet{} \textbf{With repetition}: $f[i] = d[i](d[i]+1)/2$ \\
+\textbullet{} \textbf{No repetition}: $f[i] = d[i](d[i]-1)/2$
 
--for repeative $\to f[i] = (d[i]+1)C2 \to d[i] \cdot (d[i]+1)/2$;
-
--for non-repeative $\to f[i] = d[i]C2 \to d[i] \cdot (d[i]-1)/2$;
-
-for $k$-tuples:
-
--for ordered tuples : $f[i] = (d[i])^k$;
-
--for unordered tuples :
-
---for non-repeative $\to f[i] = d[i]Ck$
-
---for repeative $\to f[i] = (d[i]+k-1)Ck$
-
-here $d[i]$ = number of elements divisible by $i$.
-
-and $C$ denotes combination
+\textbf{For $k$-tuples}: \\
+\textbullet{} \textbf{Ordered tuples}: $f[i] = (d[i])^k$ \\
+\textbullet{} \textbf{Unordered (no rep)}: $f[i] = \binom{d[i]}{k}$ \\
+\textbullet{} \textbf{Unordered (with rep)}: $f[i] = \binom{d[i]+k-1}{k}$ \\
+Where $d[i]$ is the number of elements divisible by $i$.
 \subsection{Bishop Placement}
 \begin{minted}{c++}
 int bishop_placements(int N, int K)
@@ -94,12 +85,64 @@ int bishop_placements(int N, int K)
   return ans;
 }
 \end{minted}
-\subsection{Handling Precision (EPS)}
-\begin{minted}{c++}
-const double EPS = 1e-9;
-bool equal(double a, double b) { return abs(a - b)
-< EPS; }
-bool lessThan(double a, double b) { return a < b - EPS; }
-bool greaterThan(double a, double b) { return a >
-b + EPS; }
-\end{minted}
+\subsection{Combinatorics Formulas}
+
+\textbf{Stirling Numbers of the 1st Kind $S_1(n,k)$}: \\
+Permutations of $n$ elements with exactly $k$ cycles. \\
+\textbullet{} \textbf{Recurrence}: $S_1(n,k) = S_1(n-1,k-1) + (n-1)S_1(n-1,k)$ \\
+\textbullet{} \textbf{Total sum}: $\sum_{k=0}^n S_1(n,k) = n!$ \\
+\textbullet{} \textbf{EGF}: $(-\ln(1-x))^k / k!$
+
+\textbf{Stirling Numbers of the 2nd Kind $S_2(n,k)$}: \\
+Ways to partition $n$ elements into $k$ non-empty sets. \\
+\textbullet{} \textbf{Recurrence}: $S_2(n,k) = S_2(n-1,k-1) + k \cdot S_2(n-1,k)$ \\
+\textbullet{} \textbf{Formula}: $S_2(n,k) = \frac{1}{k!} \sum_{i=0}^k (-1)^{k-i} \binom{k}{i} i^n$ \\
+\textbullet{} \textbf{EGF}: $(\exp(x)-1)^k / k!$
+
+\textbf{Bell Numbers $B(n)$}: \\
+Total ways to partition a set of $n$ elements. \\
+\textbullet{} \textbf{Relation}: $B(n) = \sum_{k=0}^n S_2(n,k)$ \\
+\textbullet{} \textbf{Recurrence}: $B(n+1) = \sum_{k=0}^n \binom{n}{k} B(k)$ \\
+\textbullet{} \textbf{EGF}: $\exp(\exp(x)-1)$
+
+\textbf{Combinatorial Identities}: \\
+\textbullet{} $\sum_{k=0}^n \binom{n-k}{k} = F_{n+1}$ (Also counts binary seqs of length $n$ without 00) \\
+\textbullet{} Non-negative sols of $\sum x_i = n$ is $\binom{n+k-1}{n}$ \\
+\textbullet{} \textbf{Pascal's}: $\binom{n}{k} + \binom{n}{k+1} = \binom{n+1}{k+1}$ \\
+\textbullet{} \textbf{Absorption}: $k\binom{n}{k} = n\binom{n-1}{k-1}$
+
+\textbf{Catalan Numbers $C_n$}: \\
+Seq: 1, 1, 2, 5, 14, 42, 132, 429, 1430, 4862 \dots \\
+\textbullet{} \textbf{Formula}: $C_n = \frac{1}{n+1} \binom{2n}{n} = \binom{2n}{n} - \binom{2n}{n+1}$ \\
+\textbullet{} \textbf{Recurrence}: $C_{n+1} = \sum_{i=0}^n C_i C_{n-i}$ \\
+\textbullet{} \textbf{OGF}: $\frac{1-\sqrt{1-4x}}{2x}$ \\
+\textbullet{} \textbf{Applications}: Correct bracket seqs, polygon triangulations, non-crossing chords, paths $(0,0) \to (n,n)$ below diagonal, full binary trees, Dyck words.
+
+\textbf{Eulerian Numbers $E(n,k)$}: \\
+Permutations with exactly $k$ ascents (element $>$ previous). \\
+\textbullet{} \textbf{Recurrence}: $E(n,k) = (n-k)E(n-1, k-1) + (k+1)E(n-1, k)$ \\
+\textbullet{} \textbf{Formula}: $E(n,k) = \sum_{j=0}^k (-1)^j \binom{n+1}{j} (k+1-j)^n$ \\
+\textbullet{} \textbf{Properties}: $E(n,k) = E(n, n-1-k)$
+
+\textbf{Derangements $D(n)$}: \\
+Permutations where $\pi(i) \neq i$. \\
+Seq: 1, 0, 1, 2, 9, 44, 265, 1854 \dots \\
+\textbullet{} \textbf{Recurrence}: $D(n) = (n-1)(D(n-1) + D(n-2))$ \\
+\textbullet{} \textbf{Formula}: $D(n) = n! \sum_{k=0}^n \frac{(-1)^k}{k!} \approx \frac{n!}{e}$ \\
+\textbullet{} \textbf{EGF}: $\frac{e^{-x}}{1-x}$
+
+\textbf{Partition Numbers $P(n,k)$}: \\
+Ways to write $n$ as a sum of exactly $k$ positive integers. \\
+\textbullet{} \textbf{Recurrence}: $P(n,k) = P(n-1, k-1) + P(n-k, k)$ \\
+\textbullet{} \textbf{Total partitions}: $P(n) = \sum_{k=0}^n P(n,k)$. (Seq: 1, 1, 2, 3, 5, 7, 11, 15, 22, 30 \dots)
+
+\textbf{Generating Functions}: \\
+\textbullet{} \textbf{OGF}: $A(x) = \sum_{i \ge 0} a_i x^i$ \\
+\textbullet{} \textbf{Ops}: $xA'(x) \Rightarrow n a_n$, $A(x)B(x) \Rightarrow \sum_{i=0}^n a_i b_{n-i}$ \\
+\textbullet{} \textbf{EGF}: $A(x) = \sum_{i \ge 0} a_i \frac{x^i}{i!}$ \\
+\textbullet{} \textbf{Ops}: $A'(x) \Rightarrow a_{n+1}$, $xA(x) \Rightarrow n a_n$, $A(x)B(x) \Rightarrow \sum_{i=0}^n \binom{n}{i} a_i b_{n-i}$
+
+\textbf{Bernoulli Numbers \& Faulhaber's}: \\
+\textbullet{} \textbf{Recurrence}: $B_n = -\frac{1}{n+1} \sum_{k=0}^{n-1} \binom{n+1}{k} B_k$ \\
+\textbullet{} \textbf{EGF}: $\frac{x}{e^x-1}$ \\
+\textbullet{} \textbf{Sum of powers}: $\sum_{k=1}^n k^c = \frac{1}{c+1} \sum_{k=0}^c (-1)^k \binom{c+1}{k} B_k n^{c+1-k}$
