@@ -138,7 +138,12 @@ auto intersect = [&](P a1, P a2, P b1, P b2)
 \begin{minted}{c++}
 const ld EPS = 1e-9;
 const ld PI = acos(-1.0);
+
+// sign: -1/0/1 for negative/zero/positive
 int sgn(ld x) { return (x > EPS) - (x < -EPS); }
+
+// 2D point with int64 coords: cross(*), dot(^),
+// norm(sq), abs, rotation
 struct P {
   using T = int64_t;
   T x, y;
@@ -155,51 +160,72 @@ struct P {
     return x * b.y - y * b.x; }
   T operator ^ (const P &b) const {
     return x * b.x + y * b.y; }
-  T dot (P &a, P &b) const {
+  T dot(P &a, P &b) const {
     return (a - *this) ^ (b - *this); }
-  T cross (P &a, P &b) {
+  T cross(P &a, P &b) {
     return (a - *this) * (b - *this); }
   ld sq() const { return x * x + y * y; }
   ld abs() const { return sqrtl(sq()); }
-  P rot() const { return P(-y, x); }
+  P rot() const { return P(-y, x); } // 90 CCW
   P rot(ld a) const {
     return P(x*cos(a) - y*sin(a),
              x*sin(a) + y*cos(a)); }
 };
+
+// true if a, b, c lie on same line
 bool collinear(P &a, P &b, P &c) {
   return (b - a) * (c - a) == 0;
 }
+
+// true if r lies on closed segment pq
 bool on_segment(P &p, P &q, P &r) {
   return collinear(p, q, r) &&
     r.x <= max(p.x, q.x) && r.x >= min(p.x, q.x) &&
     r.y <= max(p.y, q.y) && r.y >= min(p.y, q.y);
 }
+
+// Euclidean distance between a and b
 ld dist(P a, P b) { return (a - b).abs(); }
+
+// project c onto line ab (returns foot point)
 P project(P a, P b, P c) {
   return a + (b - a) * (((c - a) ^ (b - a)) /
          (b - a).sq());
 }
+
+// reflect c across line ab
 P reflect(P a, P b, P c) {
   return project(a, b, c) * 2 - c;
 }
+
+// perpendicular dist from c to line ab
 ld dist_pt_line(P a, P b, P c) {
   return fabsl((b - a) * (c - a)) / (b - a).abs();
 }
+
+// shortest dist from c to segment ab
 ld dist_pt_seg(P a, P b, P c) {
   if (((c - a) ^ (b - a)) <= 0) return (c - a).abs();
   if (((c - b) ^ (a - b)) <= 0) return (c - b).abs();
   return dist_pt_line(a, b, c);
 }
+
+// true if p lies on segment ab (EPS tolerance)
 bool on_seg(P a, P b, P p) {
   return !sgn((b - a) * (p - a)) &&
          ((p - a) ^ (p - b)) <= EPS;
 }
+
+// line-line intersection (ab x cd), stores in res,
+// returns false if parallel
 bool line_int(P a, P b, P c, P d, P &res) {
   ld cp = (b - a) * (d - c);
   if (!sgn(cp)) return false;
   res = a + (b - a) * (((d - c) * (c - a)) / cp);
   return true;
 }
+
+// true if segment ab intersects segment cd
 bool seg_int(P a, P b, P c, P d) {
   auto cp = [&](P x, P y, P z) {
     return sgn((y - x) * (z - x)); };
@@ -209,12 +235,16 @@ bool seg_int(P a, P b, P c, P d) {
   return cp(a, b, c) != cp(a, b, d) &&
          cp(c, d, a) != cp(c, d, b);
 }
+
+// area of polygon (shoelace), vertices in order
 long double polygon_area(vector<P> &p) {
   int64_t area = 0, n = p.size();
   for (int i = 0; i < n; ++i)
     area += p[i] * p[(i + 1) % n];
   return abs(area) / 2;
 }
+
+// convex hull vertices (CCW, monotone chain)
 vector<P> convexHull(vector<P> p) {
   int n = p.size(), k = 0;
   if (n <= 2) return p;
@@ -230,6 +260,8 @@ vector<P> convexHull(vector<P> p) {
   h.resize(k - 1);
   return h;
 }
+
+// point-in-polygon: 1=inside, 2=on boundary, 0=out
 int is_point_in_polygon(const vector<P>& p, P q) {
   int c = 0;
   for (int i = 0, n = p.size(); i < n; ++i) {
