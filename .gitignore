@@ -1,5 +1,7 @@
 # Editor / tool junk
 .aider*
+.kilo/
+.kimchi/
 .vscode/
 *.swp
 *.swo
@@ -21,6 +23,9 @@ Thumbs.db
 *.pyg
 _minted-*/
 
-# PDF outputs (keep original reference PDF)
+# Generated text exports
+page*.txt
+
+# PDF outputs
 notebook/main.pdf
 notebook/JUST_ORIONS_Notebook.pdf

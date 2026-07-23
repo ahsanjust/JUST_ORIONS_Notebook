@@ -1,0 +1,167 @@
+\section{Dynamic Programming}
+\subsection{SOS DP (Sum Over Subsets)}
+Complexity $O(B \cdot 2^B)$. Used for gcd/lcm/OR/AND counting. \texttt{zeta\_subset}: for each mask, sum over its submasks. \texttt{zeta\_superset}: for each mask, sum over its supermasks.
+\begin{minted}{c++}
+void zeta_subset(vector<int64_t> &dp, int bits) {
+  for (int b = 0; b < bits; b++)
+    for (int mask = 0; mask < (1LL << bits); mask++)
+      if (mask >> b & 1)
+        dp[mask] += dp[mask ^ (1LL << b)];
+}
+void zeta_superset(vector<int64_t> &dp, int bits) {
+  for (int b = 0; b < bits; b++)
+    for (int mask = 0; mask < (1LL << bits); mask++)
+      if (!(mask >> b & 1))
+        dp[mask] += dp[mask | (1LL << b)];
+}
+\end{minted}
+\begin{minted}{c++}
+void Solve() {
+  ll n; cin >> n;
+  vector<ll> arr(n);
+  for (auto& x : arr) cin >> x;
+  ll N = 1 + __lg(*max_element(arr.begin(),
+  arr.end()));
+  vector<ll> sos(1LL << N, 0), sos2(1LL << N, 0);
+  for (auto it : arr) {
+    sos[it]++;
+    sos2[((1LL << N) - 1) ^ it]++;
+  }
+  for (int i = 0; i < N; ++i)
+    for (int mask = 0; mask < (1LL << N); ++mask)
+      if (mask & (1LL << i))
+        sos[mask] += sos[mask ^ (1LL << i)],
+        sos2[mask] += sos2[mask ^ (1LL << i)];
+  for (auto& it : arr) {
+    // count y: x|y == x
+    cout << sos[it] << ' ';
+    // count y: x&y == x
+    cout << sos2[((1LL << N) - 1) ^ it] << ' ';
+    // count y: x&y != 0
+    cout << n - sos[((1LL << N) - 1) ^ it] << ' ';
+  }
+}
+\end{minted}
+
+\subsection{Knuth Optimization}
+For DP on intervals where optimal split point $p[i][j]$ is monotone in both $i$ and $j$:
+$dp[i][j] = \min_{i<k<j} (dp[i][k] + dp[k][j]) + f(i, j)$
+Reduces $O(N^3)$ to $O(N^2)$.
+\textbf{Note:} Speeds up interval DP from $O(N^3)$ to $O(N^2)$ if costs are monotonic.
+\begin{minted}{c++}
+for (int i = 0; i <= n; i++) {
+  p[i][i] = i, dp[i][i] = 0;
+  if (i < n) dp[i][i+1] = cost(i, i+1), p[i][i+1] = i;
+}
+for (int len = 2; len <= n; len++) {
+  for (int i = 0; i + len <= n; i++) {
+    int j = i + len;
+    dp[i][j] = LLONG_MAX;
+    for (int k = p[i][j-1]; k <= p[i+1][j]; k++) {
+      ll val = dp[i][k] + dp[k][j] + cost(i, j);
+      if (val < dp[i][j]) {
+        dp[i][j] = val;
+        p[i][j] = k;
+      }
+    }
+  }
+}
+\end{minted}
+\subsection{Max Rectangular Sum in Matrix}
+Key idea: Fix top and bottom rows, collapse 2D into 1D column sums, then apply Kadane's algorithm for max subarray. $O(N^2 M)$.
+\begin{minted}{c++}
+int64_t maxRectSum(vector<vector<int>>& a) {
+  int n = a.size(), m = a[0].size();
+  int64_t ans = -4e18; // Safe negative infinity
+  for (int top = 0; top < n; top++) {
+    vector<int64_t> col(m, 0);
+    for (int bot = top; bot < n; bot++) {
+      for (int j = 0; j < m; j++)
+        col[j] += a[bot][j];
+      int64_t cur = 0;
+      for (int j = 0; j < m; j++) {
+        cur = max(col[j], cur + col[j]);
+        ans = max(ans, cur);
+      }
+    }
+  }
+  return ans;
+}
+\end{minted}
+\subsection{Subset Sum (Bitset)}
+Works when sum of values $\le N$. $O(N \sqrt{N} / 64)$.
+Uses bitset DP with binary splitting optimization.
+\texttt{dp.test(k)} is true if sum $k$ can be formed.
+\begin{minted}{c++}
+const int N = 1e6 + 6;
+bitset<N> dp;
+dp.set(0);
+for (auto &[w, c] : comp) {
+  for (int i = 0; (1LL << i) <= c; ++i) {
+    dp |= dp << (w * (1LL << i));
+    c -= 1LL << i;
+  }
+  dp |= dp << (w * c);
+}
+dp.test(k) // if sum k is possible
+\end{minted}
+OR convolution can be done using SOS DP.
+\subsection{Exclusion DP (GCD/LCM counting)}
+Count pairs/k-tuples with given gcd. Let $d[i]$ = count of elements divisible by $i$. Then: \\
+\textbf{Ordered pairs} $(a,b)$, $(a,b) \neq (b,a)$: $f[i] = d[i] \cdot d[i]$ \\
+\textbf{Unordered (with rep)}: $f[i] = d[i](d[i]+1)/2$ \\
+\textbf{Unordered (no rep)}: $f[i] = d[i](d[i]-1)/2$ \\
+\textbf{Ordered $k$-tuples}: $f[i] = (d[i])^k$ \\
+\textbf{Unordered (no rep)}: $f[i] = \binom{d[i]}{k}$ \\
+\textbf{Unordered (with rep)}: $f[i] = \binom{d[i]+k-1}{k}$
+
+
+\subsection{Li Chao Tree (CHT)}
+Maintains a set of lines $y = mx + b$, answers minimum $y$-value at any query point $x$. $O(\log C)$ per insert/query, $C$ = coordinate range.
+
+When to use: DP transitions of the form $dp[j] = \min_i (m_i \cdot x_j + b_i)$ where slopes/intercepts come from earlier states. Nodes allocated lazily. For maximum queries, init with \texttt{LLONG\_MIN} and flip comparisons.
+\textbf{Note:} For queries like $y = mx+b$. Does not require queries or lines to be sorted.
+\begin{minted}{c++}
+struct LiChao {
+  struct Line {
+  ll m, b;
+  ll get(ll x) { return m * x + b; }
+};
+  struct Node { int l, r; Line line; };
+  vector<Node> seg;
+  LiChao() { seg.push_back({-1, -1, {0, LLONG_MAX}}); }
+  void addLine(Line nw, int idx = 0,
+             ll l = -1e9, ll r = 1e9) {
+    ll m = l + (r - l) / 2;
+    bool left = nw.get(l) < seg[idx].line.get(l);
+    bool mid = nw.get(m) < seg[idx].line.get(m);
+    if (mid) swap(seg[idx].line, nw);
+    if (l == r) return;
+    if (left != mid) {
+      if (seg[idx].l == -1) {
+        seg[idx].l = seg.size();
+        seg.push_back({-1, -1, {0, LLONG_MAX}});
+      }
+      addLine(nw, seg[idx].l, l, m);
+    } else {
+      if (seg[idx].r == -1) {
+        seg[idx].r = seg.size();
+        seg.push_back({-1, -1, {0, LLONG_MAX}});
+      }
+      addLine(nw, seg[idx].r, m + 1, r);
+    }
+  }
+  ll query(ll x, int idx = 0, ll l = -1e9, ll r = 1e9) {
+    if (idx == -1) return LLONG_MAX;
+    ll m = l + (r - l) / 2;
+    ll res = seg[idx].line.get(x);
+    if (l != r) {
+      if (x <= m) res = min(res, query(x, seg[idx].l, l, m));
+      else res = min(res, query(x, seg[idx].r, m+1, r));
+    }
+    return res;
+  }
+};
+// LiChao lct; lct.addLine({slope, intercept});
+// ll ans = lct.query(x);
+\end{minted}

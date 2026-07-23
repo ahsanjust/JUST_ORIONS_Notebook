@@ -1,0 +1,738 @@
+\section{Graph Theory}
+
+\subsection{Floyd-Warshall}
+All-pairs shortest paths in $O(V^3)$. Handles negative weights. Detects and propagates negative cycles: after main DP, if $m[k][k] < 0$ then all paths through $k$ become $-\infty$.
+\begin{minted}{c++}
+void floydWarshall(vector<vector<ll>>& m) {
+  int n = m.size();
+  const ll INF = 1LL << 62;
+  for (int i = 0; i < n; i++)
+    m[i][i] = min(m[i][i], 0LL);
+  for (int k = 0; k < n; k++)
+    for (int i = 0; i < n; i++)
+      for (int j = 0; j < n; j++)
+        if (m[i][k] != INF && m[k][j] != INF)
+          m[i][j] = min(m[i][j],
+            max(m[i][k]+m[k][j], -INF));
+  for (int k = 0; k < n; k++)
+    if (m[k][k] < 0)
+      for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+          if (m[i][k]!=INF && m[k][j]!=INF)
+            m[i][j] = -INF;
+}
+\end{minted}
+\subsection{Bellman-Ford / SPFA}
+Single-source shortest paths with negative edges. $O(VE)$. On $n$-th iteration, if distance still improves $\Rightarrow$ negative cycle. Sets distance to $-\infty$ for nodes reachable from negative cycle.
+\begin{minted}{c++}
+const ll LINF = LLONG_MAX / 2;
+struct Edge { int a, b; ll w; };
+struct BFNode { ll dist=LINF; int prev=-1; };
+void bellmanFord(vector<BFNode>& nodes,
+                 vector<Edge>& eds, int s) {
+  nodes[s].dist = 0;
+  int n = nodes.size();
+  for (int i = 0; i < n; i++) {
+    bool changed = false;
+    for (Edge& e : eds) {
+      if (nodes[e.a].dist == LINF) continue;
+      ll d = nodes[e.a].dist + e.w;
+      if (d < nodes[e.b].dist) {
+        nodes[e.b].dist = (i < n-1 ? d : -LINF);
+        nodes[e.b].prev = e.a;
+        changed = true;
+      }
+    }
+    if (!changed) break;
+  }
+  for (int i = 0; i < n; i++)
+    for (Edge& e : eds)
+      if (nodes[e.a].dist == -LINF)
+        nodes[e.b].dist = -LINF;
+}
+\end{minted}
+\subsection{Eulerian Path (Directed)}
+Finds Eulerian path in directed graph. Returns empty vector if none exists. Requires in-degree == out-degree for all nodes (except start/end, diff $= 1$). \texttt{gr[u]} = list of \texttt{(v, edge\_id)}. \texttt{nedges} = total edges.
+\begin{minted}{c++}
+vector<int> eulerPath(
+  vector<vector<pair<int,int>>>& gr,
+  int nedges, int src=0) {
+  int n = gr.size();
+  vector<int> its(n), used(nedges), ret;
+  vector<int> s = {src};
+  while (!s.empty()) {
+    int x = s.back(), &it = its[x];
+    if (it == (int)gr[x].size()) {
+      ret.push_back(x); s.pop_back();
+    } else {
+      auto [y,eid] = gr[x][it++];
+      if (!used[eid]) { used[eid]=1; s.push_back(y); }
+    }
+  }
+  if ((int)ret.size() != nedges+1) return {};
+  reverse(ret.begin(), ret.end());
+  return ret;
+}
+\end{minted}
+\subsection{Graph Condense (Kosaraju SCC)}
+Builds condensed DAG of strongly connected components. Two DFS passes: first on original graph, second on reversed graph. \texttt{comps} = number of SCCs. \texttt{comp[u]} = component id of node $u$. Key idea: DFS1 on original records finish-order; DFS2 on reverse assigns SCCs in reverse finish-order (Kosaraju's trick).
+\begin{minted}{c++}
+struct SCC {
+  int n, comps;
+  vector<vector<int>> adj, rev_adj, scc_adj;
+  vector<int> order, comp;
+  vector<bool> vis;
+  SCC(int _n) : n(_n), comps(0), adj(_n), rev_adj(_n),
+    comp(_n, -1), vis(_n, false) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(v);
+    rev_adj[v].push_back(u);
+  }
+  void dfs1(int u) {
+    vis[u] = true;
+    for (int v : adj[u]) if (!vis[v]) dfs1(v);
+    order.push_back(u);
+  }
+  void dfs2(int u, int id) {
+    comp[u] = id;
+    for (int v : rev_adj[u])
+      if (comp[v] == -1) dfs2(v, id);
+  }
+  void build() {
+    for (int i = 0; i < n; i++) if (!vis[i]) dfs1(i);
+    reverse(order.begin(), order.end());
+    for (int u : order) {
+      if (comp[u] == -1) dfs2(u, comps++);
+    }
+    scc_adj.resize(comps);
+    for (int u = 0; u < n; u++) {
+      for (int v : adj[u]) {
+        if (comp[u] != comp[v])
+          scc_adj[comp[u]].push_back(comp[v]);
+      }
+    }
+  }
+};
+\end{minted}
+\subsection{2-SAT}
+Each var $x_i$: node $2i$ (false), $2i+1$ (true). \texttt{either(a,b)} adds $(a \vee b)$. \texttt{setValue(x)} forces $x$ true. \texttt{solve()} assigns \texttt{values[i]=0/1}.
+\begin{minted}{c++}
+struct TwoSat {
+  int N;
+  vector<vector<int>> gr;
+  vector<int> values;
+  TwoSat(int n=0):N(n),gr(2*n){}
+  int addVar(){gr.emplace_back();gr.emplace_back();
+    return N++;}
+  void either(int f,int j){
+    f=max(2*f,-1-2*f);j=max(2*j,-1-2*j);
+    gr[f].push_back(j^1);
+    gr[j].push_back(f^1);
+  }
+  void setValue(int x){either(x,x);}
+  vector<int> val,comp,z; int time=0;
+  int dfs(int i){
+    int low=val[i]=++time,x;
+    z.push_back(i);
+    for(int e:gr[i]) if(!comp[e])
+      low=min(low,val[e]?:dfs(e));
+    if(low==val[i]){
+      do{x=z.back();z.pop_back();
+        comp[x]=low;
+        if(values[x>>1]==-1)values[x>>1]=x&1;
+      }while(x!=i);
+    }
+    return val[i]=low;
+  }
+  bool solve(){
+    values.assign(N,-1);
+    val.assign(2*N,0);comp=val;
+    for(int i=0;i<2*N;i++) if(!comp[i])dfs(i);
+    for(int i=0;i<N;i++)
+      if(comp[2*i]==comp[2*i+1]) return false;
+    return true;
+  }
+};
+// either(a,b)=a OR b; setValue(x)=x is true
+// atMostOne({a,b,c})=at most one is true
+\end{minted}
+\subsection{Articulation Points \texorpdfstring{\&}{&} Bridges}
+Finds cut vertices and cut edges in $O(N+M)$. Root is articulation if it has $\ge 2$ children in DFS tree. Edge $(u,v)$ is a bridge if $low[v] > tin[u]$. Key idea: $low[u]$ = earliest DFS entry time reachable from subtree of $u$ via at most one back-edge.
+\begin{minted}{c++}
+struct Articulation {
+  int n, timer, ecnt;
+  vector<vector<pair<int,int>>> adj;
+  vector<int> tin, low;
+  vector<bool> is_art;
+  vector<pair<int, int>> bridges;
+  Articulation(int _n) : n(_n), timer(0), ecnt(0),
+    adj(_n), tin(_n, -1), low(_n, -1),
+    is_art(_n, false) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back({v, ecnt});
+    adj[v].push_back({u, ecnt++});
+  }
+  void dfs(int u, int peid = -1) {
+    tin[u] = low[u] = timer++;
+    int children = 0;
+    for (auto [v, eid] : adj[u]) {
+      if (eid == peid) continue;
+      if (tin[v] != -1) {
+        low[u] = min(low[u], tin[v]);
+      } else {
+        children++;
+        dfs(v, eid);
+        low[u] = min(low[u], low[v]);
+        if (low[v] >= tin[u] && peid != -1)
+          is_art[u] = true;
+        if (low[v] > tin[u])
+          bridges.push_back({min(u,v), max(u,v)});
+      }
+    }
+    if (peid == -1 && children > 1) is_art[u] = true;
+  }
+  void build() {
+    for (int i = 0; i < n; i++)
+      if (tin[i] == -1) dfs(i);
+  }
+};
+\end{minted}
+\subsection{Biconnected Comp. \texorpdfstring{\&}{&} Bridge Tree}
+Finds 2-edge-connected components (BCCs) -- maximal subgraphs with no bridges. Contract each BCC into a node; original bridges become edges of a tree (bridge tree).
+
+How it works: First DFS finds bridges via $low[v] > tin[u]$. Second BFS floods each component avoiding bridges -- all nodes reachable without crossing a bridge get the same component id.
+\begin{minted}{c++}
+struct BCC {
+  int n, timer, comps;
+  vector<vector<int>> adj, tree;
+  vector<int> tin, low, comp;
+  vector<bool> is_bridge, vis;
+  vector<pair<int, int>> edges;
+  BCC(int _n) : n(_n), timer(0), comps(0), adj(_n),
+    tin(_n, -1), low(_n, -1), comp(_n, -1),
+    vis(_n, false) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(edges.size());
+    adj[v].push_back(edges.size());
+    edges.push_back({u, v});
+    is_bridge.push_back(false);
+  }
+  void dfs(int u, int peid = -1) {
+    vis[u] = true;
+    tin[u] = low[u] = timer++;
+    for (int id : adj[u]) {
+      int v = edges[id].first ^
+              edges[id].second ^ u;
+      if (id == peid) continue;
+      if (vis[v]) low[u] = min(low[u], tin[v]);
+      else {
+        dfs(v, id);
+        low[u] = min(low[u], low[v]);
+        if (low[v] > tin[u]) is_bridge[id] = true;
+      }
+    }
+  }
+  void build_tree() {
+    for (int i = 0; i < n; i++) if (!vis[i]) dfs(i);
+    vector<int> q;
+    for (int i = 0; i < n; i++) {
+      if (comp[i] != -1) continue;
+      q.push_back(i); comp[i] = comps++;
+      while (!q.empty()) {
+        int u = q.back(); q.pop_back();
+        for (int id : adj[u]) {
+          int v = edges[id].first ^
+                  edges[id].second ^ u;
+          if (comp[v] == -1 && !is_bridge[id]) {
+            comp[v] = comp[u]; q.push_back(v);
+          }
+        }
+      }
+    }
+    tree.resize(comps);
+    for (int i = 0; i < (int)edges.size(); i++) {
+      if (is_bridge[i]) {
+        int u = comp[edges[i].first],
+            v = comp[edges[i].second];
+        tree[u].push_back(v);
+        tree[v].push_back(u);
+      }
+    }
+  }
+};
+\end{minted}
+\subsection{Euler Tour (Tree Flattening)}
+Key idea: $in[u]$ = DFS entry time, $out[u]$ = DFS exit time. Subtree of $u$ = contiguous segment $[in[u], out[u]]$ in the flat array. Enables any subtree range query on a 1D array (use with BIT/Segment Tree).
+\begin{minted}{c++}
+struct EulerTour {
+  int n, timer;
+  vector<vector<int>> adj;
+  vector<int> in, out, flat;
+  EulerTour(int _n) : n(_n), timer(0), adj(_n + 1),
+    in(_n + 1), out(_n + 1) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  void dfs(int u, int p = 0) {
+    in[u] = ++timer;
+    flat.push_back(u);
+    for (int v : adj[u])
+      if (v != p) dfs(v, u);
+    out[u] = timer;
+  }
+  void build(int root = 1) { dfs(root); }
+};
+\end{minted}
+\subsection{Binary Lifting}
+Preprocess $O(N \log N)$, query $O(\log N)$. \texttt{lift(u,k)} returns $k$-th ancestor (or $-1$). \texttt{query(u,v)} returns LCA. Call \texttt{dfs(root,-1)} first. Key idea: $up[u][i] = 2^i$-th ancestor of $u$. Lift deeper node to same depth, then binary-search highest ancestor where paths diverge.
+\begin{minted}{c++}
+struct LCA {
+  int n, LOG;
+  vector<vector<int>> adj, up;
+  vector<int> depth;
+  LCA(int _n) : n(_n), LOG(__lg(_n) + 2), adj(_n),
+    up(_n, vector<int>(LOG, -1)), depth(_n, 0) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  void dfs(int u, int p = -1, int d = 0) {
+    up[u][0] = p;
+    depth[u] = d;
+    for (int i = 1; i < LOG; i++) {
+      if (up[u][i - 1] != -1)
+        up[u][i] = up[up[u][i - 1]][i - 1];
+    }
+    for (int v : adj[u])
+      if (v != p) dfs(v, u, d + 1);
+  }
+  int lift(int u, int k) {
+    for (int i = 0; i < LOG; i++) {
+      if ((k >> i) & 1) u = up[u][i];
+      if (u == -1) break;
+    }
+    return u;
+  }
+  int query(int u, int v) {
+    if (depth[u] < depth[v]) swap(u, v);
+    u = lift(u, depth[u] - depth[v]);
+    if (u == v) return u;
+    for (int i = LOG - 1; i >= 0; i--) {
+      if (up[u][i] != up[v][i]) {
+        u = up[u][i]; v = up[v][i];
+      }
+    }
+    return up[u][0];
+  }
+};
+\end{minted}
+\subsection{Heavy Light Decomposition (HLD)}
+Path queries on trees. Decomposes tree into $O(\log N)$ heavy paths. Call \texttt{dfs(root, 0)} then \texttt{decompose(root, root)}. Uses BIT internally -- swap with Lazy SegTree for range updates. \texttt{query(u,v)} returns sum on path $u \to v$. \texttt{addVal(idx, delta)} and \texttt{editVal(idx, value)} update node value.
+\begin{minted}{c++}
+struct HLD {
+  int n, cur_pos = 1;
+  vector<int> arr, parent, size, depth, heavy,
+  head, pos;
+  vector<vector<int>> adj;
+  BIT<ll> segtree;
+  HLD(int n) : n(n), arr(n + 1), parent(n + 1),
+  size(n + 2), depth(n + 2), heavy(n + 2, 0),
+  head(n + 2), pos(n + 2), adj(n + 2),
+  segtree(BIT<ll>(n + 2)) {}
+  void add_edge(int u, int v) {
+    adj[u].push_back(v), adj[v].push_back(u);
+  }
+  void dfs(int u, int p) {
+    parent[u] = p; size[u] = 1;
+    int max_sz = 0;
+    for (int v : adj[u]) {
+      if (v == p) continue;
+      depth[v] = depth[u] + 1;
+      dfs(v, u);
+      size[u] += size[v];
+      if (size[v] > max_sz)
+        max_sz = size[v], heavy[u] = v;
+    }
+  }
+  void decompose(int u, int h) {
+    head[u] = h; pos[u] = cur_pos++;
+    segtree.add(pos[u], arr[u]);
+    if (heavy[u]) decompose(heavy[u], h);
+    for (int v : adj[u])
+      if (v != parent[u] && v != heavy[u])
+        decompose(v, v);
+  }
+  int query(int u, int v) {
+    int res = 0;
+    while (head[u] != head[v]) {
+      if (depth[head[u]] < depth[head[v]])
+        swap(u, v);
+      res += segtree.sum(pos[head[u]], pos[u]);
+      u = parent[head[u]];
+    }
+    if (depth[u] > depth[v]) swap(u, v);
+    res += segtree.sum(pos[u], pos[v]);
+    return res;
+  }
+  void addVal(int idx, int delta) {
+    segtree.add(pos[idx], delta);
+    arr[idx] += delta;
+  }
+  void editVal(int idx, int value) {
+    segtree.add(pos[idx], value - arr[idx]);
+    arr[idx] = value;
+  }
+};
+\end{minted}
+\subsection{Centroid Decomposition}
+Recursively finds centroids to build $O(\log N)$ depth decomposition tree. Useful for path-counting queries (e.g., count paths of length $k$). Mark centroid removed, recurse on remaining subtrees.
+\begin{minted}{c++}
+vector<vector<int>> adj;
+vector<bool> is_removed;
+vector<int> subtree_size;
+int get_subtree_size(int node, int parent = -1) {
+  subtree_size[node] = 1;
+  for (int child : adj[node]) {
+    if (child == parent || is_removed[child])
+      continue;
+    subtree_size[node] +=
+    get_subtree_size(child, node);
+  }
+  return subtree_size[node];
+}
+int get_centroid(int node, int tree_size,
+int parent = -1) {
+  for (int child : adj[node]) {
+    if (child == parent || is_removed[child])
+      continue;
+    if (subtree_size[child] * 2 > tree_size)
+      return get_centroid(child, tree_size, node);
+  }
+  return node;
+}
+void build_centroid_decomp(int node = 0) {
+  int centroid = get_centroid(node,
+  get_subtree_size(node));
+  // do something with centroid
+  is_removed[centroid] = true;
+  for (int child : adj[centroid]) {
+    if (is_removed[child]) continue;
+    build_centroid_decomp(child);
+  }
+}
+\end{minted}
+\subsection{DSU on Tree (Sack)}
+$O(N \log N)$ offline subtree queries. Key idea: Process light children first (discard), then heavy child (keep). Re-add all light subtree elements at the end -- each element is re-added at most $O(\log N)$ times. The \texttt{keep} flag controls whether to clear after processing.
+\begin{minted}{c++}
+int timer = 0;
+vector<int> sz, in, out, flat, big;
+void dfs_sz(int u, int p) {
+  sz[u] = 1, big[u] = 0, in[u] = ++timer,
+  flat[timer] = u;
+  for (int v : adj[u]) {
+    if (v != p) {
+      dfs_sz(v, u);
+      sz[u] += sz[v];
+      if (sz[v] > sz[big[u]]) big[u] = v;
+    }
+  }
+  out[u] = timer;
+}
+void add(int u, int val) { /* update DS */ }
+void dfs_sack(int u, int p, bool keep) {
+  for (int v : adj[u])
+    if (v != p && v != big[u]) dfs_sack(v, u, 0);
+  if (big[u]) dfs_sack(big[u], u, 1);
+  for (int v : adj[u])
+    if (v != p && v != big[u])
+      for (int i = in[v]; i <= out[v]; i++)
+        add(flat[i], 1);
+  add(u, 1);
+  // answer queries for subtree u here
+  if (!keep)
+    for (int i = in[u]; i <= out[u]; i++)
+      add(flat[i], -1);
+}
+// Init: sz/in/out/flat/big.assign(n+1, 0);
+// dfs_sz(1, 0); dfs_sack(1, 0, 1);
+\end{minted}
+\subsection{Hopcroft-Karp}
+Maximum bipartite matching. Left side size = $n$, right side size = $m$. $O(E \sqrt{V})$.
+
+How it works: BFS builds layers of unmatched nodes, then DFS finds augmenting paths simultaneously (multi-augmenting). Each phase increases matching size by at least 1; at most $O(\sqrt{V})$ phases.
+\begin{minted}{c++}
+struct HopcroftKarp {
+  int n, m;
+  vector<vector<int>> g;
+  vector<int> dist, pairU, pairV;
+  static const int INF = 1e9;
+  HopcroftKarp(int n_ = 0, int m_ = 0) {
+    n = n_; m = m_;
+    g.assign(n, {});
+    pairU.assign(n, -1);
+    pairV.assign(m, -1);
+    dist.assign(n, 0);
+  }
+  void add_edge(int u, int v) { g[u].push_back(v); }
+  bool bfs() {
+    queue<int> q;
+    for (int u = 0; u < n; ++u) {
+      if (pairU[u] == -1) {
+        dist[u] = 0; q.push(u);
+      } else dist[u] = INF;
+    }
+    bool foundAug = false;
+    while (!q.empty()) {
+      int u = q.front(); q.pop();
+      for (int v : g[u]) {
+        int u2 = pairV[v];
+        if (u2 == -1) foundAug = true;
+        else if (dist[u2] == INF) {
+          dist[u2] = dist[u] + 1; q.push(u2);
+        }
+      }
+    }
+    return foundAug;
+  }
+  bool dfs(int u) {
+    for (int v : g[u]) {
+      int u2 = pairV[v];
+      if (u2 == -1 || (dist[u2] == dist[u] + 1
+      && dfs(u2))) {
+        pairU[u] = v; pairV[v] = u; return true;
+      }
+    }
+    dist[u] = INF; return false;
+  }
+  int max_matching() {
+    int matching = 0;
+    while (bfs()) {
+      for (int u = 0; u < n; ++u)
+        if (pairU[u] == -1 && dfs(u)) ++matching;
+    }
+    return matching;
+  }
+  vector<pair<int,int>> matching_edges() const {
+    vector<pair<int,int>> res;
+    for (int v = 0; v < m; ++v)
+      if (pairV[v] != -1)
+        res.emplace_back(pairV[v], v);
+    return res;
+  }
+};
+\end{minted}
+\subsection{Dinic's Algorithm (Max Flow)}
+$O(EV^2)$ worst case, $O(E \sqrt{V})$ for unit capacities. Edge $(u,v)$ with capacity $w$ is added as TWO directed arcs. \texttt{e.flow} = current flow, \texttt{e.w} = capacity. Access residual capacity via \texttt{e.w - e.flow}.
+
+Key idea: BFS builds level graph; DFS sends blocking flow along it. "dead-end" nodes are skipped via \texttt{done[u]} (current arc trick).
+\begin{minted}{c++}
+const int64_t inf = 1LL << 61;
+struct Dinic {
+  struct edge { int to, rev;
+    int64_t flow, w; };
+  int n, s, t;
+  vector<int> d, done;
+  vector<vector<edge>> g;
+  Dinic() {}
+  Dinic(int _n) { n = _n + 10, g.resize(n); }
+  void add_edge(int u, int v, int64_t w) {
+    if (u == v) return;
+    edge a = {v, (int)g[v].size(), 0, w};
+    edge b = {u, (int)g[u].size(), 0, 0};
+    g[u].push_back(a), g[v].push_back(b);
+  }
+  bool bfs() {
+    d.assign(n, -1), d[s] = 0;
+    queue<int> Q; Q.push(s);
+    while (Q.size()) {
+      int u = Q.front(); Q.pop();
+      for (auto &e : g[u]) {
+        int v = e.to;
+        if (!~d[v] && e.flow < e.w)
+          d[v] = d[u] + 1, Q.push(v);
+      }
+    }
+    return d[t] != -1;
+  }
+  int64_t dfs(int u, int64_t flow) {
+    if (u == t) return flow;
+    for (int &i = done[u]; i < (int)g[u].size(); i++) {
+      edge &e = g[u][i];
+      if (e.w <= e.flow) continue;
+      int v = e.to;
+      if (d[v] == d[u] + 1) {
+        int64_t nw = dfs(v, min(flow, e.w - e.flow));
+        if (nw > 0) {
+          e.flow += nw;
+          g[v][e.rev].flow -= nw;
+          return nw;
+        }
+      }
+    }
+    return 0;
+  }
+  int64_t max_flow(int _s, int _t) {
+    if (_s == _t) return 0;
+    s = _s, t = _t;
+    int64_t flow = 0;
+    while (bfs()) {
+      done.assign(n, 0);
+      while (int64_t nw = dfs(s, inf)) flow += nw;
+    }
+    return flow;
+  }
+};
+\end{minted}
+\subsection{Min Cost Max Flow}
+Finds min-cost max-flow using potentials (Johnson's). $O(F \cdot E \log V)$. \texttt{addEdge(u,v,cap,cost)} adds edge $u \to v$ with capacity and cost. \texttt{maxflow(s,t)} returns minimum cost to send max flow from $s$ to $t$. Supports negative costs, no negative cycles. Handles up to $\sim 10^3$ edges.
+\begin{minted}{c++}
+struct MCMF {
+  struct edge { int v, rev; ll cap, cost; };
+  int N;
+  vector<vector<edge>> g;
+  vector<ll> dist, pi;
+  vector<int> preve, prevv;
+  const ll INF = 1LL << 62;
+  MCMF(int n):N(n),g(n),dist(n),pi(n),
+    preve(n),prevv(n){}
+  void addEdge(int u,int v,ll cap,ll cost){
+    g[u].push_back({v,(int)g[v].size(),cap,cost});
+    g[v].push_back({u,(int)g[u].size()-1,0,-cost});
+  }
+  ll maxflow(int s,int t){
+    if (s == t) return 0;
+    ll flow=0,cost=0;
+    fill(pi.begin(),pi.end(),INF); pi[s]=0;
+    for(int _=0;_<N;_++){
+      bool any=false;
+      for(int u=0;u<N;u++) if(pi[u]!=INF)
+        for(auto& e:g[u])
+          if(e.cap>0&&pi[u]+e.cost<pi[e.v])
+            pi[e.v]=pi[u]+e.cost,any=true;
+      if(!any) break;
+    }
+    // detect negative cycle: if any update still possible, potentials are broken
+    for(int u=0;u<N;u++) if(pi[u]!=INF)
+      for(auto& e:g[u])
+        if(e.cap>0&&pi[u]+e.cost<pi[e.v])
+          return cost; // return 0 cost flow to avoid infinite loop
+    while(true){
+      fill(dist.begin(),dist.end(),INF);
+      dist[s]=0;
+      priority_queue<pair<ll,int>> pq;
+      pq.push({0,s});
+      while(!pq.empty()){
+        auto [d,u]=pq.top();pq.pop();
+        if(-d>dist[u]) continue;
+        for(int i=0;i<(int)g[u].size();i++){
+          edge &e=g[u][i];
+          ll nd=dist[u]+e.cost+pi[u]-pi[e.v];
+          if(e.cap>0&&nd<dist[e.v]){
+            dist[e.v]=nd;prevv[e.v]=u;
+            preve[e.v]=i;
+            pq.push({-nd,e.v});
+          }
+        }
+      }
+      if(dist[t]==INF) break;
+      for(int i=0;i<N;i++)
+        if(dist[i]<INF) pi[i]+=dist[i];
+      ll f=INF;
+      for(int u=t;u!=s;u=prevv[u])
+        f=min(f,g[prevv[u]][preve[u]].cap);
+      for(int u=t;u!=s;u=prevv[u]){
+        edge &e=g[prevv[u]][preve[u]];
+        e.cap-=f; g[e.v][e.rev].cap+=f;
+      }
+      flow+=f; cost+=f*pi[t];
+    }
+    return cost;
+  }
+};
+\end{minted}
+\subsection{Link-Cut Tree}
+Dynamic tree (link/cut). Supports adding/removing edges and connectivity queries, all in $O(\log N)$ amortized. 0-indexed nodes. \texttt{link(u,v)} -- add edge. \texttt{cut(u,v)} -- remove edge. \texttt{connected(u,v)} -- check if same tree. Each Node can store subtree data via \texttt{fix()}.
+\begin{minted}{c++}
+struct Node {
+  Node *p = 0, *pp = 0, *c[2];
+  bool flip = 0;
+  Node() { c[0] = c[1] = 0; fix(); }
+  void fix() {
+    if (c[0]) c[0]->p = this;
+    if (c[1]) c[1]->p = this;
+  }
+  void pushFlip() {
+    if (!flip) return;
+    flip = 0; swap(c[0], c[1]);
+    if (c[0]) c[0]->flip ^= 1;
+    if (c[1]) c[1]->flip ^= 1;
+  }
+  int up() { return p ? p->c[1] == this : -1; }
+  void rot(int i, int b) {
+    int h = i ^ b;
+    Node *x = c[i], *y = b == 2 ? x : x->c[h];
+    Node *z = b ? y : x;
+    if ((y->p = p)) p->c[up()] = y;
+    c[i] = z->c[i ^ 1];
+    if (b < 2) {
+      x->c[h] = y->c[h ^ 1];
+      y->c[h ^ 1] = x;
+    }
+    z->c[i ^ 1] = this;
+    fix(); x->fix(); y->fix();
+    if (p) p->fix();
+    swap(pp, y->pp);
+  }
+  void splay() {
+    for (pushFlip(); p; ) {
+      if (p->p) p->p->pushFlip();
+      p->pushFlip(); pushFlip();
+      int c1 = up(), c2 = p->up();
+      if (c2 == -1) p->rot(c1, 2);
+      else p->p->rot(c2, c1 != c2);
+    }
+  }
+  Node* first() {
+    pushFlip();
+    return c[0] ? c[0]->first() : (splay(), this);
+  }
+};
+struct LinkCut {
+  vector<Node> node;
+  LinkCut(int n) : node(n) {}
+  void link(int u, int v) {
+    makeRoot(&node[u]);
+    node[u].pp = &node[v];
+  }
+  void cut(int u, int v) {
+    Node *x = &node[u], *top = &node[v];
+    makeRoot(top); x->splay();
+    if (x->pp) x->pp = 0;
+    else { x->c[0] = top->p = 0; x->fix(); }
+  }
+  bool connected(int u, int v) {
+    Node* nu = access(&node[u])->first();
+    return nu == access(&node[v])->first();
+  }
+  void makeRoot(Node* u) {
+    access(u); u->splay();
+    if (u->c[0]) {
+      u->c[0]->p = 0;
+      u->c[0]->flip ^= 1;
+      u->c[0]->pp = u;
+      u->c[0] = 0; u->fix();
+    }
+  }
+  Node* access(Node* u) {
+    u->splay();
+    while (Node* pp = u->pp) {
+      pp->splay(); u->pp = 0;
+      if (pp->c[1])
+        pp->c[1]->p = 0, pp->c[1]->pp = pp;
+      pp->c[1] = u; pp->fix(); u = pp;
+    }
+    return u;
+  }
+};
+\end{minted}

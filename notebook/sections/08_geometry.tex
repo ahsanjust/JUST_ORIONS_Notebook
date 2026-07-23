@@ -1,6 +1,16 @@
 \section{Geometry}
+\subsection{Precision Handling}
+\textbf{Note:} Never use \texttt{a == b} for floats. Use \texttt{abs(a - b) < EPS}.
+\begin{minted}{c++}
+const double EPS = 1e-9;
+bool equal(double a, double b) {
+  return abs(a - b) < EPS; }
+bool lessThan(double a, double b) {
+  return a < b - EPS; }
+bool greaterThan(double a, double b) {
+  return a > b + EPS; }
+\end{minted}
 \subsection{Geometry Formulas}
-
 Triangle:
 Side length $a, b, c$
 Area: $\frac{1}{2} \times base \times height$
@@ -13,16 +23,12 @@ Arc Length: $L = \theta r$
 Sector Area: $Area = \frac{1}{2} r^2 \theta$
 Segment Area: $Area = \frac{1}{2} r^2 (\theta - \sin\theta)$
 
-\begin{itemize}
-  \item \textbf{Rhombus:} Area = $\frac{1}{2} \times d_1 \times d_2$
-  \item \textbf{Trapezium:} Area = $\frac{1}{2} \times (b_1 + b_2) \times h$
-  \item \textbf{Regular Polygon (n sides):}
-    Perimeter = $n \times a$,
-    Area = $\frac{1}{4}na^2 \cot(\frac{\pi}{n})$
-  \item \textbf{Circle:} $C = 2\pi r$, $A = \pi r^2$
-  \item \textbf{Ellipse:} $A = \pi a b$
-  \item \textbf{Polygon:} Interior sum = $(n-2) \times 180^\circ$
-\end{itemize}
+\textbf{Rhombus:} Area = $\frac{1}{2} \times d_1 \times d_2$ \\
+\textbf{Trapezium:} Area = $\frac{1}{2} \times (b_1 + b_2) \times h$ \\
+\textbf{Regular Polygon (n sides):} Perimeter = $n \times a$, Area = $\frac{1}{4}na^2 \cot(\frac{\pi}{n})$ \\
+\textbf{Circle:} $C = 2\pi r$, $A = \pi r^2$ \\
+\textbf{Ellipse:} $A = \pi a b$ \\
+\textbf{Polygon:} Interior sum = $(n-2) \times 180^\circ$
 
 3D Shapes:
 \textbf{Sphere:} $SA = 4\pi r^2$, $V = \frac{4}{3}\pi r^3$ \\
@@ -30,11 +36,26 @@ Segment Area: $Area = \frac{1}{2} r^2 (\theta - \sin\theta)$
 \textbf{Cone:} $SA = \pi r(r+l)$, $V = \frac{1}{3}\pi r^2 h$ \\
 \textbf{Torus:} $SA = 4\pi^2 Rr$, $V = 2\pi^2 Rr^2$
 
+\subsection{Geometry Theorems}
+\textbf{Pick's Theorem}: For a simple polygon with integer coordinates:
+$A = I + \frac{B}{2} - 1$, where $I$ = interior lattice points, $B$ = boundary lattice points.
+
+\textbf{Brahmagupta's Formula}: Area of a cyclic quadrilateral with sides $a,b,c,d$:
+$S = \sqrt{(s-a)(s-b)(s-c)(s-d)}$ where $s = \frac{a+b+c+d}{2}$.
+
+\textbf{Fermat Point}: Point minimizing sum of distances to triangle vertices.
+If no angle $> 120^\circ$, sum is $\sqrt{(a^2+b^2+c^2 + 4\sqrt{3}\times Area)/2}$.
+
+\textbf{Simpson's Rule}: $\int_a^b f(x) dx \approx \frac{h}{3}[f(x_0) + f(x_n) + 4\sum f(x_{2i+1}) + 2\sum f(x_{2i})]$
+
+\textbf{Pythagorean Triples}: $a = 2st, b = s^2-t^2, c = s^2+t^2$ for $s>t>0$, $\gcd(s,t)=1$, $s \not\equiv t \pmod 2$.
+
 \subsection{Closest Pair of Points}
+\textbf{Returns:} \texttt{Res} struct containing the minimum distance squared (\texttt{d}) and the two points (\texttt{a}, \texttt{b}).
 \begin{minted}{c++}
 struct Res { int64_t d; P a, b; };
 int64_t sq(int64_t x) { return x * x; }
-int64_t dist(P &a, P &b) {
+int64_t dist_sq(P &a, P &b) {
   return sq(a.x - b.x) + sq(a.y - b.y);
 }
 Res closest_pair(vector<P>& p, vector<P>& py,
@@ -44,7 +65,7 @@ vector<P>& tmp, int l, int r) {
   if (n == 2) {
     if (py[l].y > py[l + 1].y)
       swap(py[l], py[l + 1]);
-    return {dist(p[l], p[l + 1]), p[l], p[l + 1]};
+    return {dist_sq(p[l], p[l + 1]), p[l], p[l + 1]};
   }
   int m = (l + r) >> 1, midx = p[m].x;
   Res res_l = closest_pair(p, py, tmp, l, m);
@@ -64,7 +85,7 @@ vector<P>& tmp, int l, int r) {
     for (int j = i + 1; j < (int)stripe.size(); j++) {
       if (sq(stripe[i].y - stripe[j].y) >= res.d)
         break;
-      int64_t d = dist(stripe[i], stripe[j]);
+      int64_t d = dist_sq(stripe[i], stripe[j]);
       if (d < res.d)
         res = {d, stripe[i], stripe[j]};
     }
@@ -72,6 +93,8 @@ vector<P>& tmp, int l, int r) {
   return res;
 }
 \end{minted}
+\subsection{Rectangle Distance}
+Distance between the two incircle touch points of the right triangles formed by the diagonal of an $L \times W$ rectangle.
 \begin{minted}{c++}
 long double L, W;
 if(!(cin >> L >> W)) return 0;
@@ -87,39 +110,12 @@ long double D = sqrtl(dx*dx + dy*dy);
 cout << fixed << setprecision(6) << (double)D
 << "\n";
 \end{minted}
-\begin{minted}{c++}
-long double r1, r2, r3;
-cin >> r1 >> r2 >> r3;
-long double a = r2 + r3;
-long double b = r3 + r1;
-long double c = r1 + r2;
-long double s = (a + b + c) / 2.0L;
-long double T = sqrtl(s*(s - a)*(s - b)*(s - c));
-auto angle = [&](long double opp, long double x,
-long double y) {
-  long double cosv = (x*x + y*y - opp*opp) /
-  (2.0L * x * y);
-  cosv = min((long double)1.0,
-  max((long double)-1.0, cosv));
-  return acosl(cosv);
-};
-long double A = angle(a, b, c);
-long double B = angle(b, c, a);
-long double C = angle(c, a, b);
-long double sectorSum = 0.5L*(r1*r1*A +
-r2*r2*B + r3*r3*C);
-long double blackArea = T - sectorSum;
-cout << fixed << setprecision(6) <<
-(double)blackArea << "\n";
-\end{minted}
 \subsection{Polygon Operations}
 \begin{minted}{c++}
 const ld EPS = 1e-9;
 const ld PI = acos(-1.0);
-
 // sign: -1/0/1 for negative/zero/positive
 int sgn(ld x) { return (x > EPS) - (x < -EPS); }
-
 // 2D point with int64 coords: cross(*), dot(^),
 // norm(sq), abs, rotation
 struct P {
@@ -130,6 +126,10 @@ struct P {
     return P{x - b.x, y - b.y}; }
   P operator + (const P &b) const {
     return P{x + b.x, y + b.y}; }
+  template<class U> P operator * (const U &c) const {
+    return P{(T)(x * c), (T)(y * c)}; }
+  template<class U> P operator / (const U &c) const {
+    return P{(T)(x / c), (T)(y / c)}; }
   bool operator < (const P &b) const {
     return x == b.x ? y < b.y : x < b.x; }
   bool operator == (const P &b) const {
@@ -149,60 +149,50 @@ struct P {
     return P(x*cos(a) - y*sin(a),
              x*sin(a) + y*cos(a)); }
 };
-
 // true if a, b, c lie on same line
 bool collinear(P &a, P &b, P &c) {
   return (b - a) * (c - a) == 0;
 }
-
 // true if r lies on closed segment pq
 bool on_segment(P &p, P &q, P &r) {
   return collinear(p, q, r) &&
     r.x <= max(p.x, q.x) && r.x >= min(p.x, q.x) &&
     r.y <= max(p.y, q.y) && r.y >= min(p.y, q.y);
 }
-
 // Euclidean distance between a and b
-ld dist(P a, P b) { return (a - b).abs(); }
-
+ld dist_euclid(P a, P b) { return (a - b).abs(); }
 // project c onto line ab (returns foot point)
 P project(P a, P b, P c) {
   return a + (b - a) * (((c - a) ^ (b - a)) /
          (b - a).sq());
 }
-
 // reflect c across line ab
 P reflect(P a, P b, P c) {
   return project(a, b, c) * 2 - c;
 }
-
 // perpendicular dist from c to line ab
 ld dist_pt_line(P a, P b, P c) {
   return fabsl((b - a) * (c - a)) / (b - a).abs();
 }
-
 // shortest dist from c to segment ab
 ld dist_pt_seg(P a, P b, P c) {
   if (((c - a) ^ (b - a)) <= 0) return (c - a).abs();
   if (((c - b) ^ (a - b)) <= 0) return (c - b).abs();
   return dist_pt_line(a, b, c);
 }
-
 // true if p lies on segment ab (EPS tolerance)
 bool on_seg(P a, P b, P p) {
   return !sgn((b - a) * (p - a)) &&
          ((p - a) ^ (p - b)) <= EPS;
 }
-
 // line-line intersection (ab x cd), stores in res,
 // returns false if parallel
 bool line_int(P a, P b, P c, P d, P &res) {
   ld cp = (b - a) * (d - c);
   if (!sgn(cp)) return false;
-  res = a + (b - a) * (((d - c) * (c - a)) / cp);
+  res = a + (b - a) * (((c - a) * (d - c)) / cp);
   return true;
 }
-
 // true if segment ab intersects segment cd
 bool seg_int(P a, P b, P c, P d) {
   auto cp = [&](P x, P y, P z) {
@@ -213,15 +203,13 @@ bool seg_int(P a, P b, P c, P d) {
   return cp(a, b, c) != cp(a, b, d) &&
          cp(c, d, a) != cp(c, d, b);
 }
-
-// area of polygon (shoelace), vertices in order
+// area of polygon (shoelace), vertices in order (strict CCW or CW)
 long double polygon_area(vector<P> &p) {
   int64_t area = 0, n = p.size();
   for (int i = 0; i < n; ++i)
     area += p[i] * p[(i + 1) % n];
-  return abs(area) / 2;
+  return (long double)abs(area) / 2.0L;
 }
-
 // convex hull vertices (CCW, monotone chain)
 vector<P> convexHull(vector<P> p) {
   int n = p.size(), k = 0;
@@ -238,7 +226,6 @@ vector<P> convexHull(vector<P> p) {
   h.resize(k - 1);
   return h;
 }
-
 // point-in-polygon: 1=inside, 2=on boundary, 0=out
 int is_point_in_polygon(const vector<P>& p, P q) {
   int c = 0;
@@ -256,31 +243,324 @@ int is_point_in_polygon(const vector<P>& p, P q) {
   return c;
 }
 \end{minted}
-\subsection{Precision Handling}
+\subsection{Area Enclosed by Three Circles}
+Black area between three mutually tangent circles of radii $r_1, r_2, r_3$ (triangle area minus sector areas).
 \begin{minted}{c++}
-const double EPS = 1e-9;
-bool equal(double a, double b) {
-  return abs(a - b) < EPS; }
-bool lessThan(double a, double b) {
-  return a < b - EPS; }
-bool greaterThan(double a, double b) {
-  return a > b + EPS; }
+long double r1, r2, r3;
+cin >> r1 >> r2 >> r3;
+long double a = r2 + r3;
+long double b = r3 + r1;
+long double c = r1 + r2;
+long double s = (a + b + c) / 2.0L;
+long double val = s*(s - a)*(s - b)*(s - c);
+long double T = val > 0 ? sqrtl(val) : 0;
+auto angle = [&](long double opp, long double x,
+long double y) {
+  long double cosv = (x*x + y*y - opp*opp) /
+  (2.0L * x * y);
+  cosv = min((long double)1.0,
+  max((long double)-1.0, cosv));
+  return acosl(cosv);
+};
+long double A = angle(a, b, c);
+long double B = angle(b, c, a);
+long double C = angle(c, a, b);
+long double sectorSum = 0.5L*(r1*r1*A +
+r2*r2*B + r3*r3*C);
+long double blackArea = T - sectorSum;
+cout << fixed << setprecision(6) <<
+(double)blackArea << "\n";
 \end{minted}
-\subsection{Geometry Theorems}
+\subsection{Half-Plane Intersection}
+Finds the convex polygon (or empty region) satisfying all half-planes $a_i x + b_i y \le c_i$.
+Lines are sorted by angle, then a deque maintains the intersection.
+\texttt{halfPlaneIntersection(lines)} returns vertices of the resulting polygon. $O(N \log N)$.
+\begin{minted}{c++}
+struct Line {
+  double a, b, c; // ax + by <= c
+  double ang;
+  Line(double a = 0, double b = 0, double c = 0)
+    : a(a), b(b), c(c) {
+    ang = atan2(b, a);
+  }
+  bool operator < (const Line &o) const {
+    return ang < o.ang;
+  }
+};
+pair<double,double> intersect(Line &p, Line &q) {
+  double d = p.a * q.b - p.b * q.a;
+  return {(p.c * q.b - q.c * p.b) / d,
+          (p.a * q.c - q.a * p.c) / d};
+}
+bool ok(Line &a, Line &b, Line &c) {
+  auto [x, y] = intersect(a, b);
+  return c.a * x + c.b * y < c.c + 1e-9;
+}
+vector<pair<double,double>>
+halfPlaneIntersection(vector<Line> v) {
+  sort(v.begin(), v.end());
+  vector<Line> filtered;
+  for (int i = 0; i < (int)v.size(); i++) {
+    if (i > 0 && abs(v[i].ang - v[i-1].ang) < 1e-9) {
+      if (v[i].c < filtered.back().c) filtered.back() = v[i];
+    } else filtered.push_back(v[i]);
+  }
+  v = filtered;
+  deque<Line> dq;
+  for (auto &l : v) {
+    while (dq.size() >= 2 &&
+           !ok(dq[dq.size()-2], dq.back(), l))
+      dq.pop_back();
+    while (dq.size() >= 2 &&
+           !ok(dq[0], dq[1], l))
+      dq.pop_front();
+    dq.push_back(l);
+  }
+  while (dq.size() >= 3 && !ok(dq[dq.size()-2], dq.back(), dq[0])) dq.pop_back();
+  while (dq.size() >= 3 && !ok(dq[0], dq[1], dq.back())) dq.pop_front();
+  vector<pair<double,double>> res;
+  for (int i = 0; i < (int)dq.size(); i++)
+    res.push_back(intersect(dq[i],
+                  dq[(i+1)%dq.size()]));
+  return res;
+}
+\end{minted}
 
-\textbf{Pick's Theorem}: For a simple polygon with integer coordinates:
-$A = I + \frac{B}{2} - 1$, where $I$ = interior lattice points, $B$ = boundary lattice points.
+\subsection{Rotating Calipers}
+Extends convex hull: $O(N)$ diameter (farthest pair) and minimum width. Requires CCW hull from \texttt{convexHull}.
+\begin{minted}{c++}
+// Diameter: farthest pair in convex polygon, returns actual distance
+ld rotating_diameter(vector<P> &h) {
+  int n = h.size();
+  if (n <= 1) return 0;
+  if (n == 2) return (h[0] - h[1]).abs();
+  ld ans = 0;
+  for (int i = 0, j = 1; i < n; i++) {
+    while ((h[(i+1)%n] - h[i]) * (h[(j+1)%n] - h[j]) > 0)
+      j = (j + 1) % n;
+    ans = max(ans, (h[i] - h[j]).sq());
+    ans = max(ans, (h[(i+1)%n] - h[j]).sq());
+  }
+  return sqrtl(ans);
+}
+// Width: minimum distance between parallel supporting lines
+ld polygon_width(vector<P> &h) {
+  int n = h.size();
+  if (n <= 2) return 0;
+  ld ans = 1e30;
+  for (int i = 0, j = 1; i < n; i++) {
+    while ((h[(i+1)%n] - h[i]) * (h[(j+1)%n] - h[j]) > 0)
+      j = (j + 1) % n;
+    ld d = fabsl((h[(i+1)%n] - h[i]) * (h[j] - h[i]))
+           / (h[(i+1)%n] - h[i]).abs();
+    ans = min(ans, d);
+  }
+  return ans;
+}
+\end{minted}
 
-\textbf{Brahmagupta's Formula}: Area of a cyclic quadrilateral with sides $a,b,c,d$:
-$S = \sqrt{(s-a)(s-b)(s-c)(s-d)}$ where $s = \frac{a+b+c+d}{2}$.
+\subsection{Point-in-Convex Polygon (O(log N))}
+Determines if a point is inside a CCW-ordered convex hull in $O(\log N)$.
+\begin{minted}{c++}
+// Returns 1 if q is inside or on boundary of convex polygon p (CCW), 0 otherwise
+int point_in_convex(P &q, vector<P> &p) {
+  int n = p.size();
+  int64_t cross_first = (p[1] - p[0]) * (q - p[0]);
+  if (cross_first == 0) {
+    return min(p[0].x, p[1].x) <= q.x && q.x <= max(p[0].x, p[1].x) &&
+           min(p[0].y, p[1].y) <= q.y && q.y <= max(p[0].y, p[1].y);
+  }
+  if (cross_first < 0) return 0;
+  int lo = 1, hi = n - 1;
+  while (lo < hi) {
+    int mid = (lo + hi + 1) / 2;
+    if ((p[mid] - p[0]) * (q - p[0]) >= 0) lo = mid;
+    else hi = mid - 1;
+  }
+  int64_t cross_last = (p[(lo+1)%n] - p[lo]) * (q - p[lo]);
+  if (cross_last < 0) return 0;
+  if (cross_last == 0) {
+    P a = p[lo], b = p[(lo+1)%n];
+    return min(a.x, b.x) <= q.x && q.x <= max(a.x, b.x) &&
+           min(a.y, b.y) <= q.y && q.y <= max(a.y, b.y);
+  }
+  return 1;
+}
+\end{minted}
 
-\textbf{Fermat Point}: Point minimizing sum of distances to triangle vertices.
-If no angle $> 120^\circ$, sum is $\sqrt{(a^2+b^2+c^2 + 4\sqrt{3}\times Area)/2}$.
+\subsection{Minimum Enclosing Circle (Welzl)}
+Randomized expected $O(N)$. Finds smallest circle enclosing all points.
+\begin{minted}{c++}
+struct PointD {
+  ld x, y;
+  PointD(ld x=0, ld y=0) : x(x), y(y) {}
+  PointD(P p) : x(p.x), y(p.y) {}
+  PointD operator+(PointD p) const { return {x+p.x, y+p.y}; }
+  PointD operator-(PointD p) const { return {x-p.x, y-p.y}; }
+  PointD operator*(ld c) const { return {x*c, y*c}; }
+  PointD operator/(ld c) const { return {x/c, y/c}; }
+  ld cross(PointD p) const { return x*p.y - y*p.x; }
+  ld sq() const { return x*x + y*y; }
+  ld abs() const { return sqrtl(sq()); }
+};
+struct Circle { PointD c; ld r; };
+Circle welzl(vector<P> &pts) {
+  mt19937 rng(chrono::steady_clock::now()
+    .time_since_epoch().count());
+  vector<PointD> p(pts.begin(), pts.end());
+  shuffle(p.begin(), p.end(), rng);
+  auto circum = [](PointD a, PointD b, PointD c) {
+    PointD ab = b-a, ac = c-a;
+    ld d = 2 * ab.cross(ac);
+    PointD o(
+      a.x + (ab.sq()*ac.y - ac.sq()*ab.y) / d,
+      a.y + (ac.sq()*ab.x - ab.sq()*ac.x) / d);
+    return Circle{o, (o - a).abs()};
+  };
+  function<Circle(int, vector<PointD>&)> f =
+    [&](int i, vector<PointD> &b) -> Circle {
+    if (i == (int)p.size() || b.size() == 3) {
+      if (b.empty()) return {{0,0}, 0};
+      if (b.size() == 1) return {b[0], 0};
+      if (b.size() == 2)
+        return {(b[0]+b[1])/2, (b[0]-b[1]).abs()/2};
+      return circum(b[0], b[1], b[2]);
+    }
+    Circle c = f(i+1, b);
+    if ((c.c - p[i]).abs() > c.r + 1e-9) {
+      b.push_back(p[i]);
+      c = f(i+1, b);
+      b.pop_back();
+    }
+    return c;
+  };
+  vector<PointD> b;
+  return f(0, b);
+}
+// welzl(p).r is the radius of the minimum enclosing circle
+\end{minted}
 
-\textbf{Simpson's Rule}: $\int_a^b f(x) dx \approx \frac{h}{3}[f(x_0) + f(x_n) + 4\sum f(x_{2i+1}) + 2\sum f(x_{2i})]$
+\subsection{Minkowski Sum of Convex Polygons}
+$P \oplus Q = \{p+q : p \in P, q \in Q\}$ in $O(N+M)$. Result is convex.
+\textbf{Applications:} convex polygon collision detection, distance computation.
+\begin{minted}{c++}
+vector<P> minkowski_sum(vector<P> &a, vector<P> &b) {
+  auto reorder = [](vector<P> &p) {
+    int n = p.size(), idx = 0;
+    for (int i = 1; i < n; i++)
+      if (p[i].y < p[idx].y ||
+         (p[i].y == p[idx].y && p[i].x < p[idx].x))
+        idx = i;
+    rotate(p.begin(), p.begin()+idx, p.end());
+  };
+  if (a.empty() || b.empty()) return {};
+  reorder(a); reorder(b);
+  a.push_back(a[0]); b.push_back(b[0]);
+  int n = a.size(), m = b.size();
+  vector<P> res;
+  for (int i = 0, j = 0; i < n || j < m; ) {
+    res.push_back(a[i % n] + b[j % m]);
+    if (i >= n) j++;
+    else if (j >= m) i++;
+    else {
+      auto ca = a[(i+1)%n] - a[i%n];
+      auto cb = b[(j+1)%m] - b[j%m];
+      if (ca * cb >= 0) i++;
+      if (ca * cb <= 0) j++;
+    }
+  }
+  return res;
+}
+\end{minted}
 
-\textbf{Pythagorean Triples}: $a = 2st, b = s^2-t^2, c = s^2+t^2$ for $s>t>0$, $\gcd(s,t)=1$, $s \not\equiv t \pmod 2$.
+\subsection{Circle Operations}
+Circumcircle, circle-line, circle-circle intersection. Uses \texttt{PointD} from Welzl subsection above.
+\begin{minted}{c++}
+// Circumcircle of three points, returns {center, radius}
+pair<PointD, ld> circumcircle(P a, P b, P c) {
+  PointD A(a), B(b), C(c);
+  PointD ab = B-A, ac = C-A;
+  ld d = 2 * ab.cross(ac);
+  PointD o(A.x + (ab.sq()*ac.y - ac.sq()*ab.y)/d,
+           A.y + (ac.sq()*ab.x - ab.sq()*ac.x)/d);
+  return {o, (o - A).abs()};
+}
+// Circle-Line: returns number of intersection points
+int circle_line(PointD c, ld r, P a, P b,
+                vector<PointD> &res) {
+  PointD A(a), B(b), ab = B - A;
+  PointD p = A + ab * (((c-A).x * ab.x + (c-A).y * ab.y) / ab.sq());
+  ld d = (p - c).abs();
+  if (d > r + 1e-9) return 0;
+  if (fabsl(d - r) < 1e-9) { res = {p}; return 1; }
+  ld t = sqrtl(r*r - d*d);
+  PointD dir = ab / ab.abs() * t;
+  res = {p - dir, p + dir};
+  return 2;
+}
+// Circle-Circle: returns number of intersection points
+int circle_circle(PointD c1, ld r1, PointD c2, ld r2,
+                  vector<PointD> &res) {
+  ld d = (c1 - c2).abs();
+  if (d > r1 + r2 + 1e-9 || d < fabsl(r1-r2) - 1e-9)
+    return 0;
+  if (d < 1e-9 && fabsl(r1-r2) < 1e-9) return -1;
+  ld a = (r1*r1 - r2*r2 + d*d) / (2*d);
+  ld h = sqrtl(r1*r1 - a*a);
+  PointD m = c1 + (c2-c1) * (a / d);
+  PointD perp(-(c2-c1).y * h / d, (c2-c1).x * h / d);
+  res = {m + perp, m - perp};
+  return 2;
+}
+\end{minted}
 
-\textbf{Euler's Totient Theorem}: If $\gcd(a,n)=1$, $a^{\phi(n)} \equiv 1 \pmod n$.
-For any $a,n$, $a^n \equiv a^{n-\phi(n)} \pmod n$.
-For $m \ge \log_2 n$, $a^m \equiv a^{(m \bmod \phi(n)) + \phi(n)} \pmod n$.
+\subsection{Line Sweep (Rectangle Union Area)}
+Union area of axis-aligned rectangles via sweep line and segment tree. $O(N \log N)$.
+\begin{minted}{c++}
+struct Event {
+  ll x, y1, y2, type;
+  bool operator<(const Event &o) const { return x < o.x; }
+};
+struct SegTree {
+  vector<int> cnt;
+  vector<ll> len, ys;
+  int n;
+  SegTree(vector<ll> &ys_) : ys(ys_), n(ys_.size()-1) {
+    cnt.assign(4*n, 0); len.assign(4*n, 0);
+  }
+  void upd(int i, int l, int r, int ql, int qr, int v) {
+    if (ql >= r || qr <= l) return;
+    if (ql <= l && r <= qr) cnt[i] += v;
+    else {
+      int m = (l+r)/2;
+      upd(i*2, l, m, ql, qr, v);
+      upd(i*2+1, m, r, ql, qr, v);
+    }
+    if (cnt[i]) len[i] = ys[r] - ys[l];
+    else len[i] = (r-l==1) ? 0 : len[i*2] + len[i*2+1];
+  }
+  ll total() { return len[1]; }
+};
+ll union_area(vector<tuple<ll,ll,ll,ll>> &rects) {
+  vector<Event> ev;
+  vector<ll> ys;
+  for (auto [x1,y1,x2,y2] : rects) {
+    ev.push_back({x1, y1, y2, 1});
+    ev.push_back({x2, y1, y2, -1});
+    ys.push_back(y1); ys.push_back(y2);
+  }
+  sort(ev.begin(), ev.end());
+  sort(ys.begin(), ys.end());
+  ys.erase(unique(ys.begin(), ys.end()), ys.end());
+  SegTree seg(ys);
+  ll ans = 0, prev = ev[0].x;
+  for (auto &e : ev) {
+    ans += (e.x - prev) * seg.total();
+    int l = lower_bound(ys.begin(),ys.end(),e.y1)-ys.begin();
+    int r = lower_bound(ys.begin(),ys.end(),e.y2)-ys.begin();
+    seg.upd(1, 0, seg.n, l, r, e.type);
+    prev = e.x;
+  }
+  return ans;
+}
+\end{minted}

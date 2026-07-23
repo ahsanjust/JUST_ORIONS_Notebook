@@ -1,0 +1,185 @@
+\section{Combinatorics}
+\subsection{Binomial Coefficient Properties}
+\textbf{Symmetry}: $\binom{n}{k} = \binom{n}{n-k}$ \\
+\textbf{Pascal (Addition)}: $\binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k}$ \\
+\textbf{Absorption (Committee)}: $k\binom{n}{k} = n\binom{n-1}{k-1}$ \\
+\textbf{Sum (Total Subsets)}: $\sum_{k=0}^n \binom{n}{k} = 2^n$ \\
+\textbf{Alternating Sum}: $\sum_{k=0}^n (-1)^k \binom{n}{k} = 0$ \\
+\textbf{Even/Odd Sum}: $\sum_{k\text{ even/odd}} \binom{n}{k} = 2^{n-1}$ \\
+\textbf{Hockey-Stick}: $\sum_{i=k}^n \binom{i}{k} = \binom{n+1}{k+1}$ \\
+\textbf{Sum over Upper Index}: $\sum_{m=0}^n \binom{m}{k} = \binom{n+1}{k+1}$ \\
+\textbf{Vandermonde's Convolution}: $\sum_{k=0}^r \binom{m}{k} \binom{n}{r-k} = \binom{m+n}{r}$ \\
+\textbf{Sum of Squares}: $\sum_{k=0}^n \binom{n}{k}^2 = \binom{2n}{n}$ \\
+\textbf{Weighted}: $\sum_{k=1}^n k\binom{n}{k} = n \cdot 2^{n-1}$ \\
+\textbf{Fibonacci}: $\sum_{k \ge 0} \binom{n-k}{k} = F_{n+1}$
+
+\subsection{Stars and Bars}
+\textbullet{} Ways to put $n$ identical items into $k$ distinct bins (can be empty): $\binom{n+k-1}{k-1}$ \\
+\textbullet{} Ways to put $n$ identical items into $k$ distinct bins (non-empty): $\binom{n-1}{k-1}$
+
+\subsection{Catalan Numbers $C_n$}
+Seq: 1, 1, 2, 5, 14, 42, 132, 429, 1430, 4862 \dots \\
+\textbullet{} Formula: $C_n = \frac{1}{n+1} \binom{2n}{n} = \binom{2n}{n} - \binom{2n}{n+1}$ \\
+\textbullet{} Recurrence: $C_{n+1} = \sum_{i=0}^n C_i C_{n-i}$ \\
+\textbullet{} OGF: $\frac{1-\sqrt{1-4x}}{2x}$ \\
+\textbullet{} Applications: Correct bracket seqs, polygon triangulations,
+non-crossing chords, paths $(0,0) \to (n,n)$ below diagonal,
+full binary trees, Dyck words.
+
+\subsection{Derangements $D(n)$}
+Permutations where $\pi(i) \neq i$. \\
+Seq: 1, 0, 1, 2, 9, 44, 265, 1854 \dots \\
+\textbullet{} Recurrence: $D(n) = (n-1)(D(n-1) + D(n-2))$ \\
+\textbullet{} Formula: $D(n) = n! \sum_{k=0}^n \frac{(-1)^k}{k!} \approx \frac{n!}{e}$ \\
+\textbullet{} EGF: $\frac{e^{-x}}{1-x}$ \\
+\textbullet{} Code:
+\begin{minted}{c++}
+if (n > 0) D[1] = 0;
+if (n > 1) D[2] = 1;
+for (int i = 3; i <= n; i++)
+  D[i] = (i - 1) * (D[i - 1] + D[i - 2]);
+\end{minted}
+\subsection{Partition Numbers $P(n,k)$}
+Ways to write $n$ as sum of exactly $k$ positive ints. \\
+\textbullet{} Recurrence: $P(n,k) = P(n-1,k-1) + P(n-k,k)$ \\
+\textbullet{} Total partitions: $P(n) = \sum_{k=0}^n P(n,k)$ \\
+Seq: 1, 1, 2, 3, 5, 7, 11, 15, 22, 30 \dots
+
+\subsection{Bell Numbers $B(n)$}
+Total ways to partition a set of $n$ elements. \\
+\textbf{Note:} Total ways to partition a set of distinct elements. \\
+\textbullet{} $B(n) = \sum_{k=0}^n S_2(n,k)$ \\
+\textbullet{} $B(n+1) = \sum_{k=0}^n \binom{n}{k} B(k)$ \\
+\textbullet{} EGF: $\exp(\exp(x)-1)$
+
+\subsection{Stirling 1st Kind $S_1(n,k)$}
+Permutations of $n$ elements with exactly $k$ cycles. \\
+\textbf{Note:} Ways to arrange $N$ elements into exactly $K$ cycles. \\
+\textbullet{} Recurrence: $S_1(n,k) = S_1(n-1,k-1) + (n-1)S_1(n-1,k)$ \\
+\textbullet{} Total sum: $\sum_{k=0}^n S_1(n,k) = n!$ \\
+\textbullet{} EGF: $(-\ln(1-x))^k / k!$
+
+\subsection{Stirling 2nd Kind $S_2(n,k)$}
+Partition $n$ elements into $k$ non-empty sets. \\
+\textbf{Note:} Ways to partition $N$ distinct elements into $K$ non-empty sets. \\
+\textbullet{} Recurrence: $S_2(n,k) = S_2(n-1,k-1) + k \cdot S_2(n-1,k)$ \\
+\textbullet{} Formula: $S_2(n,k) = \frac{1}{k!} \sum_{i=0}^k (-1)^{k-i} \binom{k}{i} i^n$ \\
+\textbullet{} EGF: $(\exp(x)-1)^k / k!$
+
+\subsection{Eulerian Numbers $E(n,k)$}
+Permutations with exactly $k$ ascents. \\
+\textbf{Note:} Permutations with exactly $K$ ascents (where $p_i < p_{i+1}$). \\
+\textbullet{} Recurrence: $E(n,k) = (n-k)E(n-1,k-1) + (k+1)E(n-1,k)$ \\
+\textbullet{} Formula: $E(n,k) = \sum_{j=0}^k (-1)^j \binom{n+1}{j} (k+1-j)^n$ \\
+\textbullet{} $E(n,k) = E(n, n-1-k)$
+
+\subsection{Bernoulli \& Faulhaber's}
+\textbf{Note:} Used to find sum of powers $\sum_{i=1}^N i^k$. \\
+\textbullet{} Recurrence: $B_n = -\frac{1}{n+1} \sum_{k=0}^{n-1} \binom{n+1}{k} B_k$ \\
+\textbullet{} EGF: $\frac{x}{e^x-1}$ \\
+\textbullet{} Sum of powers:
+$\sum_{k=1}^n k^c = \frac{1}{c+1} \sum_{k=0}^c (-1)^k \binom{c+1}{k} B_k n^{c+1-k}$
+\subsection{Lucas Theorem}
+Computes $\binom{n}{r} \bmod p$ for prime $p$, when $n, r$ are large. Breaks $n, r$ into base-$p$ digits and multiplies small binomials. MOD must be prime and $\le 10^5$ for precomputed factorials. Usage: $C(10^{18}, 10^9) \bmod 1000000007$ in $O(\log_p n)$ time.
+\textbf{Note:} Computes $\binom{N}{R} \pmod P$ for large $N, R$ and small prime $P$.
+\begin{minted}{c++}
+long long lucas(long long n, long long r) {
+  if (r == 0) return 1;
+  return lucas(n / MOD, r / MOD) *
+         nCr(n % MOD, r % MOD) % MOD;
+}
+\end{minted}
+\subsection{Burnside's / Polya}
+Counts distinct colorings under group actions. Answer $= \frac{1}{|G|} \sum_{g \in G} (\text{colorings fixed by } g)$. Code: Rotation group of $n \times m$ grid $\times$ reflection. See also: \texttt{count\_cycles(p)} to compute $k^{c(\sigma)}$.
+\textbf{Note:} Counts distinct objects under symmetry (like rotating a necklace).
+\begin{minted}{c++}
+using Permutation = vector<int>;
+void operator*=(Permutation& p, Permutation
+const& q) {
+  Permutation copy = p;
+  for (int i = 0; i < p.size(); i++)
+    p[i] = copy[q[i]];
+}
+int count_cycles(Permutation p) {
+  int cnt = 0;
+  for (int i = 0; i < p.size(); i++) {
+    if (p[i] != -1) {
+      cnt++;
+      for (int j = i; p[j] != -1;) {
+        int next = p[j]; p[j] = -1; j = next;
+      }
+    }
+  }
+  return cnt;
+}
+int solve(int n, int m) {
+  Permutation p(n*m), p1(n*m), p2(n*m), p3(n*m);
+  for (int i = 0; i < n*m; i++) {
+    p[i] = i;
+    p1[i] = (i % n + 1) % n + i / n * n;
+    p2[i] = (i / n + 1) % m * n + i % n;
+    p3[i] = (m - 1 - i / n) * n + (n - 1 - i % n);
+  }
+  set<Permutation> s;
+  for (int i1 = 0; i1 < n; i1++) {
+    for (int i2 = 0; i2 < m; i2++) {
+      for (int i3 = 0; i3 < 2; i3++) {
+        s.insert(p); p *= p3;
+      }
+      p *= p2;
+    }
+    p *= p1;
+  }
+  int sum = 0;
+  for (Permutation const& p : s)
+    sum += 1 << count_cycles(p);
+  return sum / s.size();
+}
+\end{minted}
+\subsection{Bishop Placement}
+Count ways to place $K$ bishops on an $N \times N$ chessboard so no two attack each other. Bishops on black and white diagonals are independent, so the two color sets are solved separately via DP and combined. \texttt{squares(i)} returns the number of cells on the $i$-th diagonal. $O(N^2)$.
+\textbf{Note:} Bishops on black squares and white squares do not attack each other.
+\begin{minted}{c++}
+int bishop_placements(int N, int K) {
+  if (K > 2 * N - 1) return 0;
+  auto len = [&](int i) {
+    if (i > N) return 2 * N - i;
+    return i;
+  };
+  // Collect diagonal lengths for each color, sorted increasingly
+  vector<int> black, white;
+  for (int i = 1; i <= 2 * N - 1; i++) {
+    if (i & 1) black.push_back(len(i));
+    else white.push_back(len(i));
+  }
+  sort(black.begin(), black.end());
+  sort(white.begin(), white.end());
+  auto solve = [&](vector<int> &diag, int K) {
+    int m = diag.size();
+    vector<vector<int>> D(m + 1, vector<int>(K + 1, 0));
+    D[0][0] = 1;
+    for (int i = 1; i <= m; i++)
+      for (int j = 0; j <= K; j++) {
+        D[i][j] = D[i-1][j];
+        if (j > 0)
+          D[i][j] += D[i-1][j-1] * (diag[i-1] - j + 1);
+      }
+    return D[m];
+  };
+  auto B = solve(black, K), W = solve(white, K);
+  int ans = 0;
+  for (int i = 0; i <= K; i++)
+    ans += B[i] * W[K - i];
+  return ans;
+}
+\end{minted}
+\subsection{Generating Functions}
+\textbf{Note:} OGF is for combinations (order doesn't matter), EGF is for permutations (order matters). \\
+\textbullet{} OGF: $A(x) = \sum_{i \ge 0} a_i x^i$ \\
+\textbullet{} $xA'(x) \Rightarrow n a_n$,
+$A(x)B(x) \Rightarrow \sum_{i=0}^n a_i b_{n-i}$ \\
+\textbullet{} EGF: $A(x) = \sum_{i \ge 0} a_i \frac{x^i}{i!}$ \\
+\textbullet{} $A'(x) \Rightarrow a_{n+1}$,
+$xA(x) \Rightarrow n a_n$,
+$A(x)B(x) \Rightarrow \sum_{i=0}^n \binom{n}{i} a_i b_{n-i}$
+

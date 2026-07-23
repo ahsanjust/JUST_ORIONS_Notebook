@@ -1,0 +1,182 @@
+\section{Others}
+\subsection{Bit Hacks}
+\begin{minted}{c++}
+// --- Basic ops ---
+x & -x                          // LSB value
+x & (x - 1)                     // unset LSB
+x | (x - 1)                     // set trailing 0s to 1
+~x & (x + 1)                    // isolate lowest 0-bit
+x && !(x & (x - 1))             // is power of two?
+x >> i & 1                      // get bit i
+x |= (1 << i)                   // set bit i
+x &= ~(1 << i)                  // clear bit i
+x ^= (1 << i)                   // toggle bit i
+(1 << k) - 1                    // mask of k lowest bits
+// --- GCC builtins (suffix ll for 64-bit; undef for 0) ---
+__builtin_popcount(x)           // # of 1-bits
+__builtin_clz(x)                // leading zeros
+__builtin_ctz(x)                // trailing zeros
+__builtin_parity(x)             // popcount mod 2
+// --- MSB / bit width (32-bit) ---
+31 - __builtin_clz(x)           // MSB position (0-idx)
+32 - __builtin_clz(x)           // bit width
+1 << (31 - __builtin_clz(x))    // MSB value
+// --- Iterate set bits of x ---
+for (int s = x; s; s &= s - 1) {
+  int i = __builtin_ctz(s);     // current bit index
+}
+// --- Iterate submasks of mask m ---
+for (int s = m; ; s = (s - 1) & m) {
+  if (s == 0) break;
+}
+// --- Next number with same popcount ---
+int next_popcount(int x) {
+  int c = x & -x, r = x + c;
+  return r | (((r ^ x) >> 2) / c);
+}
+// --- Round up to power of two ---
+uint32_t next_pow2(uint32_t n) {
+  n--; n |= n>>1; n |= n>>2; n |= n>>4;
+  n |= n>>8; n |= n>>16; return ++n;
+}
+// 64-bit: add n |= n>>32
+// --- Gray code ---
+int gray = x ^ (x >> 1); // binary -> Gray
+// Gray -> binary: g = gray; for (int m = g>>1; m; m>>=1) g ^= m;
+\end{minted}
+
+\subsection{Zobrist Hashing (XOR Hashing)}
+Each element gets a random 64-bit value via \texttt{mt19937\_64}. Hash of a set $=$ XOR of its elements' hashes. $O(1)$ add/remove, collision probability negligible ($\approx 2^{-64}$).
+
+\textbf{Applications:}
+\begin{itemize}
+  \item \textbf{Subarray anagram detection}: Assign random $rnd[v]$ to each distinct value. Prefix XOR $pre[i+1] = pre[i] \oplus rnd[a[i]]$. Two subarrays $[l,r]$ and $[l',r']$ are anagrams iff $pre[r+1] \oplus pre[l] = pre[r'+1] \oplus pre[l']$.
+  \item \textbf{Set equality}: Hash two sets by XORing element hashes; equal $\implies$ equal hash.
+  \item \textbf{Tree isomorphism}: $hash[u] = rnd[val[u]] \oplus \bigoplus_{v \in children} hash[v]$ (sort child hashes first for unordered trees).
+  \item \textbf{Game state hashing}: Chess/Go engines assign random numbers to each piece+square; board hash $=$ XOR of all active pieces (Zobrist origin).
+\end{itemize}
+\begin{minted}{c++}
+mt19937_64 rng(chrono::steady_clock::now()
+  .time_since_epoch().count());
+vector<uint64_t> rnd(N);
+for (auto &x : rnd) x = rng();
+
+// Prefix XOR for subarray hash
+vector<uint64_t> pre(n + 1, 0);
+for (int i = 0; i < n; i++)
+  pre[i + 1] = pre[i] ^ rnd[a[i]];
+// xor of range [l, r] = pre[r+1] ^ pre[l]
+\end{minted}
+
+\subsection{Range OR, XOR, AND Tricks}
+\begin{minted}{c++}
+int64_t xor_0ton(int64_t n) {
+  if (n % 4 == 0) return n;
+  if (n % 4 == 1) return 1;
+  if (n % 4 == 2) return n + 1;
+  return 0;
+}
+int64_t range_xor(int64_t l, int64_t r) {
+  return xor_0ton(r) ^ xor_0ton(l - 1);
+}
+int64_t range_and(int64_t l, int64_t r) {
+  int b = 0;
+  while ((l >> b) ^ (r >> b)) b += 1;
+  return (l >> b) << b;
+}
+int64_t range_or(int64_t l, int64_t r) {
+  int b = 0;
+  while ((l >> b) ^ (r >> b)) b += 1;
+  return r | ((1LL << b) - 1);
+}
+\end{minted}
+
+\subsection{Inclusion–Exclusion with Bitmasks}
+Count elements satisfying \textbf{none} of $n$ properties $P_1,\dots,P_n$:
+$$\Big|\bigcap_{i=1}^n \overline{P_i}\Big| = \sum_{mask=0}^{2^n-1} (-1)^{\text{popcount}(mask)} \cdot f(mask)$$
+where $f(mask)$ = count of elements satisfying all properties with bit $=1$ in mask.
+\begin{minted}{c++}
+template<typename F>
+ll inclusion_exclusion(int n, F f) {
+  ll ans = 0;
+  for (int mask = 0; mask < (1 << n); mask++) {
+    ll sign = (__builtin_popcount(mask) & 1) ? -1 : 1;
+    ans += sign * f(mask);
+  }
+  return ans;
+}
+// Count numbers in [1,N] not divisible by any prime in p[0..n-1]
+// auto f = [&](int mask) -> ll {
+//   ll prod = 1;
+//   for (int i = 0; i < n; i++)
+//     if (mask >> i & 1) prod *= p[i];
+//   return N / prod;
+// };
+// ll result = inclusion_exclusion(n, f);
+\end{minted}
+
+\subsection{Sum of Digits up to N}
+Counts total digit sum of all integers $[1, N]$.
+Key idea: For each decimal position with factor $f$, count contribution of each digit value (0-9) to that position across all numbers. $O(\log N)$.
+\begin{minted}{c++}
+uint64_t sumDigitsUpTo(uint64_t n) {
+  if (n <= 0) return 0;
+  uint64_t sum = 0;
+  for (uint64_t f = 1; f <= n; f *= 10) {
+    uint64_t hi = n / (f * 10);
+    uint64_t cur = (n / f) % 10;
+    uint64_t lo = n % f;
+    sum += hi * 45LL * f;
+    sum += cur * (lo + 1);
+    sum += f * (cur * (cur - 1) / 2);
+  }
+  return sum;
+}
+\end{minted}
+\subsection{Number of Digits up to N}
+Total count of digits written out in $[1, N]$ (e.g. for $N=12$: $1,2,\dots,9,1,0,1,1,1,2$ = $15$ digits).
+Key: Numbers with $d$ digits span a range; count their contribution per digit-length. $O(\log N)$.
+\begin{minted}{c++}
+uint64_t get(uint64_t n) {
+  if (n <= 0) return 0;
+  uint64_t base = 1, digits = 1, now = 0;
+  while (base <= n / 10) {
+    base *= 10;
+    now += (base - base / 10) * digits;
+    digits += 1;
+  }
+  n -= (base - 1);
+  now += n * digits;
+  return now;
+}
+\end{minted}
+\subsection{Game Theory \texorpdfstring{\&}{&} Nim}
+\textbf{Standard Nim}: XOR sum of piles $= 0 \implies$ Second player wins. $\neq 0 \implies$ First player wins.
+
+\textbf{Subtraction Game}: Can only take up to $k$ stones. XOR sum of $(pile_i \bmod (k+1))$.
+
+\textbf{Index-k Nim}: Can remove from up to $k$ piles at once. Write sizes in binary. Sum each column. If all column sums $\equiv 0 \pmod{k+1}$, second player wins.
+
+\textbf{Mis\`{e}re Nim} (Last player to move LOSES): If all piles have size 1, Second wins if $N$ is ODD. Otherwise, play like Standard Nim (XOR sum).
+
+\subsection{Sprague-Grundy}
+$g(v) = \text{mex}\{g(u) : u \text{ reachable from } v\}$. $g=0 \implies$ losing, else winning. XOR combines sub-games, mex computes single state.
+\begin{minted}{c++}
+// DP template (bool[] avoids set overhead)
+int g[N]; g[0] = 0;
+for (int i = 1; i <= maxN; i++) {
+  bool seen[K] = {};
+  for (int m : moves) if (i >= m) seen[g[i - m]] = 1;
+  int m = 0; while (seen[m]) m++;
+  g[i] = m;
+}
+// Standard Nim: g(n) = n (XOR pile sizes / 1st wins if != 0)
+// Subtraction {1..m}: g(n) = n % (m+1)
+// Take & Break: g(n) = mex{ g(a) ^ g(b) | a+b=n }
+// Staircase Nim: XOR odd-indexed piles only
+// Wythoff: losing pairs = (floor(phi*k), floor(phi^2*k))
+// Pattern: DP 100 terms for periodicity.
+// g >> 1000 => closed form.
+// Watch: mex includes 0; g(0)=0; add moves irrelevant;
+// count losing via pairs XOR=0
+\end{minted}

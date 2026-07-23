@@ -11,23 +11,7 @@ LaTeX PDF that teams can bring into contest.
 ## 📂 Repository Structure
 
 ```
-JUST_ORIONS_Notebook/
-├── notebook/               # LaTeX source → compiled PDF
-│   ├── main.tex            # Master document
-│   ├── main.pdf            # Compiled output (25-page reference)
-│   └── sections/           # 11 modular algorithm sections
-│       ├── 01_build_and_basics.tex
-│       ├── 02_persistent_segtree.tex
-│       ├── 03_sparse_table.tex
-│       ├── 04_treap.tex
-│       ├── 05_graph_algorithms.tex
-│       ├── 06_tree_algorithms.tex
-│       ├── 07_string_algorithms.tex
-│       ├── 08_trie_and_booth.tex
-│       ├── 09_basis_and_dp.tex
-│       ├── 10_combinatorics.tex
-│       └── 11_geometry_and_misc.tex
-│
+Template/
 ├── library/                # CP algorithm library (git submodule)
 │   ├── templates/          # 16 self-contained contest templates
 │   ├── data_structures/    # Segment Tree, BIT, DSU, Trie, Treap...
@@ -41,12 +25,33 @@ JUST_ORIONS_Notebook/
 │   ├── tricks/             # Algorithmic tricks and techniques
 │   └── references/         # External libraries (KACTL, ICPC teamnote...)
 │
-└── docs/                   # Project documentation
-    ├── context.md          # Project context & architecture overview
-    ├── progress.md         # Section completion tracker
-    ├── decisions.md        # Design decision log
-    ├── issues.md           # Known issues & fixes
-    └── style-guide.md      # LaTeX style & typography guide
+├── notebook/               # LaTeX source → compiled PDF
+│   ├── main.tex            # Master document
+│   ├── main.pdf            # Compiled output (25-page reference)
+│   └── sections/           # 9 modular algorithm sections
+│       ├── 01_setup_and_basics.tex
+│       ├── 02_data_structure.tex
+│       ├── 03_graph_theory.tex
+│       ├── 04_number_theory.tex
+│       ├── 05_combinatorics.tex
+│       ├── 06_math.tex
+│       ├── 07_strings.tex
+│       ├── 08_geometry.tex
+│       └── 09_others.tex
+│
+├── analysis/               # Gap analysis reports vs major CP resources
+│   ├── catalog-analysis.md          # CF catalog cross-reference
+│   ├── catalog-analysis-kactl.md    # KACTL cross-reference
+│   └── catalog-analysis-cpalgo.md   # cp-algorithms cross-reference
+│
+├── docs/                   # Reference PDFs and other documents
+│   ├── Backup_notebook.pdf
+│   └── Catalog-Codeforces.pdf
+│
+├── Makefile                # Build system for the notebook PDF
+├── README.md
+├── .gitignore
+└── .gitmodules             # library/ submodule definition
 ```
 
 ---
@@ -87,17 +92,15 @@ pdflatex -shell-escape main.tex   # second pass for correct TOC page numbers
 
 | # | Section | Key Algorithms |
 |---|---------|----------------|
-| 01 | **Setup & Basics** | Sublime build, PBDS, GP Hash, DSU |
-| 02 | **Segtree / BIT** | Persistent Seg Tree, Fenwick 1D/2D, Range Update |
-| 03 | **Sparse / Merge** | Sparse Table, Sparse Table 2D, Merge Sort Tree |
-| 04 | **Treap** | Implicit Treap with lazy (reverse, range add, sum) |
-| 05 | **Graph** | SCC (Kosaraju), Bridges, Hopcroft-Karp, Dinic's |
-| 06 | **Tree** | Binary Lifting, Euler Tour, HLD, Centroid Decomp, LCA |
-| 07 | **String** | KMP, Z, Manacher, Suffix Array + LCP, Aho-Corasick, Trie |
-| 08 | **Trie / Booth** | Booth's Algo, Extended GCD, CRT, SPF/Möbius, Miller-Rabin, MatExp |
-| 09 | **Basis / DP** | Basis Vector, SOS DP, LIS, Subset Sum bitset, Submasks |
-| 10 | **Combinatorics** | Burnside's Lemma, Inclusion-Exclusion, Bishop Placement |
-| 11 | **Geometry & Misc** | Closest Pair, Polygon, Convex Hull, Mo's Algorithm, Pollard Rho |
+| 01 | **Setup & Basics** | Sublime build, PBDS, GP Hash, Fast I/O, Debug |
+| 02 | **Data Structure** | Sparse Table, Merge Sort Tree, PST, Fenwick, Treap, Mo's, DSU, Lazy SegTree |
+| 03 | **Graph Theory** | SCC, Bridges, Hopcroft-Karp, Dinic, HLD, Centroid Decomp, 2-SAT, MCMF |
+| 04 | **Number Theory** | Extended Euclid, CRT, SPF/Möbius, Miller-Rabin, Pollard Rho, Segmented Sieve |
+| 05 | **Combinatorics** | Burnside, Stirling, Catalan, Lucas, Stars & Bars, Generating Functions |
+| 06 | **Math** | XOR Basis, Matrix Exp, FFT, NTT, Lagrange Interpolation, Digit DP |
+| 07 | **Strings** | Binary Trie, Booth, KMP, Z, Manacher, Suffix Array, Aho-Corasick, Hashing |
+| 08 | **Geometry** | Closest Pair, Polygon Ops, Convex Hull, Half-Plane Intersection |
+| 09 | **Others** | Game Theory, SOS DP, FWHT, Knuth Opt, Li Chao Tree, Gaussian Elimination, BM, Wavelet Tree |
 
 ---
 

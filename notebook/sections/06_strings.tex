@@ -1,0 +1,398 @@
+\section{Strings}
+\subsection{String Double Hashing}
+Static $O(1)$ substring hash, two moduli. \texttt{DHash(s)} builds prefix hashes. \texttt{get(l,r)} returns \texttt{pair<ll,ll>}. Compare via \texttt{get(l1,r1)==get(l2,r2)}.
+\begin{minted}{c++}
+struct DHash {
+  ll mod[2]={1000000007,1000000009},
+     base[2]={911382323,972663749};
+  vector<ll> pw[2],h[2];
+  DHash(string &s) {
+    int n=s.size();
+    for(int k=0;k<2;k++) {
+      pw[k].resize(n+1,1); h[k].resize(n+1);
+      for(int i=0;i<n;i++) {
+        pw[k][i+1]=pw[k][i]*base[k]%mod[k];
+        h[k][i+1]=(h[k][i]*base[k]+s[i])%mod[k];
+      }
+    }
+  }
+  pair<ll,ll> get(int l,int r) {
+    return {
+      (h[0][r+1]-h[0][l]*pw[0][r-l+1]%mod[0]
+       +mod[0])%mod[0],
+      (h[1][r+1]-h[1][l]*pw[1][r-l+1]%mod[1]
+       +mod[1])%mod[1],
+    };
+  }
+};
+\end{minted}
+\subsection{Dynamic String Hash}
+Segment tree with point update ($O(\log N)$), forward/reverse hash, palindrome check. 1-indexed. Set $N$ to max length. Call \texttt{init\_hash(N)} once.
+\begin{minted}{c++}
+const int MOD[]={127657753,987654319}, BASE[]={137,277};
+int pw[2][N],ipw[2][N];
+int mpow(int a,int n,int m) {
+  int r=1;
+  while(n) { if(n&1) r=1LL*r*a%m; a=1LL*a*a%m; n>>=1; }
+  return r;
+}
+void init_hash(int n) {
+  for(int k=0;k<2;k++) {
+    pw[k][0]=ipw[k][0]=1;
+    for(int i=1;i<=n;i++)
+      pw[k][i]=1LL*pw[k][i-1]*BASE[k]%MOD[k];
+    int inv=mpow(BASE[k],MOD[k]-2,MOD[k]);
+    for(int i=1;i<=n;i++)
+      ipw[k][i]=1LL*ipw[k][i-1]*inv%MOD[k];
+  }
+}
+using H = array<int,2>;
+H add(H a,H b) { return
+  {(a[0]+b[0])%MOD[0],(a[1]+b[1])%MOD[1]}; }
+H mul(H a,H b) { return {(int)(1LL*a[0]*b[0]%MOD[0]),
+  (int)(1LL*a[1]*b[1]%MOD[1])};
+}
+struct SegHash {
+  int n;
+  vector<H> fwd,rev;
+  SegHash(string s) {
+    n=s.size(); s="."+s;
+    fwd.resize(4*n); rev.resize(4*n);
+    build(1,1,n,s);
+  }
+  void build(int node,int l,int r,string &s) {
+    if(l==r) {
+      fwd[node]=
+        {(int)(1LL*s[l]*pw[0][l]%MOD[0]),
+         (int)(1LL*s[l]*pw[1][l]%MOD[1])};
+      rev[node]=
+        {(int)(1LL*s[l]*pw[0][n-l+1]%MOD[0]),
+         (int)(1LL*s[l]*pw[1][n-l+1]%MOD[1])};
+      return;
+    }
+    int mid=(l+r)/2;
+    build(node*2,l,mid,s);
+    build(node*2+1,mid+1,r,s);
+    fwd[node]=add(fwd[node*2],fwd[node*2+1]);
+    rev[node]=add(rev[node*2],rev[node*2+1]);
+  }
+  void upd(int i,char c) { upd(1,1,n,i,c); }
+  void upd(int node,int l,int r,int idx,char c) {
+    if(l==r) {
+      fwd[node]=
+        {(int)(1LL*c*pw[0][l]%MOD[0]),
+         (int)(1LL*c*pw[1][l]%MOD[1])};
+      rev[node]=
+        {(int)(1LL*c*pw[0][n-l+1]%MOD[0]),
+         (int)(1LL*c*pw[1][n-l+1]%MOD[1])};
+      return;
+    }
+    int mid=(l+r)/2;
+    if(idx<=mid) upd(node*2,l,mid,idx,c);
+    else upd(node*2+1,mid+1,r,idx,c);
+    fwd[node]=add(fwd[node*2],fwd[node*2+1]);
+    rev[node]=add(rev[node*2],rev[node*2+1]);
+  }
+  H qry(vector<H>& t,int node,int l,int r,int i,int j) {
+    if(i>r||j<l) return {0,0};
+    if(i<=l&&r<=j) return t[node];
+    int mid=(l+r)/2;
+    return add(qry(t,node*2,l,mid,i,j),
+               qry(t,node*2+1,mid+1,r,i,j));
+  }
+  H get_hash(int l,int r) {
+    H h = qry(fwd,1,1,n,l,r);
+    return mul(h,{ipw[0][l-1],ipw[1][l-1]});
+  }
+  H get_rev(int l,int r) {
+    H h = qry(rev,1,1,n,l,r);
+    return mul(h,{ipw[0][n-r],ipw[1][n-r]});
+  }
+  bool is_pal(int l,int r) {
+    return get_hash(l,r)==get_rev(l,r);
+  }
+};
+\end{minted}
+\subsection{LPS and SPS}
+$O(N)$. \texttt{getLps(pattern)} returns LPS (longest proper prefix which is also suffix). \texttt{getSps(pi)} returns SPS (smallest proper prefix which is also suffix).
+\begin{minted}{c++}
+vector<int> getLps(const string &t) {
+  int n = t.size();
+  vector<int> pi(n, 0);
+  int lps = 0;
+  for (int q = 1; q < n; q++) {
+    while (lps > 0 && t[lps] != t[q])
+      lps = pi[lps - 1];
+    if (t[lps] == t[q]) lps += 1;
+    pi[q] = lps;
+  }
+  return pi;
+}
+vector<int> getSps(const vector<int> &pi) {
+  int n = pi.size();
+  vector<int> sps(n, 0);
+  for (int i = 1; i < n; i++) {
+    if (pi[i] == 0) sps[i] = 0;
+    else if (pi[pi[i] - 1] == 0) sps[i] = pi[i];
+    else sps[i] = sps[pi[i] - 1];
+  }
+  return sps;
+}
+\end{minted}
+Usage: \texttt{auto pi = getLps(s); auto sp = getSps(pi);}
+\subsection{Z-Algorithm}
+$O(N)$. \texttt{z[i]} = longest common prefix of $s[0..n-1]$ and $s[i..n-1]$.
+\begin{minted}{c++}
+vector<int> getZ(const string &s) {
+  int n = s.size();
+  if (n == 0) return {};
+  vector<int> z(n);
+  z[0] = 0;
+  for (int i = 1, l = 0, r = 0; i < n; ++i) {
+    if (i <= r)
+      z[i] = min(r - i + 1, z[i - l]);
+    while (i + z[i] < n && s[z[i]] == s[i + z[i]])
+      ++z[i];
+    if (i + z[i] - 1 > r)
+      l = i, r = i + z[i] - 1;
+  }
+  return z;
+}
+\end{minted}
+\subsection{Manacher's Algorithm}
+$O(N)$. \texttt{p[1][i]} = odd palindrome radius at $i$, \texttt{p[0][i]} = even palindrome radius (right center).
+\begin{minted}{c++}
+struct Manacher {
+  vector<int> p[2];
+  Manacher(string s) {
+    int n = s.size();
+    p[0].resize(n + 1); // even-len palindromes (right center)
+    p[1].resize(n);     // odd-len palindromes (center at i)
+    for (int z = 0; z < 2; z++) {
+      for (int i = 0, l = 0, r = 0; i < n; i++) {
+        int t = r - i + !z;
+        if (i < r) p[z][i] = min(t, p[z][l + t]);
+        int L = i - p[z][i], R = i + p[z][i] - !z;
+        while (L >= 1 && R + 1 < n &&
+               s[L - 1] == s[R + 1])
+          p[z][i]++, L--, R++;
+        if (R > r) l = L, r = R; // update rightmost pal
+      }
+    }
+  }
+  bool is_pal(int l, int r) {
+    int mid = (l + r + 1) / 2, len = r - l + 1;
+    return 2 * p[len % 2][mid] + len % 2 >= len;
+  }
+};
+\end{minted}
+\subsection{Suffix Array}
+$O(N \log N)$ prefix-doubling. Returns SA and LCP.
+\texttt{sa[i]} = starting index of $i$-th smallest suffix.
+\texttt{lcp[i]} = LCP of \texttt{sa[i]} and \texttt{sa[i-1]} (\texttt{lcp[0]}=0).
+\textbf{Tricks:} Distinct substrings = $\frac{n(n+1)}{2} - \sum lcp[i]$. Longest repeated substring = $\max(lcp)$.
+Works with string or \texttt{vector<int>}. \texttt{lim} = alphabet size (128 for ASCII).
+\begin{minted}{c++}
+array<vector<int>, 2> get_sa(auto& s, int lim = 128) {
+  int n = s.size() + 1, k = 0, a, b;
+  vector<int> x(begin(s), end(s));
+  x.push_back(0);
+  vector<int> sv = x, y(n), sa(n), lcp(n), ws(max(n, lim)), rank(n);
+  iota(begin(sa), end(sa), 0);
+  for (int j = 0, p = 0; p < n;
+       j = max(1, j * 2), lim = p) {
+    p = j, iota(begin(y), end(y), n - j);
+    for (int i = 0; i < n; i++)
+      if (sa[i] >= j) y[p++] = sa[i] - j;
+    fill(begin(ws), end(ws), 0);
+    for (int i = 0; i < n; i++) ws[x[i]]++;
+    for (int i = 1; i < lim; i++) ws[i] += ws[i - 1];
+    for (int i = n; i--;)
+      sa[--ws[x[y[i]]]] = y[i];
+    swap(x, y), p = 1, x[sa[0]] = 0;
+    for (int i = 1; i < n; i++)
+      a = sa[i - 1], b = sa[i],
+      x[b] = (y[a] == y[b] && y[a + j] == y[b + j])
+             ? p - 1 : p++;
+  }
+  for (int i = 1; i < n; i++) rank[sa[i]] = i;
+  for (int i = 0, j; i < n - 1; lcp[rank[i++]] = k)
+    for (k && k--, j = sa[rank[i] - 1];
+         sv[i + k] == sv[j + k]; k++);
+  sa.erase(sa.begin()), lcp.erase(lcp.begin());
+  return {sa, lcp};
+}
+\end{minted}
+\subsection{Aho-Corasick}
+Multiple pattern matching in $O(N + \sum|P| + occ)$.
+\texttt{ins(s)} inserts pattern, \texttt{build\_fails()} builds fail + output links.
+Traverse text via \texttt{trie[cur][c]}, follow \texttt{exit\_link[cur]} for matches.
+\texttt{is\_end[cur]} = length of pattern ending at node (0 if none).
+\begin{minted}{c++}
+const int N = 1e6 + 6;
+int trie[N][26], fail[N], exit_link[N], is_end[N];
+int ptr;
+void init() {
+  for (int i = 0; i <= ptr; i++) {
+    fill(trie[i], trie[i] + 26, 0);
+    fail[i] = exit_link[i] = is_end[i] = 0;
+  }
+  ptr = 1;
+}
+void ins(string &s) {
+  int cur = 0;
+  for (auto c : s) {
+    int d = c - 'a';
+    if (!trie[cur][d]) trie[cur][d] = ptr++;
+    cur = trie[cur][d];
+  }
+  is_end[cur] = s.size();
+}
+void build_fails() {
+  queue<int> q;
+  for (int i = 0; i < 26; i++)
+    if (trie[0][i]) q.push(trie[0][i]);
+  while (q.size()) {
+    int cur = q.front(); q.pop();
+    exit_link[cur] = is_end[fail[cur]] > 0
+                     ? fail[cur] : exit_link[fail[cur]];
+    for (int d = 0; d < 26; d++) {
+      if (trie[cur][d]) {
+        q.push(trie[cur][d]);
+        fail[trie[cur][d]] = trie[fail[cur]][d];
+      } else {
+        trie[cur][d] = trie[fail[cur]][d];
+      }
+    }
+  }
+}
+\end{minted}
+\subsection{Booth's Algorithm (Min Lex Rotation)}
+$O(N)$. Finds min lexicographic rotation.
+\textbf{Returns:} The 0-indexed starting position of the lexicographically smallest rotation.
+\begin{minted}{c++}
+int minLex(string &s) {
+  int len = s.size();
+  int n = 2 * len, i = 0, j = 1, k = 0;
+  int a, b;
+  while (i + k < n && j + k < n) {
+    a = (i + k >= len) ? s[i + k - len] : s[i + k];
+    b = (j + k >= len) ? s[j + k - len] : s[j + k];
+    if (a == b) ++k;
+    else if (a > b) {
+      i = i + k + 1;
+      if (i <= j) i = j + 1;
+      k = 0;
+    } else {
+      j = j + k + 1;
+      if (j <= i) j = i + 1;
+      k = 0;
+    }
+  }
+  return min(i, j);
+}
+\end{minted}
+\subsection{Periods}
+A string has period $p$ if $s[i] = s[i+p]$ for all $i$. Equivalently, $n-p$ is a border length.
+The chain $\pi[n-1] \to \pi[\pi[n-1]-1] \to \cdots \to 0$ yields all borders; subtracting from $n$ gives all periods.
+\textbf{When to use:} periodicity/compression problems, checking if a string repeats, shift/cut operations.
+\begin{minted}{c++}
+vector<int> getPeriods(const vector<int> &pi) {
+  if (pi.empty()) return {};
+  int n = pi.size(), p = pi.back();
+  vector<int> periods;
+  while (p > 0) {
+    periods.push_back(n - p);
+    p = pi[p - 1];
+  }
+  return periods;
+}
+\end{minted}
+\subsection{KMP Automaton}
+Precomputes \texttt{nxt[i][c]} = LPS after adding character \texttt{c} from state \texttt{i} (matched prefix length).
+Eliminates back-tracking, enabling $O(N)$ DP over text.
+\textbf{When to use:} counting strings of length $N$ that avoid a pattern, DP where pattern matching is a constraint.
+\begin{minted}{c++}
+const int K = 26;
+vector<array<int,K>> buildAuto(const string &s) {
+  auto pi = getLps(s);
+  int n = s.size();
+  vector<array<int,K>> nxt(n + 1);
+  nxt[0][s[0]-'a'] = 1;
+  for (int i = 1; i <= n; i++)
+    for (int c = 0; c < K; c++) {
+      if (i == n || c != s[i] - 'a')
+        nxt[i][c] = nxt[pi[i-1]][c];
+      else
+        nxt[i][c] = i + 1;
+    }
+  return nxt;
+}
+\end{minted}
+\subsection{Lyndon Factorization (Duval)}
+$O(N)$. Decomposes string into non-increasing Lyndon words. A Lyndon word is strictly smaller than all its proper rotations.
+\textbf{When to use:} necklace problems, string decomposition into Lyndon words, minimal string rotation (alternative to Booth).
+\begin{minted}{c++}
+vector<string> lyndon(const string &s) {
+  int n = s.size();
+  vector<string> res;
+  for (int i = 0; i < n; ) {
+    int j = i + 1, k = i;
+    while (j < n && s[k] <= s[j]) {
+      if (s[k] < s[j]) k = i;
+      else k++;
+      j++;
+    }
+    while (i <= k) {
+      res.push_back(s.substr(i, j - k));
+      i += j - k;
+    }
+  }
+  return res;
+}
+\end{minted}
+\subsection{Eertree (Palindromic Tree)}
+$O(N)$. Every distinct palindrome corresponds to a unique node. \texttt{len[v]} = palindrome length,
+\texttt{link[v]} = longest proper palindromic suffix, \texttt{cnt[v]} = occurrence count (filled after construction).
+\textbf{When to use:} count distinct palindromes, palindrome occurrences, palindrome factorization, DP on palindromes.
+\begin{minted}{c++}
+struct Eertree {
+  vector<array<int,26>> nxt;
+  vector<int> len, link, cnt;
+  int last;
+  Eertree(const string &s) : last(1) {
+    len = {-1, 0}; link = {0, 0}; cnt = {0, 0};
+    nxt.push_back({}); nxt.push_back({});
+    for (int i = 0; i < (int)s.size(); i++) add(s, i);
+    for (int i = (int)len.size() - 1; i > 1; i--)
+      cnt[link[i]] += cnt[i];
+  }
+  void add(const string &s, int i) {
+    int c = s[i] - 'a', cur = last;
+    while (true) {
+      int cl = len[cur];
+      if (i - cl - 1 >= 0 && s[i - cl - 1] == s[i]) break;
+      cur = link[cur];
+    }
+    if (nxt[cur][c]) {
+      last = nxt[cur][c]; cnt[last]++; return;
+    }
+    int node = len.size();
+    nxt.push_back({});
+    len.push_back(len[cur] + 2);
+    cnt.push_back(1);
+    nxt[cur][c] = node;
+    if (len[node] == 1) {
+      link.push_back(1); last = node; return;
+    }
+    int l = link[cur];
+    while (true) {
+      int ll = len[l];
+      if (i - ll - 1 >= 0 && s[i - ll - 1] == s[i]) break;
+      l = link[l];
+    }
+    link.push_back(nxt[l][c]);
+    last = node;
+  }
+};
+\end{minted}

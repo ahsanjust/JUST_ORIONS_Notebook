@@ -1,6 +1,6 @@
 \documentclass[10pt, a4paper, oneside]{article}
 \usepackage[left=0.1in,right=0.1in,top=0.25in,bottom=0.15in,headsep=0.05in,headheight=14.5pt]{geometry}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 \usepackage{fancyhdr}
 \usepackage{xcolor}
 \usepackage{tocloft}
@@ -18,14 +18,15 @@
 \setlength{\columnsep}{0.4cm}
 \setlength{\columnseprule}{0.1pt}
 \setlength{\parskip}{0pt}
+\setlength{\multicolsep}{0pt}
 
 \setlength{\fboxsep}{1pt}%
 \setlength{\fboxrule}{0.01pt}%
 
 \titleformat{\section}{\normalfont\fontsize{10}{10}\bfseries}{\thesection}{1em}{}[\vspace{1pt}\titlerule]
 \titleformat{\subsection}{\normalfont\fontsize{10}{10}\bfseries}{\thesubsection}{0.5em}{}[\vspace{1pt}\titlerule]
-\titlespacing*{\section}{0pt}{3pt}{2pt}
-\titlespacing*{\subsection}{0pt}{2pt}{2pt}
+\titlespacing*{\section}{0pt}{2pt}{1pt}
+\titlespacing*{\subsection}{0pt}{1pt}{1pt}
 
 %\renewcommand{\ttdefault}{pcr}
 \renewcommand\cftsecfont{\fontsize{10}{11}\bfseries}
@@ -38,8 +39,9 @@
 \renewcommand{\theFancyVerbLine}{
   \sffamily\textcolor[rgb]{1.0,0.5,0.5}{\scriptsize\arabic{FancyVerbLine}}}
   
-\setminted{breaklines, breaksymbolleft=\ensuremath{\hookrightarrow},
-breakafter={,+-*;>=}, breakbefore={</}, tabsize=2, obeytabs, mathescape, framesep=3pt, fontsize=\fontsize{9}{10}}
+\setminted{breaklines, breakanywhere=true, breaksymbolleft=\ensuremath{\hookrightarrow},
+breakafter={,+-*;>=}, breakbefore={</}, tabsize=2, obeytabs, mathescape, framesep=2pt, fontsize=\fontsize{9}{10}}
+\def\FancyVerbVspace{0pt}
 
 \pagestyle{fancy}
 \fancyhead[L]{\small\thepage}
@@ -73,23 +75,25 @@ breakafter={,+-*;>=}, breakbefore={</}, tabsize=2, obeytabs, mathescape, framese
 
 \begin{document}
 \begin{landscape}
+\raggedbottom
 \begin{multicols*}{3}
-
+\raggedcolumns
+\raggedbottom
 \maketitle
 \vspace{-3ex}
 \tableofcontents
 \pagestyle{fancy}
  
-\raggedbottom
 \input{sections/01_setup_and_basics}
-\input{sections/02_data_structure}
-\input{sections/03_graph_theory}
-\input{sections/04_number_theory}
-\input{sections/05_combinatorics}
-\input{sections/06_math}
-\input{sections/07_strings}
+\input{sections/02_math}
+\input{sections/03_number_theory}
+\input{sections/04_combinatorics}
+\input{sections/05_data_structure}
+\input{sections/06_strings}
+\input{sections/07_graph_theory}
 \input{sections/08_geometry}
-\input{sections/09_others}
+\input{sections/09_dynamic_programming}
+\input{sections/10_others}
 \end{multicols*}
 \end{landscape}
 \end{document}
