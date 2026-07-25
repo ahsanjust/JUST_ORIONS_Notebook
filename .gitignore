@@ -27,5 +27,5 @@ _minted-*/
 page*.txt
 
 # PDF outputs
-notebook/main.pdf
-notebook/JUST_ORIONS_Notebook.pdf
+# notebook/main.pdf
+# notebook/JUST_ORIONS_Notebook.pdf
