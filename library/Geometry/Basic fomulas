@@ -1,0 +1,43 @@
+Arc distance : length of the curved path. (s = r * theta)
+Chord distance : straight line between two points. (d = 2 * r * sin(theta / 2))
+
+Minute to Degree: θ_degrees = θ_minutes ÷ 60 
+Degree to Radian: θ_radians = θ_degrees × (π / 180) 
+Minute to Radian: θ_radians = θ_minutes × (π / 10800) 
+Radians to Degrees: θ_degrees = θ_radians × (180 / π) 
+Degrees to Minutes: θ_bytes = θ_degrees × 60 
+Radians to Minutes: θ_minutes = θ_radians × (10800 / π)
+
+inline double dist2D(double x1, double y1, double x2, double y2) {
+  return hypot(x2 - x1, y2 - y1);
+}
+
+inline double dist3D(double x1, double y1, double z1, double x2, double y2, double z2) {
+  return hypot(x2 - x1, y2 - y1, z2 - z1);
+}
+inline double dist2D(P &A, P &B) {
+  return hypot(B.x - A.x, B.y - A.y);
+}
+
+bool CheckIfThePointInsideTheCirle(array<double, 2> &p, double x, double y, double r) {
+  return dist2D(x, y, p[0], p[1]) < r;
+}
+
+volume of rectangle : h * l * w
+volume of right angle triange : 1 / 2 * b * h * w 
+volume : area * depth
+
+long double inradius(long double a, long double b, long double c) {
+  long double s = (a + b + c) / 2.0;
+  long double area = sqrt(s * (s - a) * (s - b) * (s - c));
+  if (area == 0) return 0; // Invalid triangle
+  return area / s;
+}
+
+double circumradius(double a, double b, double c) {
+  double s = (a + b + c) / 2.0;
+  double area = sqrt(s * (s - a) * (s - b) * (s - c));
+  if (area == 0) return 0; // Invalid triangle
+  double R = (a * b * c) / (4.0 * area);
+  return R;
+}

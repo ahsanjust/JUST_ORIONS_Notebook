@@ -1,0 +1,22 @@
+const int N = 1e6 + 10;
+bitset<N> yo;
+vector<int> primes;
+
+void sieve() {
+  yo.set();
+  yo[0] = yo[1] = 0;
+  for (int i = 2; i * i < N; i++) {
+    if (yo[i]) {
+      for (int j = i * i; j < N; j += i) {
+        yo[j] = false;
+      }
+    }
+  }
+  primes.push_back(2);
+  for (int i = 3; i < N; i += 2) {
+    if (yo[i]) {
+      primes.push_back(i);
+    }
+  }
+}
+bool isprime(int x) { return yo[x]; }

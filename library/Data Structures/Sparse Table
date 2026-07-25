@@ -1,0 +1,25 @@
+template <typename T>
+struct SparseTable {
+  int n;
+  vector<vector<T>> table;
+  T identity;
+  T merge(T a, T b) { return max(a, b); }
+  SparseTable(const vector<T> &A, T id) {
+    n = A.size();
+    identity = id;
+    int LG = 32 - __builtin_clz(n);
+    table.assign(LG, vector<T>(n, id));
+    table[0] = A;
+    for (int j = 1; j < LG; j++) {
+      for (int i = 0; i + (1 << j) <= n; i++) {
+        table[j][i] = merge(table[j-1][i], table[j-1][i + (1 << (j-1))]);
+      }
+    }
+  }
+  T query(int l, int r) {
+    if (l > r) return identity;
+    int j = 31 - __builtin_clz(r - l + 1);
+    return merge(table[j][l], table[j][r - (1 << j) + 1]);
+  }
+  T get(int idx) { return table[0][idx]; }
+};

@@ -1,0 +1,50 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+//This is O(n ^ 2) approach, Rather we can solve it in O(n) using suffix array and LCP array, ans : total substring - sum of (LPC);
+struct Node {
+  Node *next[26];
+  Node() : {
+    fill(begin(nxt), end(nxt), nullptr);
+  }
+  bool contain(char c) { return (next[c - 'a'] != nullptr); }
+  void put(char ch, Node *node) { next[ch - 'a'] = node; }
+};
+
+class Trie {
+private:
+  Node *root;
+
+public:
+  Trie() { root = new Node(); }
+
+  int getDistinctSubstringsCount(int startIndex, string &s) {
+    int distinctCount = 0;
+    Node *node = root;
+    for (int i = startIndex; i < s.size(); i++) {
+      if (!node->contain(s[i])) {
+        distinctCount += 1;
+        node->put(s[i], new Node());
+      }
+      node = node->next[s[i] - 'a'];
+    }
+    return distinctCount;
+  }
+};
+
+int countDistinctSubstrings(string s) {
+  int64_t result = 0;
+  Trie trie;
+  for (int i = 0; i < s.size(); i++) {
+    result += trie.getDistinctSubstringsCount(i, s);
+  }
+  return result + 1;
+}
+
+int main() {
+  string s = "ababc";
+  cout << "Number of distinct substrings: " << countDistinctSubstrings(s) << endl;
+  return 0;
+}

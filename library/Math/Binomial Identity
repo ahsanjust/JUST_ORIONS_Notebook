@@ -1,0 +1,100 @@
+প্রতি টি identity-কে এমনভাবে explain করা হলো যা তা মুখস্থ না করে visualize করা যায়।
+
+### 1. Symmetry Rule
+C(n, k) = C(n, n-k)
+
+ধরুন 10 জনের মধ্যে 3 জনকে select করলেন।
+3 জনকে select করা আর 7 জনকে বাদ দেয়া আসলে একই ঘটনা।
+তাই,
+10 জন থেকে 3 জন বাছাই করার উপায় = 10 জন থেকে 7 জন বাদ দেয়ার উপায়।
+
+### 2. Pascal's Identity
+C(n, k) = C(n-1, k-1) + C(n-1, k)
+
+ধরুন n জনের মধ্যে k জনের team বানাতে হবে।
+একজন নির্দিষ্ট ব্যক্তি X কে নিয়ে চিন্তা করুন।
+দুইটা case হতে পারে
+
+- X team এ আছে
+  তাহলে বাকি n-1 জন থেকে k-1 জন নিতে হবে
+- X team এ নেই
+  তাহলে n-1 জন থেকেই k জন নিতে হবে
+
+এই দুই case যোগ করলেই total answer পাওয়া যায়।
+
+### 3. Committee Selection Identity
+k * C(n, k) = n * C(n-1, k-1)
+
+n জন থেকে k জনের committee বানিয়ে একজন President নির্বাচন করতে হবে।
+
+একভাবে
+- আগে committee বানান
+- তারপর committee থেকে President নির্বাচন করুন
+
+আরেকভাবে
+- আগে President নির্বাচন করুন
+- তারপর বাকি সদস্য নির্বাচন করুন
+
+দুইভাবেই একই জিনিস count হচ্ছে, তাই answer সমান।
+
+### 4. Total Subsets
+Sum_{k=0}^{n} C(n, k) = 2^n
+
+প্রতি টি element এর জন্য 2টা choice আছে
+- নেবে
+- নেবে না
+
+n টি element এর total possibilities
+2 * 2 * ... * 2
+= 2^n
+
+### 5. Alternating Sum
+Sum_{k=0}^{n} (-1)^k * C(n, k) = 0
+
+Even size subset এবং odd size subset এর সংখ্যা সমান।
+একদলকে positive আর অন্যদলকে negative ধরলে তারা একে অপরকে cancel করে দেয়।
+তাই answer 0 হয়।
+
+### 6. Even and Odd Indices Sum
+C(n,0) + C(n,2) + C(n,4) + ... = 2^(n-1)
+C(n,1) + C(n,3) + C(n,5) + ... = 2^(n-1)
+
+সব subsets মোট 2^n।
+Even size subset এবং odd size subset সমান সংখ্যক।
+
+তাই প্রত্যেকের contribution হয় total এর অর্ধেক।
+অর্থাৎ 2^(n-1)।
+
+### 7. Hockey Stick Identity
+Sum_{i=k}^{n} C(i, k) = C(n+1, k+1)
+
+Pascal Triangle এ diagonal বরাবর যোগ করলে একটা hockey stick এর মতো shape তৈরি হয়।
+মজার ব্যাপার হলো, পুরা diagonal এর sum গিয়ে শেষ হয় মাত্র একটা value তে।
+
+### 8. Another Form of Hockey Stick
+Sum_{m=0}^{n} C(m, k) = C(n+1, k+1)
+
+এটা আগের identity-রই আরেকটা representation।
+কারণ m < k হলে C(m, k) এর value 0 হয়।
+তাই কার্যকরী summation k থেকেই শুরু হয়।
+
+### 9. Vandermonde's Identity
+Sum_{k=0}^{r} C(m, k) * C(n, r-k) = C(m+n, r)
+
+ধরুন m জন ছেলে আর n জন মেয়ে আছে।
+r জনের team বানাতে হবে।
+আপনি
+- 0 ছেলে, r মেয়ে
+- 1 ছেলে, r-1 মেয়ে
+- 2 ছেলে, r-2 মেয়ে
+এভাবে সব case count করতে পারেন।
+অথবা সরাসরি m+n জন থেকে r জন select করতে পারেন।
+দুইভাবেই একই answer পাওয়া যাবে।
+
+### 10. Sum of Squares
+Sum_{k=0}^{n} C(n, k)^2 = C(2n, n)
+
+ধরুন n জনের দুইটা group আছে।
+আপনাকে মোট n জন select করতে হবে।
+এক group থেকে k জন এবং অন্যখ group থেকে n-k জন নেওয়ার সব possible way যোগ করলে শেষ পর্যন্ত সেটা 2n জন থেকে n জন বাছাই করার সমান হয়।
+এটাই identity-টির intuition।

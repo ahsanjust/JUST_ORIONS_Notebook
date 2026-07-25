@@ -1,0 +1,42 @@
+long double polygon_area(vector<P> &p) {
+  int64_t area = 0, n = p.size();
+  for (int i = 0; i < n; ++i) area += p[i] * p[(i + 1) % n];
+  return abs(area) / 2;
+}
+
+vector<P> convexHull(vector<P> p) {
+  int n = p.size();
+  if (n <= 2) return p;
+  sort(p.begin(), p.end());
+  vector<P> low;
+  // use '<' -> if we want to keep co-linear points
+  // use '<=' -> if we want to remove co-linear points
+  for (int i = 0; i < n; i++) {
+    while (low.size() >= 2 && low[low.size() - 2].cross(low[low.size() - 1], p[i]) < 0) low.pop_back();
+    low.push_back(p[i]);
+  }
+  vector<P> up;
+  for (int i = n - 1; i >= 0; --i) {
+    while (up.size() >= 2 && up[up.size() - 2].cross(up[up.size() - 1], p[i]) < 0) up.pop_back();
+    up.push_back(p[i]);
+  }
+  low.pop_back();
+  up.pop_back();
+  low.insert(low.end(), up.begin(), up.end());
+  return low;
+}
+
+int is_point_in_polygon(const vector<P>& p, P q) {
+  int c = 0;
+  for (int i = 0, n = p.size(); i < n; ++i) {
+    P a = p[i], b = p[(i + 1) % n];
+    if ((b - a) * (q - a) == 0 && min(a.x, b.x) <= q.x && q.x <= max(a.x, b.x) && min(a.y, b.y) <= q.y && q.y <= max(a.y, b.y)) return 2;
+    if ((a.y > q.y) != (b.y > q.y) && ((b - a) * (q - a) > 0) == (a.y < b.y)) c = !c;
+  }
+  return c;
+}
+
+double angle_at_vertex(P &a, P &b, P &c) {
+  double ang_rad = atan2l(fabs(b.cross(a, c)), b.dot(a, c));
+  return ang_rad * 180.0L / acosl(-1.0L);
+}

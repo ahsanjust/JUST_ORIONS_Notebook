@@ -1,0 +1,28 @@
+struct fenwick {
+  vector<int64_t> f, vals;
+  int n;
+  fenwick(int _n) : n(_n), f(_n + 1, 0), vals(_n, 0) {}
+  void add(int i, int64_t v) {
+    assert(i >= 0 && i < n);
+    vals[i] += v;
+    for (++i; i <= n; i += i & -i) {
+      f[i] += v;
+    }
+  }
+  void set(int i, int64_t v) {
+    assert(i >= 0 && i < n);
+    add(i, v - vals[i]);
+  }
+  int64_t get(int i) {
+    assert(i >= 0 && i < n);
+    int64_t ret = 0;
+    for (++i; i > 0; i -= i & -i) {
+      ret += f[i];
+    }
+    return ret;
+  }
+  int64_t range(int l, int r) {
+    if (l > r) return 0;
+    return get(r) - get(l - 1);
+  }
+};
