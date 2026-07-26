@@ -65,6 +65,12 @@ Template/
 │   ├── STRESSTEST_GUIDE.md
 │   └── STRESSTEST_LOG.md
 │
+├── references/             # External CP reference notebooks
+│   ├── cp-reference/
+│   ├── Effervescent_Code_Library/
+│   ├── icpc-teamnote/
+│   └── kactl/
+│
 ├── Makefile                # Build system for the notebook PDF
 ├── README.md
 └── .gitignore
