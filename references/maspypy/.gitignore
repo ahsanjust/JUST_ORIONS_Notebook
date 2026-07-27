@@ -1,0 +1,4 @@
+*.gch
+
+temp.cpp
+my_template_compiled.hpp

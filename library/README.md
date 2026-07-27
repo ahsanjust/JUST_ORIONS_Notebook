@@ -22,7 +22,8 @@ Resources/
 │   ├── kactl/              # KTH ACM Contest Template Library
 │   ├── cp-reference/       # CP Reference by zhtluo
 │   ├── Effervescent_Code_Library/
-│   └── icpc-teamnote/      # ICPC Team Note by justiceHui
+│   ├── icpc-teamnote/      # ICPC Team Note by justiceHui
+│   └── maspypy/            # maspypy's competitive programming library
 └── Tools/                  # Utilities and references
     ├── debug-tips.txt      # Debugging and optimization tips
     └── stl-ref.txt         # C++ STL quick reference

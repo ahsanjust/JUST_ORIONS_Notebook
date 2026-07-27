@@ -69,7 +69,8 @@ Template/
 │   ├── cp-reference/
 │   ├── Effervescent_Code_Library/
 │   ├── icpc-teamnote/
-│   └── kactl/
+│   ├── kactl/
+│   └── maspypy/
 │
 ├── Makefile                # Build system for the notebook PDF
 ├── README.md
