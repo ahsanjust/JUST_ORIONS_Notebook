@@ -110,7 +110,7 @@ Description:
 
 // Trie
 template<typename Key, typename Value>
-using trie = trie<Key, Value, null_type, trie_prefix_search_node_update>;
+using trie_ds = trie<Key, Value, null_type, trie_prefix_search_node_update>;
 /*
 Description:
     A trie (prefix tree) data structure for efficient string operations.
@@ -177,7 +177,7 @@ int main() {
     cout << endl;
 
     // Trie
-    trie<string, int> tr;
+    trie_ds<string, int> tr;
     tr.insert({"apple", 5});
     tr.insert({"banana", 10});
     tr.insert({"app", 3});

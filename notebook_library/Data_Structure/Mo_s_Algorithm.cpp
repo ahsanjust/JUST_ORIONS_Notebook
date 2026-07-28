@@ -1,4 +1,4 @@
-// sort queries: blocks of size B, snake-order within blocks
+// sort queries: blocks of size B, snake-order within blocks (even/odd block sorting)
 sort(cu.begin(), cu.end(), [&](auto &x, auto &y) {
   if (x.l / B != y.l / B)
     return x.l / B < y.l / B;

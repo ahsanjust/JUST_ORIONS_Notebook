@@ -1,49 +1,46 @@
 struct Trie {
   static const int B = 31;
-  vector<array<int, 2>> nxt;
-  vector<int> cnt;
-  Trie() {
-    nxt.push_back({0, 0});
-    cnt.push_back(0);
-  }
+  struct Node { int nxt[2]; int cnt; };
+  vector<Node> pool;
+  Trie() { pool.push_back({0, 0, 0}); }
   void add(int x, int v = 1) {
     int u = 0;
-    cnt[u] += v;
+    pool[u].cnt += v;
     for (int i = B - 1; i >= 0; --i) {
       int d = (x >> i) & 1;
-      if (!nxt[u][d]) {
-        nxt[u][d] = nxt.size();
-        nxt.push_back({0, 0});
-        cnt.push_back(0);
+      if (!pool[u].nxt[d]) {
+        pool[u].nxt[d] = pool.size();
+        pool.push_back({0, 0, 0});
       }
-      u = nxt[u][d];
-      cnt[u] += v;
+      u = pool[u].nxt[d];
+      pool[u].cnt += v;
     }
   }
   int count(int x) {
     int u = 0;
     for (int i = B - 1; i >= 0; --i) {
       int d = (x >> i) & 1;
-      if (!nxt[u][d] || !cnt[nxt[u][d]])
+      int nxt = pool[u].nxt[d];
+      if (!nxt || !pool[nxt].cnt)
         return 0;
-      u = nxt[u][d];
+      u = nxt;
     }
-    return cnt[u];
+    return pool[u].cnt;
   }
   int count_xor_less(int x, int k) {
     int u = 0, ans = 0;
     for (int i = B - 1; i >= 0; --i) {
       int d = (x >> i) & 1;
       if ((k >> i) & 1) {
-        if (nxt[u][d])
-          ans += cnt[nxt[u][d]];
-        if (!nxt[u][d ^ 1])
+        if (pool[u].nxt[d])
+          ans += pool[pool[u].nxt[d]].cnt;
+        if (!pool[u].nxt[d ^ 1])
           break;
-        u = nxt[u][d ^ 1];
+        u = pool[u].nxt[d ^ 1];
       } else {
-        if (!nxt[u][d])
+        if (!pool[u].nxt[d])
           break;
-        u = nxt[u][d];
+        u = pool[u].nxt[d];
       }
     }
     return ans;
@@ -51,32 +48,32 @@ struct Trie {
   int count_xor_greater(int x, int k) {
     if (k >= (1LL << B) - 1)
       return 0;
-    return cnt[0] - count_xor_less(x, k + 1);
+    return pool[0].cnt - count_xor_less(x, k + 1);
   }
   int get_kth(int k) {
-    if (cnt[0] < k)
+    if (pool[0].cnt < k)
       return -1;
     int u = 0, ans = 0;
     for (int i = B - 1; i >= 0; --i) {
-      int left = nxt[u][0] ? cnt[nxt[u][0]] : 0;
+      int left = pool[u].nxt[0] ? pool[pool[u].nxt[0]].cnt : 0;
       if (k <= left)
-        u = nxt[u][0];
+        u = pool[u].nxt[0];
       else
-        k -= left, u = nxt[u][1], ans |= (1 << i);
+        k -= left, u = pool[u].nxt[1], ans |= (1 << i);
     }
     return ans;
   }
   int get_xor_kth(int x, int k) {
-    if (cnt[0] < k)
+    if (pool[0].cnt < k)
       return -1;
     int u = 0, ans = 0;
     for (int i = B - 1; i >= 0; --i) {
       int d = (x >> i) & 1;
-      int req = nxt[u][d] ? cnt[nxt[u][d]] : 0;
+      int req = pool[u].nxt[d] ? pool[pool[u].nxt[d]].cnt : 0;
       if (k <= req)
-        u = nxt[u][d], ans |= (0 << i);
+        u = pool[u].nxt[d];
       else
-        k -= req, u = nxt[u][d ^ 1], ans |= (1 << i);
+        k -= req, u = pool[u].nxt[d ^ 1], ans |= (1 << i);
     }
     return ans;
   }
@@ -84,19 +81,19 @@ struct Trie {
     if (!t1 || t2 == 2)
       return 0;
     if ((t1 == 2 && !t2) || b < 0)
-      return cnt[u];
+      return pool[u].cnt;
     int d = (x >> b) & 1;
     int64_t res = 0;
     if (d) {
-      if (nxt[u][1])
-        res += go(nxt[u][1], b - 1, x, t1 == 1 ? 0 : t1, t2 == 1 ? 0 : t2);
-      if (nxt[u][0])
-        res += go(nxt[u][0], b - 1, x, t1 == 1 ? 2 : t1, t2);
+      if (pool[u].nxt[1])
+        res += go(pool[u].nxt[1], b - 1, x, t1 == 1 ? 0 : t1, t2 == 1 ? 0 : t2);
+      if (pool[u].nxt[0])
+        res += go(pool[u].nxt[0], b - 1, x, t1 == 1 ? 2 : t1, t2);
     } else {
-      if (nxt[u][1])
-        res += go(nxt[u][1], b - 1, x, t1, t2 == 1 ? 2 : t2);
-      if (nxt[u][0])
-        res += go(nxt[u][0], b - 1, x, t1, t2);
+      if (pool[u].nxt[1])
+        res += go(pool[u].nxt[1], b - 1, x, t1, t2 == 1 ? 2 : t2);
+      if (pool[u].nxt[0])
+        res += go(pool[u].nxt[0], b - 1, x, t1, t2);
     }
     return res;
   }

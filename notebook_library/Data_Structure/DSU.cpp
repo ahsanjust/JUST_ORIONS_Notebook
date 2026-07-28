@@ -1,26 +1,20 @@
 struct dsu {
-  vector<int> par, rank, sz;
+  vector<int> e;  // negative = size (root), non-negative = parent
   int cnt;
-  dsu(int n) {
-    par.resize(n);
-    iota(par.begin(), par.end(), 0);
-    rank.resize(n, 0);
-    sz.resize(n, 1);
-    cnt = n;
-  }
+  dsu(int n) : e(n, -1), cnt(n) {}
   int find(int x) {
-    return x == par[x] ? x : par[x] = find(par[x]);
+    return e[x] < 0 ? x : e[x] = find(e[x]);
   }
   bool unite(int x, int y) {
     x = find(x), y = find(y);
     if (x == y)
       return false;
-    if (rank[x] < rank[y])
-      swap(x, y);
-    par[y] = x, sz[x] += sz[y];
-    if (rank[x] == rank[y])
-      rank[x] += 1;
+    if (e[x] > e[y])
+      swap(x, y);  // more negative = larger size
+    e[x] += e[y];
+    e[y] = x;
     --cnt;
     return true;
   }
+  int size(int x) { return -e[find(x)]; }
 };

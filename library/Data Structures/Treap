@@ -17,9 +17,7 @@ struct Treap {
   void update(Node *&t) {
     if (!t) return;
     t -> size = size(t -> l) + size(t -> r) + 1;
-    t -> sum = t -> data + t -> size * t -> toProp;
-    if (t -> l) t -> sum += t -> l -> sum + t -> l -> size * t -> l -> toProp;
-    if (t -> r) t -> sum += t -> r -> sum + t -> r -> size * t -> r -> toProp;
+    t -> sum = t -> data + (t -> l ? t -> l -> sum : 0) + (t -> r ? t -> r -> sum : 0);
   }
   void push(Node *&t) {
     if (!t) return;
@@ -30,8 +28,14 @@ struct Treap {
     }
     if (t -> toProp) {
       t -> data += t -> toProp;
-      if (t -> l) t -> l -> toProp += t -> toProp;
-      if (t -> r) t -> r -> toProp += t -> toProp;
+      if (t -> l) {
+        t -> l -> toProp += t -> toProp;
+        t -> l -> sum += t -> toProp * t -> l -> size;
+      }
+      if (t -> r) {
+        t -> r -> toProp += t -> toProp;
+        t -> r -> sum += t -> toProp * t -> r -> size;
+      }
       t -> toProp = 0;
     }
   }

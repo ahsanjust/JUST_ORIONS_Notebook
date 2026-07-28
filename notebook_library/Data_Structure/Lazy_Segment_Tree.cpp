@@ -1,23 +1,21 @@
 struct LSeg {
   int n;
   vector<ll> sm, mx, mn, ad, st;
-  vector<char> hz;
-  const ll INF = 1e18;
-  LSeg(int n) : n(n), sm(4 * n), mx(4 * n), mn(4 * n), ad(4 * n), st(4 * n), hz(4 * n) {}
+  const ll INF = 1e18, NO_SET = 9e18;
+  LSeg(int n) : n(n), sm(4 * n), mx(4 * n), mn(4 * n), ad(4 * n), st(4 * n, NO_SET) {}
   void pull(int i) {
     sm[i] = sm[i * 2] + sm[i * 2 + 1];
     mx[i] = max(mx[i * 2], mx[i * 2 + 1]);
     mn[i] = min(mn[i * 2], mn[i * 2 + 1]);
   }
   void pset(int i, int s, int e, ll v) {
-    hz[i] = 1;
     st[i] = v;
     ad[i] = 0;
     sm[i] = v * (e - s + 1);
     mx[i] = mn[i] = v;
   }
   void padd(int i, int s, int e, ll v) {
-    if (hz[i])
+    if (st[i] != NO_SET)
       st[i] += v;
     else
       ad[i] += v;
@@ -29,10 +27,10 @@ struct LSeg {
     if (s == e)
       return;
     int m = (s + e) / 2;
-    if (hz[i]) {
+    if (st[i] != NO_SET) {
       pset(i * 2, s, m, st[i]);
       pset(i * 2 + 1, m + 1, e, st[i]);
-      hz[i] = 0;
+      st[i] = NO_SET;
     }
     if (ad[i]) {
       padd(i * 2, s, m, ad[i]);
