@@ -10,7 +10,7 @@ Each entry: **Section file** — subsections tested, variant compile flags passe
 | 2026-07-22 | `02_math.tex` | Matrix Exponentiation (fib, expo, mul), XOR Basis, Gaussian Elimination, NTT | same 3 variants | 2000-5000 each | ✅ PASS |
 | 2026-07-22 | `03_number_theory.tex` | Montgomery, Pollard Rho | `-O2` (debug trace) | manual trace | ❌ 3 bugs found (#3, #4, #5) |
 | 2026-07-22 | `05_data_structure.tex` | Sparse2D (RMQ), Binary Trie | same 3 variants | 2000-5000 each | ✅ PASS |
-| 2026-07-22 | `02_math.tex` | FFT, FWHT, Lagrange, Berlekamp-Massey | `-O2`, `-O0 -fsanitize=address,undefined`, `#define int long long` | 2000-5000 each | ✅ FWHT/BM PASS; ❌ FFT empty-guard missing (#7); ❌ Lagrange OOB (#6) |
+| 2026-07-22 | `02_math.tex` | FFT, FWHT, Berlekamp-Massey | `-O2`, `-O0 -fsanitize=address,undefined`, `#define int long long` | 2000-5000 each | ✅ FWHT/BM PASS; ❌ FFT empty-guard missing (#7) |
 | 2026-07-22 | `03_number_theory.tex` | EGCD/CRT, SPF, Segmented Sieve, Phi | `-O2`, `-O0 -fsanitize=address,undefined`, `#define int long long` | 2000-5000 each | ✅ SPF/Phi/EGCD PASS; ❌ SegSieve L=0 (#9); 🟡 EGCD sign (#8) |
 | 2026-07-23 | `04_combinatorics.tex` | Burnside/Polya, Lucas Theorem, Bishop Placement | `-O2`, `-O0 -fsanitize=address,undefined` | Burnside: 2000; Lucas: 5000+500 properties; Bishop: full brute N≤4 + N=5 K∈{0,1,2,7,8,9} + formula K=2 up to N=20 | ✅ Burnside/Lucas PASS; ❌ Bishop DP geometric order bug (#10 🔴) |
 | 2026-07-23 | `06_strings.tex` | Manacher, Z-Algorithm, SOS DP, Digit DP, Closest Pair of Points, Suffix Array, Aho-Corasick | `-O2`, `-O0 -fsanitize=address,undefined` | 2000-5000 each | ✅ Manacher/SOS/Digit/Closest/SA/AC PASS; ❌ Z empty-string OOB (#11 🟡) |

@@ -1,8 +1,7 @@
 ll discrete_log(ll a, ll b, ll m) {
   a %= m;
   b %= m;
-  if (b == 1)
-    return 0;
+  if (b == 1) return 0;
   ll n = sqrt(m) + 1;
   unordered_map<ll, ll> baby;
   ll cur = b;
@@ -11,14 +10,12 @@ ll discrete_log(ll a, ll b, ll m) {
     cur = cur * a % m;
   }
   ll an = 1;
-  for (ll i = 0; i < n; i++)
-    an = an * a % m;
+  for (ll i = 0; i < n; i++) an = an * a % m;
   cur = 1;
   for (ll p = 0; p <= n; p++) {
     if (baby.count(cur)) {
       ll x = p * n - baby[cur];
-      if (x >= 0)
-        return x;
+      if (x >= 0) return x;
     }
     cur = cur * an % m;
   }

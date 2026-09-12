@@ -13,8 +13,7 @@ void bellmanFord(vector<BFNode>& nodes, vector<Edge>& eds, int s) {
   for (int i = 0; i < n; i++) {
     bool changed = false;
     for (Edge& e : eds) {
-      if (nodes[e.a].dist == LINF)
-        continue;
+      if (nodes[e.a].dist == LINF) continue;
       ll d = nodes[e.a].dist + e.w;
       if (d < nodes[e.b].dist) {
         nodes[e.b].dist = (i < n - 1 ? d : -LINF);
@@ -22,11 +21,9 @@ void bellmanFord(vector<BFNode>& nodes, vector<Edge>& eds, int s) {
         changed = true;
       }
     }
-    if (!changed)
-      break;
+    if (!changed) break;
   }
   for (int i = 0; i < n; i++)
     for (Edge& e : eds)
-      if (nodes[e.a].dist == -LINF)
-        nodes[e.b].dist = -LINF;
+      if (nodes[e.a].dist == -LINF) nodes[e.b].dist = -LINF;
 }

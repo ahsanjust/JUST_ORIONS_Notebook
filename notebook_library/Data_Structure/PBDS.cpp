@@ -21,8 +21,6 @@ using OS = tree<T, null_type, Cmp, rb_tree_tag, tree_order_statistics_node_updat
 
 // --- Custom Comparator Example ---
 struct cmp {
-  bool operator()(int a, int b) {
-    return a > b;
-  }  // must be strict
+  bool operator()(int a, int b) { return a > b; }  // must be strict
 };
 using custom_set = OS<int, cmp>;

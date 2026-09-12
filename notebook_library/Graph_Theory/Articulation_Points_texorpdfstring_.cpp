@@ -13,26 +13,21 @@ struct Articulation {
     tin[u] = low[u] = timer++;
     int children = 0;
     for (auto [v, eid] : adj[u]) {
-      if (eid == peid)
-        continue;
+      if (eid == peid) continue;
       if (tin[v] != -1) {
         low[u] = min(low[u], tin[v]);
       } else {
         children++;
         dfs(v, eid);
         low[u] = min(low[u], low[v]);
-        if (low[v] >= tin[u] && peid != -1)
-          is_art[u] = true;
-        if (low[v] > tin[u])
-          bridges.push_back({min(u, v), max(u, v)});
+        if (low[v] >= tin[u] && peid != -1) is_art[u] = true;
+        if (low[v] > tin[u]) bridges.push_back({min(u, v), max(u, v)});
       }
     }
-    if (peid == -1 && children > 1)
-      is_art[u] = true;
+    if (peid == -1 && children > 1) is_art[u] = true;
   }
   void build() {
     for (int i = 0; i < n; i++)
-      if (tin[i] == -1)
-        dfs(i);
+      if (tin[i] == -1) dfs(i);
   }
 };

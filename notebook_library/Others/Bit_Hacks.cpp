@@ -34,8 +34,7 @@ x & -x                 // LSB value
 }
 // --- Iterate submasks of mask m ---
 for (int s = m;; s = (s - 1) & m) {
-  if (s == 0)
-    break;
+  if (s == 0) break;
 }
 // --- Next number with same popcount ---
 int next_popcount(int x) {

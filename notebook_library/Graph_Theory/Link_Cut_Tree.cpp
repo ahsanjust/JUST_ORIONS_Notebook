@@ -6,30 +6,22 @@ struct Node {
     fix();
   }
   void fix() {
-    if (c[0])
-      c[0]->p = this;
-    if (c[1])
-      c[1]->p = this;
+    if (c[0]) c[0]->p = this;
+    if (c[1]) c[1]->p = this;
   }
   void pushFlip() {
-    if (!flip)
-      return;
+    if (!flip) return;
     flip = 0;
     swap(c[0], c[1]);
-    if (c[0])
-      c[0]->flip ^= 1;
-    if (c[1])
-      c[1]->flip ^= 1;
+    if (c[0]) c[0]->flip ^= 1;
+    if (c[1]) c[1]->flip ^= 1;
   }
-  int up() {
-    return p ? p->c[1] == this : -1;
-  }
+  int up() { return p ? p->c[1] == this : -1; }
   void rot(int i, int b) {
     int h = i ^ b;
     Node *x = c[i], *y = b == 2 ? x : x->c[h];
     Node* z = b ? y : x;
-    if ((y->p = p))
-      p->c[up()] = y;
+    if ((y->p = p)) p->c[up()] = y;
     c[i] = z->c[i ^ 1];
     if (b < 2) {
       x->c[h] = y->c[h ^ 1];
@@ -39,21 +31,17 @@ struct Node {
     fix();
     x->fix();
     y->fix();
-    if (p)
-      p->fix();
+    if (p) p->fix();
     swap(pp, y->pp);
   }
   void splay() {
     for (pushFlip(); p;) {
-      if (p->p)
-        p->p->pushFlip();
+      if (p->p) p->p->pushFlip();
       p->pushFlip();
       pushFlip();
       int c1 = up(), c2 = p->up();
-      if (c2 == -1)
-        p->rot(c1, 2);
-      else
-        p->p->rot(c2, c1 != c2);
+      if (c2 == -1) p->rot(c1, 2);
+      else p->p->rot(c2, c1 != c2);
     }
   }
   Node* first() {
@@ -72,8 +60,7 @@ struct LinkCut {
     Node *x = &node[u], *top = &node[v];
     makeRoot(top);
     x->splay();
-    if (x->pp)
-      x->pp = 0;
+    if (x->pp) x->pp = 0;
     else {
       x->c[0] = top->p = 0;
       x->fix();
@@ -99,8 +86,7 @@ struct LinkCut {
     while (Node* pp = u->pp) {
       pp->splay();
       u->pp = 0;
-      if (pp->c[1])
-        pp->c[1]->p = 0, pp->c[1]->pp = pp;
+      if (pp->c[1]) pp->c[1]->p = 0, pp->c[1]->pp = pp;
       pp->c[1] = u;
       pp->fix();
       u = pp;

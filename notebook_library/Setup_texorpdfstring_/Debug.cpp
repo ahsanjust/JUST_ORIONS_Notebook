@@ -25,8 +25,7 @@ void __p(vector<T> x) {
   cerr << "{";
   int _ = 0;
   for (auto y : x) {
-    if (_++)
-      cerr << ",";
+    if (_++) cerr << ",";
     __p(y);
   }
   cerr << "}";
@@ -37,8 +36,7 @@ void __p(set<T> x) {
   cerr << "{";
   int _ = 0;
   for (auto y : x) {
-    if (_++)
-      cerr << ",";
+    if (_++) cerr << ",";
     __p(y);
   }
   cerr << "}";
@@ -49,8 +47,7 @@ void __p(map<T, U> x) {
   cerr << "{";
   int _ = 0;
   for (auto [k, v] : x) {
-    if (_++)
-      cerr << ",";
+    if (_++) cerr << ",";
     __p(k);
     cerr << ":";
     __p(v);
@@ -61,8 +58,7 @@ void __p(map<T, U> x) {
 template <class T>
 void __p(stack<T> s) {
   vector<T> v;
-  while (v.size() || s.size())
-    v.push_back(s.top()), s.pop();
+  while (v.size() || s.size()) v.push_back(s.top()), s.pop();
   reverse(v.begin(), v.end());
   __p(v);
 }
@@ -70,16 +66,14 @@ void __p(stack<T> s) {
 template <class T>
 void __p(queue<T> q) {
   vector<T> v;
-  while (q.size())
-    v.push_back(q.front()), q.pop();
+  while (q.size()) v.push_back(q.front()), q.pop();
   __p(v);
 }
 // priority_queue<T>
 template <class T>
 void __p(priority_queue<T> q) {
   vector<T> v;
-  while (q.size())
-    v.push_back(q.top()), q.pop();
+  while (q.size()) v.push_back(q.top()), q.pop();
   __p(v);
 }
 
@@ -87,12 +81,10 @@ void __dbg(const char*) {}
 template <class T, class... U>
 void __dbg(const char* s, T x, U... t) {
   int i = 0;
-  while (s[i] && s[i] != ',')
-    i++;
+  while (s[i] && s[i] != ',') i++;
   cerr.write(s, i) << "=";
   __p(x);
-  if constexpr (sizeof...(t))
-    cerr << " || ", __dbg(s + i + 1, t...);
+  if constexpr (sizeof...(t)) cerr << " || ", __dbg(s + i + 1, t...);
 }
 #else
 #define dbg(...)

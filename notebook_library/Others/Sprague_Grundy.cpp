@@ -4,11 +4,9 @@ g[0] = 0;
 for (int i = 1; i <= maxN; i++) {
   bool seen[K] = {};
   for (int m : moves)
-    if (i >= m)
-      seen[g[i - m]] = 1;
+    if (i >= m) seen[g[i - m]] = 1;
   int m = 0;
-  while (seen[m])
-    m++;
+  while (seen[m]) m++;
   g[i] = m;
 }
 // Standard Nim: g(n) = n (XOR pile sizes / 1st wins if != 0)

@@ -11,11 +11,8 @@ struct EulerTour {
     in[u] = ++timer;
     flat.push_back(u);
     for (int v : adj[u])
-      if (v != p)
-        dfs(v, u);
+      if (v != p) dfs(v, u);
     out[u] = timer;
   }
-  void build(int root = 1) {
-    dfs(root);
-  }
+  void build(int root = 1) { dfs(root); }
 };

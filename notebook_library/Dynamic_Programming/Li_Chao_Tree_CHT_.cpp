@@ -1,53 +1,72 @@
 struct LiChao {
   struct Line {
     ll m, b;
-    ll get(ll x) {
-      return m * x + b;
-    }
+    ll eval(ll x) const { return m * x + b; }
   };
+  static constexpr ll INF = 2e18;
   struct Node {
-    int l, r;
-    Line line;
+    int l = -1, r = -1;
+    Line line = {0, INF};
   };
-  vector<Node> seg;
-  LiChao() {
-    seg.push_back({-1, -1, {0, LLONG_MAX}});
-  }
-  void addLine(Line nw, int idx = 0, ll l = -1e9, ll r = 1e9) {
-    ll m = l + (r - l) / 2;
-    bool left = nw.get(l) < seg[idx].line.get(l);
-    bool mid = nw.get(m) < seg[idx].line.get(m);
-    if (mid)
-      swap(seg[idx].line, nw);
-    if (l == r)
-      return;
-    if (left != mid) {
-      if (seg[idx].l == -1) {
-        seg[idx].l = seg.size();
-        seg.push_back({-1, -1, {0, LLONG_MAX}});
+  vector<Node> t = {Node()};
+
+  void add_line(Line nw, int u = 0, ll l = -1e9, ll r = 1e9) {
+    ll mid = l + (r - l) / 2;
+    bool bl = nw.eval(l) < t[u].line.eval(l);
+    bool bm = nw.eval(mid) < t[u].line.eval(mid);
+    if (bm) swap(t[u].line, nw);
+    if (l == r) return;
+    if (bl != bm) {
+      if (t[u].l == -1) {
+        t[u].l = t.size();
+        t.emplace_back();
       }
-      addLine(nw, seg[idx].l, l, m);
+      add_line(nw, t[u].l, l, mid);
     } else {
-      if (seg[idx].r == -1) {
-        seg[idx].r = seg.size();
-        seg.push_back({-1, -1, {0, LLONG_MAX}});
+      if (t[u].r == -1) {
+        t[u].r = t.size();
+        t.emplace_back();
       }
-      addLine(nw, seg[idx].r, m + 1, r);
+      add_line(nw, t[u].r, mid + 1, r);
     }
   }
-  ll query(ll x, int idx = 0, ll l = -1e9, ll r = 1e9) {
-    if (idx == -1)
-      return LLONG_MAX;
-    ll m = l + (r - l) / 2;
-    ll res = seg[idx].line.get(x);
-    if (l != r) {
-      if (x <= m)
-        res = min(res, query(x, seg[idx].l, l, m));
-      else
-        res = min(res, query(x, seg[idx].r, m + 1, r));
+
+  void add_segment(ll ql, ll qr, Line nw, int u = 0, ll l = -1e9, ll r = 1e9) {
+    if (qr < l || r < ql) return;
+    if (ql <= l && r <= qr) {
+      add_line(nw, u, l, r);
+      return;
     }
-    return res;
+    ll mid = l + (r - l) / 2;
+    if (ql <= mid) {
+      if (t[u].l == -1) {
+        t[u].l = t.size();
+        t.emplace_back();
+      }
+      add_segment(ql, qr, nw, t[u].l, l, mid);
+    }
+    if (qr > mid) {
+      if (t[u].r == -1) {
+        t[u].r = t.size();
+        t.emplace_back();
+      }
+      add_segment(ql, qr, nw, t[u].r, mid + 1, r);
+    }
+  }
+
+  ll query(ll x, int u = 0, ll l = -1e9, ll r = 1e9) {
+    if (u == -1) return INF;
+    ll res = t[u].line.eval(x);
+    if (l == r) return res;
+    ll mid = l + (r - l) / 2;
+    if (x <= mid) return min(res, query(x, t[u].l, l, mid));
+    return min(res, query(x, t[u].r, mid + 1, r));
   }
 };
-// LiChao lct; lct.addLine({slope, intercept});
-// ll ans = lct.query(x);
+// Usage:
+// LiChao tree;
+// tree.add_line({m, b});             // y = mx + b for all x in [-1e9, 1e9]
+// tree.add_segment(l, r, {m, b});     // y = mx + b only for x in [l, r]
+// ll min_val = tree.query(x);
+// For max queries: insert {-m, -b} and take -query(x)
+

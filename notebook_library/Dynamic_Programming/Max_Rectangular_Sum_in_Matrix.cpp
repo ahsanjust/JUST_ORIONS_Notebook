@@ -4,8 +4,7 @@ int64_t maxRectSum(vector<vector<int>>& a) {
   for (int top = 0; top < n; top++) {
     vector<int64_t> col(m, 0);
     for (int bot = top; bot < n; bot++) {
-      for (int j = 0; j < m; j++)
-        col[j] += a[bot][j];
+      for (int j = 0; j < m; j++) col[j] += a[bot][j];
       int64_t cur = 0;
       for (int j = 0; j < m; j++) {
         cur = max(col[j], cur + col[j]);

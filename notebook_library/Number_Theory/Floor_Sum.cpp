@@ -9,8 +9,7 @@ ll floor_sum(ll n, ll m, ll a, ll b) {
     b %= m;
   }
   ll y_max = (a * n + b) / m;
-  if (y_max == 0)
-    return ans;
+  if (y_max == 0) return ans;
   ans += floor_sum(y_max, a, m, (a * n + b) % m);
   return ans;
 }

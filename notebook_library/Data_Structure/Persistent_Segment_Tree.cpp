@@ -17,10 +17,13 @@ struct PST {
     int cur = sz++;
     lc[cur] = lc[pre];
     rc[cur] = rc[pre];
-    if (b == e) { val[cur] = val[pre] + v; return cur; }
+    if (b == e) {
+      val[cur] = val[pre] + v;
+      return cur;
+    }
     int m = (b + e) >> 1;
     if (i <= m) lc[cur] = upd(lc[pre], b, m, i, v);
-    else        rc[cur] = upd(rc[pre], m + 1, e, i, v);
+    else rc[cur] = upd(rc[pre], m + 1, e, i, v);
     val[cur] = val[lc[cur]] + val[rc[cur]];
     return cur;
   }
@@ -28,8 +31,16 @@ struct PST {
     while (b < e) {
       int m = (b + e) >> 1;
       int left_cnt = val[lc[cur]] - val[lc[pre]];
-      if (k <= left_cnt) { cur = lc[cur]; pre = lc[pre]; e = m; }
-      else               { cur = rc[cur]; pre = rc[pre]; b = m + 1; k -= left_cnt; }
+      if (k <= left_cnt) {
+        cur = lc[cur];
+        pre = lc[pre];
+        e = m;
+      } else {
+        cur = rc[cur];
+        pre = rc[pre];
+        b = m + 1;
+        k -= left_cnt;
+      }
     }
     return b;
   }
@@ -38,8 +49,16 @@ struct PST {
     int res = 0;
     while (b < e) {
       int m = (b + e) >> 1;
-      if (x <= m) { cur = lc[cur]; pre = lc[pre]; e = m; }
-      else { res += val[lc[cur]] - val[lc[pre]]; cur = rc[cur]; pre = rc[pre]; b = m + 1; }
+      if (x <= m) {
+        cur = lc[cur];
+        pre = lc[pre];
+        e = m;
+      } else {
+        res += val[lc[cur]] - val[lc[pre]];
+        cur = rc[cur];
+        pre = rc[pre];
+        b = m + 1;
+      }
     }
     res += val[cur] - val[pre];
     return res;

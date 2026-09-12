@@ -56,20 +56,7 @@ struct custom_hash {
 };
 gp_hash_table<pair<ll,ll>, ll, custom_hash> mp;
 \end{minted}
-\subsection{Rope (GNU)}
-\texttt{gnu\_cxx::rope} = built-in treap (split/merge/insert/erase $O(\log N)$). \texttt{crope} for char, \texttt{rope<int>} for ints. Include:
-\begin{minted}{c++}
-#include <ext/rope>
-using namespace __gnu_cxx;
-crope r; // crope for char, rope<int> for ints
-r.push_back('a');            // append
-r.insert(0,"hello ");        // insert string
-r.erase(0,6);                // erase 6 chars from pos 0
-r.substr(0,5);               // extract substring [0,5)
-char c = r[3];               // access O(log N)
-cout << r << "\n";           // print whole rope
-string s="test"; crope r2(s.begin(),s.end());
-\end{minted}
+
 \subsection{DSU}
 KACTL-style single-vector DSU: \texttt{e[x]} is negative for roots (stores \texttt{-size}) and non-negative for parents. $66\%$ memory savings vs 3-vector approach. \texttt{size(x)} returns component size. \texttt{cnt} tracks number of components.
 \begin{minted}{c++}

@@ -1,8 +1,7 @@
 using Permutation = vector<int>;
 void operator*=(Permutation& p, Permutation const& q) {
   Permutation copy = p;
-  for (int i = 0; i < p.size(); i++)
-    p[i] = copy[q[i]];
+  for (int i = 0; i < p.size(); i++) p[i] = copy[q[i]];
 }
 int count_cycles(Permutation p) {
   int cnt = 0;
@@ -38,7 +37,6 @@ int solve(int n, int m) {
     p *= p1;
   }
   int sum = 0;
-  for (Permutation const& p : s)
-    sum += 1 << count_cycles(p);
+  for (Permutation const& p : s) sum += 1 << count_cycles(p);
   return sum / s.size();
 }

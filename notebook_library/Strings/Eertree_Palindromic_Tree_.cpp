@@ -8,17 +8,14 @@ struct Eertree {
     cnt = {0, 0};
     nxt.push_back({});
     nxt.push_back({});
-    for (int i = 0; i < (int)s.size(); i++)
-      add(s, i);
-    for (int i = (int)len.size() - 1; i > 1; i--)
-      cnt[link[i]] += cnt[i];
+    for (int i = 0; i < (int)s.size(); i++) add(s, i);
+    for (int i = (int)len.size() - 1; i > 1; i--) cnt[link[i]] += cnt[i];
   }
   void add(const string &s, int i) {
     int c = s[i] - 'a', cur = last;
     while (true) {
       int cl = len[cur];
-      if (i - cl - 1 >= 0 && s[i - cl - 1] == s[i])
-        break;
+      if (i - cl - 1 >= 0 && s[i - cl - 1] == s[i]) break;
       cur = link[cur];
     }
     if (nxt[cur][c]) {
@@ -39,8 +36,7 @@ struct Eertree {
     int l = link[cur];
     while (true) {
       int ll = len[l];
-      if (i - ll - 1 >= 0 && s[i - ll - 1] == s[i])
-        break;
+      if (i - ll - 1 >= 0 && s[i - ll - 1] == s[i]) break;
       l = link[l];
     }
     link.push_back(nxt[l][c]);

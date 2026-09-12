@@ -11,17 +11,14 @@ struct HopcroftKarp {
     pairV.assign(m, -1);
     dist.assign(n, 0);
   }
-  void add_edge(int u, int v) {
-    g[u].push_back(v);
-  }
+  void add_edge(int u, int v) { g[u].push_back(v); }
   bool bfs() {
     queue<int> q;
     for (int u = 0; u < n; ++u) {
       if (pairU[u] == -1) {
         dist[u] = 0;
         q.push(u);
-      } else
-        dist[u] = INF;
+      } else dist[u] = INF;
     }
     bool foundAug = false;
     while (!q.empty()) {
@@ -29,8 +26,7 @@ struct HopcroftKarp {
       q.pop();
       for (int v : g[u]) {
         int u2 = pairV[v];
-        if (u2 == -1)
-          foundAug = true;
+        if (u2 == -1) foundAug = true;
         else if (dist[u2] == INF) {
           dist[u2] = dist[u] + 1;
           q.push(u2);
@@ -55,16 +51,14 @@ struct HopcroftKarp {
     int matching = 0;
     while (bfs()) {
       for (int u = 0; u < n; ++u)
-        if (pairU[u] == -1 && dfs(u))
-          ++matching;
+        if (pairU[u] == -1 && dfs(u)) ++matching;
     }
     return matching;
   }
   vector<pair<int, int>> matching_edges() const {
     vector<pair<int, int>> res;
     for (int v = 0; v < m; ++v)
-      if (pairV[v] != -1)
-        res.emplace_back(pairV[v], v);
+      if (pairV[v] != -1) res.emplace_back(pairV[v], v);
     return res;
   }
 };

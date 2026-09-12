@@ -15,8 +15,7 @@ vector<int> eulerPath(vector<vector<pair<int, int>>>& gr, int nedges, int src = 
       }
     }
   }
-  if ((int)ret.size() != nedges + 1)
-    return {};
+  if ((int)ret.size() != nedges + 1) return {};
   reverse(ret.begin(), ret.end());
   return ret;
 }

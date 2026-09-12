@@ -14,24 +14,20 @@ struct TwoSat {
     gr[f].push_back(j ^ 1);
     gr[j].push_back(f ^ 1);
   }
-  void setValue(int x) {
-    either(x, x);
-  }
+  void setValue(int x) { either(x, x); }
   vector<int> val, comp, z;
   int time = 0;
   int dfs(int i) {
     int low = val[i] = ++time, x;
     z.push_back(i);
     for (int e : gr[i])
-      if (!comp[e])
-        low = min(low, val[e] ?: dfs(e));
+      if (!comp[e]) low = min(low, val[e] ?: dfs(e));
     if (low == val[i]) {
       do {
         x = z.back();
         z.pop_back();
         comp[x] = low;
-        if (values[x >> 1] == -1)
-          values[x >> 1] = x & 1;
+        if (values[x >> 1] == -1) values[x >> 1] = x & 1;
       } while (x != i);
     }
     return val[i] = low;
@@ -41,11 +37,9 @@ struct TwoSat {
     val.assign(2 * N, 0);
     comp = val;
     for (int i = 0; i < 2 * N; i++)
-      if (!comp[i])
-        dfs(i);
+      if (!comp[i]) dfs(i);
     for (int i = 0; i < N; i++)
-      if (comp[2 * i] == comp[2 * i + 1])
-        return false;
+      if (comp[2 * i] == comp[2 * i + 1]) return false;
     return true;
   }
 };

@@ -2,27 +2,13 @@ struct PointD {
   ld x, y;
   PointD(ld x = 0, ld y = 0) : x(x), y(y) {}
   PointD(P p) : x(p.x), y(p.y) {}
-  PointD operator+(PointD p) const {
-    return {x + p.x, y + p.y};
-  }
-  PointD operator-(PointD p) const {
-    return {x - p.x, y - p.y};
-  }
-  PointD operator*(ld c) const {
-    return {x * c, y * c};
-  }
-  PointD operator/(ld c) const {
-    return {x / c, y / c};
-  }
-  ld cross(PointD p) const {
-    return x * p.y - y * p.x;
-  }
-  ld sq() const {
-    return x * x + y * y;
-  }
-  ld abs() const {
-    return sqrtl(sq());
-  }
+  PointD operator+(PointD p) const { return {x + p.x, y + p.y}; }
+  PointD operator-(PointD p) const { return {x - p.x, y - p.y}; }
+  PointD operator*(ld c) const { return {x * c, y * c}; }
+  PointD operator/(ld c) const { return {x / c, y / c}; }
+  ld cross(PointD p) const { return x * p.y - y * p.x; }
+  ld sq() const { return x * x + y * y; }
+  ld abs() const { return sqrtl(sq()); }
 };
 struct Circle {
   PointD c;
@@ -40,12 +26,9 @@ Circle welzl(vector<P> &pts) {
   };
   function<Circle(int, vector<PointD> &)> f = [&](int i, vector<PointD> &b) -> Circle {
     if (i == (int)p.size() || b.size() == 3) {
-      if (b.empty())
-        return {{0, 0}, 0};
-      if (b.size() == 1)
-        return {b[0], 0};
-      if (b.size() == 2)
-        return {(b[0] + b[1]) / 2, (b[0] - b[1]).abs() / 2};
+      if (b.empty()) return {{0, 0}, 0};
+      if (b.size() == 1) return {b[0], 0};
+      if (b.size() == 2) return {(b[0] + b[1]) / 2, (b[0] - b[1]).abs() / 2};
       return circum(b[0], b[1], b[2]);
     }
     Circle c = f(i + 1, b);

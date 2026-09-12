@@ -1,6 +1,5 @@
 vector<int> getPeriods(const vector<int> &pi) {
-  if (pi.empty())
-    return {};
+  if (pi.empty()) return {};
   int n = pi.size(), p = pi.back();
   vector<int> periods;
   while (p > 0) {

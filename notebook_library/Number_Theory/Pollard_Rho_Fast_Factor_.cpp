@@ -3,19 +3,15 @@ struct Montgomery {
   ull n, nr;
   Montgomery(ull n) {
     this->n = n, nr = 1;
-    for (int i = 0; i < 6; i++)
-      nr *= 2 - n * nr;
+    for (int i = 0; i < 6; i++) nr *= 2 - n * nr;
   }
   ull reduce(__uint128_t x) const {
     ull q = ull(x) * nr, m = ((__uint128_t)q * n) >> 64;
     ull res = (x >> 64) + n - m;
-    if (res >= n)
-      res -= n;
+    if (res >= n) res -= n;
     return res;
   }
-  ull multiply(ull x, ull y) {
-    return reduce((__uint128_t)x * y);
-  }
+  ull multiply(ull x, ull y) { return reduce((__uint128_t)x * y); }
 };
 ull f(ull x, ull n, ull a) {
   return ((__uint128_t)x * x + a) % n;

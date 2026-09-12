@@ -11,28 +11,22 @@ struct LCA {
     up[u][0] = p;
     depth[u] = d;
     for (int i = 1; i < LOG; i++) {
-      if (up[u][i - 1] != -1)
-        up[u][i] = up[up[u][i - 1]][i - 1];
+      if (up[u][i - 1] != -1) up[u][i] = up[up[u][i - 1]][i - 1];
     }
     for (int v : adj[u])
-      if (v != p)
-        dfs(v, u, d + 1);
+      if (v != p) dfs(v, u, d + 1);
   }
   int lift(int u, int k) {
     for (int i = 0; i < LOG; i++) {
-      if ((k >> i) & 1)
-        u = up[u][i];
-      if (u == -1)
-        break;
+      if ((k >> i) & 1) u = up[u][i];
+      if (u == -1) break;
     }
     return u;
   }
   int query(int u, int v) {
-    if (depth[u] < depth[v])
-      swap(u, v);
+    if (depth[u] < depth[v]) swap(u, v);
     u = lift(u, depth[u] - depth[v]);
-    if (u == v)
-      return u;
+    if (u == v) return u;
     for (int i = LOG - 1; i >= 0; i--) {
       if (up[u][i] != up[v][i]) {
         u = up[u][i];

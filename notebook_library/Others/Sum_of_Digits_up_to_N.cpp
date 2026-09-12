@@ -1,6 +1,5 @@
 uint64_t sumDigitsUpTo(uint64_t n) {
-  if (n <= 0)
-    return 0;
+  if (n <= 0) return 0;
   uint64_t sum = 0;
   for (uint64_t f = 1; f <= n; f *= 10) {
     uint64_t hi = n / (f * 10);

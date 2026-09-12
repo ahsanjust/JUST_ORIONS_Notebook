@@ -10,14 +10,11 @@ inline char gc() {
 int readInt() {
   int a, c;
   while ((a = gc()) < 40)
-    if (a == 0)
-      return 0;
+    if (a == 0) return 0;
   bool minus = (a == '-');
-  if (minus)
-    a = gc();
+  if (minus) a = gc();
   unsigned res = a - 48;
-  while ((c = gc()) >= 48)
-    res = res * 10 + (c - 48);
+  while ((c = gc()) >= 48) res = res * 10 + (c - 48);
   return minus ? -(long long)res : (int)res;
 }
 // ~5x faster than cin/scanf

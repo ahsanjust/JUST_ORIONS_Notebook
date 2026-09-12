@@ -4,18 +4,15 @@ vector<int> subtree_size;
 int get_subtree_size(int node, int parent = -1) {
   subtree_size[node] = 1;
   for (int child : adj[node]) {
-    if (child == parent || is_removed[child])
-      continue;
+    if (child == parent || is_removed[child]) continue;
     subtree_size[node] += get_subtree_size(child, node);
   }
   return subtree_size[node];
 }
 int get_centroid(int node, int tree_size, int parent = -1) {
   for (int child : adj[node]) {
-    if (child == parent || is_removed[child])
-      continue;
-    if (subtree_size[child] * 2 > tree_size)
-      return get_centroid(child, tree_size, node);
+    if (child == parent || is_removed[child]) continue;
+    if (subtree_size[child] * 2 > tree_size) return get_centroid(child, tree_size, node);
   }
   return node;
 }
@@ -24,8 +21,7 @@ void build_centroid_decomp(int node = 0) {
   // do something with centroid
   is_removed[centroid] = true;
   for (int child : adj[centroid]) {
-    if (is_removed[child])
-      continue;
+    if (is_removed[child]) continue;
     build_centroid_decomp(child);
   }
 }

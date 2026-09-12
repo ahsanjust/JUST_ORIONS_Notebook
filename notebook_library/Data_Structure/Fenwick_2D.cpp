@@ -1,19 +1,15 @@
 struct BIT2D {
   int n, m;
   vector<vector<ll>> bit;
-  BIT2D(int n, int m) : n(n), m(m) {
-    bit.assign(n + 1, vector<ll>(m + 1, 0));
-  }
+  BIT2D(int n, int m) : n(n), m(m) { bit.assign(n + 1, vector<ll>(m + 1, 0)); }
   void add(int x, int y, ll val) {
     for (int i = x; i <= n; i += i & -i)
-      for (int j = y; j <= m; j += j & -j)
-        bit[i][j] += val;
+      for (int j = y; j <= m; j += j & -j) bit[i][j] += val;
   }
   ll sum(int x, int y) {
     ll res = 0;
     for (int i = x; i > 0; i -= i & -i)
-      for (int j = y; j > 0; j -= j & -j)
-        res += bit[i][j];
+      for (int j = y; j > 0; j -= j & -j) res += bit[i][j];
     return res;
   }
   ll query(int x1, int y1, int x2, int y2) {

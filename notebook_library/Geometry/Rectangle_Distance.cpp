@@ -1,6 +1,5 @@
 long double L, W;
-if (!(cin >> L >> W))
-  return 0;
+if (!(cin >> L >> W)) return 0;
 long double h = sqrtl(L * L + W * W);
 long double P = L + W + h;
 long double x1 = L * (L + h) / P;

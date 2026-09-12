@@ -23,8 +23,7 @@ T egcd(T a, T b, T &x, T &y) {
 pair<T, T> crt(T a1, T m1, T a2, T m2) {
   T p, q;
   T g = egcd(m1, m2, p, q);
-  if (a1 % g != a2 % g)
-    return {0, -1};
+  if (a1 % g != a2 % g) return {0, -1};
   T m = m1 / g * m2;
   p = (p % m + m) % m;
   q = (q % m + m) % m;
@@ -45,13 +44,10 @@ ll extgcd(ll a, ll b, ll &x, ll &y) {
 }
 bool find_any_solution(ll a, ll b, ll c, ll &x0, ll &y0, ll &g) {
   g = extgcd(abs(a), abs(b), x0, y0);
-  if (c % g)
-    return false;
+  if (c % g) return false;
   x0 *= c / g;
   y0 *= c / g;
-  if (a < 0)
-    x0 = -x0;
-  if (b < 0)
-    y0 = -y0;
+  if (a < 0) x0 = -x0;
+  if (b < 0) y0 = -y0;
   return true;
 }

@@ -16,26 +16,21 @@ struct BCC {
     tin[u] = low[u] = timer++;
     for (int id : adj[u]) {
       int v = edges[id].first ^ edges[id].second ^ u;
-      if (id == peid)
-        continue;
-      if (vis[v])
-        low[u] = min(low[u], tin[v]);
+      if (id == peid) continue;
+      if (vis[v]) low[u] = min(low[u], tin[v]);
       else {
         dfs(v, id);
         low[u] = min(low[u], low[v]);
-        if (low[v] > tin[u])
-          is_bridge[id] = true;
+        if (low[v] > tin[u]) is_bridge[id] = true;
       }
     }
   }
   void build_tree() {
     for (int i = 0; i < n; i++)
-      if (!vis[i])
-        dfs(i);
+      if (!vis[i]) dfs(i);
     vector<int> q;
     for (int i = 0; i < n; i++) {
-      if (comp[i] != -1)
-        continue;
+      if (comp[i] != -1) continue;
       q.push_back(i);
       comp[i] = comps++;
       while (!q.empty()) {

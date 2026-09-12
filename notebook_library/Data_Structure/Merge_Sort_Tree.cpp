@@ -18,8 +18,7 @@ struct MergeSortTree {
           back_inserter(tree[node]));
   }
   int query(int node, int l, int r, int ql, int qr, int k) {
-    if (l > qr || r < ql)
-      return 0;
+    if (l > qr || r < ql) return 0;
     if (l >= ql && r <= qr) {
       // binary search in sorted node list: count <= k
       return upper_bound(tree[node].begin(), tree[node].end(), k) - tree[node].begin();

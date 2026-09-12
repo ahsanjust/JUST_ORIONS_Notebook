@@ -15,8 +15,7 @@ void fwht(vector<int> &a, bool inv, int type) {
       }
   if (inv && type == 2) {
     int inv_n = modpow(n, MOD - 2);
-    for (auto &x : a)
-      x = (ll)x * inv_n % MOD;
+    for (auto &x : a) x = (ll)x * inv_n % MOD;
   }
 }
 // conv(a, b) = for type=0: c[k]=sum_{i|j=k} a[i]*b[j]

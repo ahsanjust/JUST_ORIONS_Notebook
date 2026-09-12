@@ -116,7 +116,7 @@ pdflatex -shell-escape main.tex   # second pass for correct TOC page numbers
 | # | Section | Key Algorithms |
 |---|---------|----------------|
 | 01 | **Setup & Basics** | Sublime build, PBDS, GP Hash, Fast I/O, Debug |
-| 02 | **Math** | XOR Basis, Matrix Exp, FFT, NTT, Lagrange Interpolation, Gaussian Elimination, FWHT, Berlekamp-Massey |
+| 02 | **Math** | XOR Basis, Matrix Exp, FFT, NTT, Gaussian Elimination, FWHT, Berlekamp-Massey |
 | 03 | **Number Theory** | Extended Euclid, CRT, SPF/Möbius, Miller-Rabin, Pollard Rho, Segmented Sieve, Discrete Log |
 | 04 | **Combinatorics** | Burnside, Derangements, Lucas, Bishop Placement, Inclusion-Exclusion |
 | 05 | **Data Structure** | Sparse Table, Merge Sort Tree, PST, Fenwick, Treap, Mo's, DSU, Lazy SegTree, Wavelet Tree |
@@ -130,9 +130,42 @@ pdflatex -shell-escape main.tex   # second pass for correct TOC page numbers
 
 ## Constraints
 
-- **Max pages:** 25 (IUPC/ICPC limit) — currently ~21 pages (~4 pages of budget remaining)
+- **Max pages:** 25 (IUPC/ICPC limit)
 - **Layout:** 3-column landscape, 10pt font, minted syntax highlighting
 - **Language:** C++17
+
+---
+
+## Code Formatting & Style Guide
+
+All algorithm templates in this repository adhere to a unified formatting style configured in `.clang-format` (based on Google C++ style):
+
+- **Indentation**: 2 spaces (no tabs)
+- **Column Limit**: 120 columns
+- **Single-Line Conditionals & Loops**: For `if()`, `for()`, and `while()` conditions without braces (`{}`), the statement **must remain on the same line** to conserve vertical space and maximize density for the printed notebook.
+  - Configured settings:
+    ```yaml
+    BasedOnStyle: Google
+    IndentWidth: 2
+    ColumnLimit: 120
+    AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+    AllowShortLoopsOnASingleLine: true
+    AllowShortBlocksOnASingleLine: Never
+    AllowShortFunctionsOnASingleLine: Inline
+    ```
+  - Example:
+    ```cpp
+    if (mid) swap(t[u].line, nw);
+    if (l == r) return;
+    for (int i = 0; i < n; i++) cin >> a[i];
+    while (q--) solve();
+    ```
+
+### Format Commands
+To reformat all C++ snippets in `notebook_library/`:
+```bash
+find notebook_library/ -name "*.cpp" -exec clang-format -i {} +
+```
 
 ---
 

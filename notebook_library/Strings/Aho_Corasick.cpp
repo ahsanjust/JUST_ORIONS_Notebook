@@ -12,8 +12,7 @@ void ins(string &s) {
   int cur = 0;
   for (auto c : s) {
     int d = c - 'a';
-    if (!trie[cur][d])
-      trie[cur][d] = ptr++;
+    if (!trie[cur][d]) trie[cur][d] = ptr++;
     cur = trie[cur][d];
   }
   is_end[cur] = s.size();
@@ -21,8 +20,7 @@ void ins(string &s) {
 void build_fails() {
   queue<int> q;
   for (int i = 0; i < 26; i++)
-    if (trie[0][i])
-      q.push(trie[0][i]);
+    if (trie[0][i]) q.push(trie[0][i]);
   while (q.size()) {
     int cur = q.front();
     q.pop();

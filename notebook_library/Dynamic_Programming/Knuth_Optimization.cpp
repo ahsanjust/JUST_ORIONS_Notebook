@@ -1,7 +1,6 @@
 for (int i = 0; i <= n; i++) {
   p[i][i] = i, dp[i][i] = 0;
-  if (i < n)
-    dp[i][i + 1] = cost(i, i + 1), p[i][i + 1] = i;
+  if (i < n) dp[i][i + 1] = cost(i, i + 1), p[i][i + 1] = i;
 }
 for (int len = 2; len <= n; len++) {
   for (int i = 0; i + len <= n; i++) {

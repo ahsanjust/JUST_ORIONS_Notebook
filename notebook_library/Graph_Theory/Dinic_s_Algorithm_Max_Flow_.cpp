@@ -8,12 +8,9 @@ struct Dinic {
   vector<int> d, done;
   vector<vector<edge>> g;
   Dinic() {}
-  Dinic(int _n) {
-    n = _n + 10, g.resize(n);
-  }
+  Dinic(int _n) { n = _n + 10, g.resize(n); }
   void add_edge(int u, int v, int64_t w) {
-    if (u == v)
-      return;
+    if (u == v) return;
     edge a = {v, (int)g[v].size(), 0, w};
     edge b = {u, (int)g[u].size(), 0, 0};
     g[u].push_back(a), g[v].push_back(b);
@@ -27,19 +24,16 @@ struct Dinic {
       Q.pop();
       for (auto &e : g[u]) {
         int v = e.to;
-        if (!~d[v] && e.flow < e.w)
-          d[v] = d[u] + 1, Q.push(v);
+        if (!~d[v] && e.flow < e.w) d[v] = d[u] + 1, Q.push(v);
       }
     }
     return d[t] != -1;
   }
   int64_t dfs(int u, int64_t flow) {
-    if (u == t)
-      return flow;
+    if (u == t) return flow;
     for (int &i = done[u]; i < (int)g[u].size(); i++) {
       edge &e = g[u][i];
-      if (e.w <= e.flow)
-        continue;
+      if (e.w <= e.flow) continue;
       int v = e.to;
       if (d[v] == d[u] + 1) {
         int64_t nw = dfs(v, min(flow, e.w - e.flow));
@@ -53,14 +47,12 @@ struct Dinic {
     return 0;
   }
   int64_t max_flow(int _s, int _t) {
-    if (_s == _t)
-      return 0;
+    if (_s == _t) return 0;
     s = _s, t = _t;
     int64_t flow = 0;
     while (bfs()) {
       done.assign(n, 0);
-      while (int64_t nw = dfs(s, inf))
-        flow += nw;
+      while (int64_t nw = dfs(s, inf)) flow += nw;
     }
     return flow;
   }

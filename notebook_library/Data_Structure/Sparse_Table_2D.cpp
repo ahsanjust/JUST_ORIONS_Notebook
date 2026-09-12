@@ -6,32 +6,25 @@ struct Sparse2D {
   Sparse2D(int n, int m) : n(n), m(m) {
     a.assign(n, vector<int>(m));
     lg.resize(max(n, m) + 1);
-    for (int i = 2; i <= max(n, m); i++)
-      lg[i] = lg[i >> 1] + 1;
+    for (int i = 2; i <= max(n, m); i++) lg[i] = lg[i >> 1] + 1;
   }
-  void set_val(int i, int j, int v) {
-    a[i][j] = v;
-  }
+  void set_val(int i, int j, int v) { a[i][j] = v; }
   void build() {
     auto &s = st[0][0];
     s.assign(n, vector<int>(m));
     for (int i = 0; i < n; i++)
-      for (int j = 0; j < m; j++)
-        s[i][j] = a[i][j];
+      for (int j = 0; j < m; j++) s[i][j] = a[i][j];
     int la = lg[n], lb = lg[m];
     for (int ka = 0; ka <= la; ka++) {
       for (int kb = 0; kb <= lb; kb++) {
-        if (ka + kb == 0)
-          continue;
+        if (ka + kb == 0) continue;
         int pwa = 1 << ka, pwb = 1 << kb;
         auto &cur = st[ka][kb];
         cur.assign(n - pwa + 1, vector<int>(m - pwb + 1));
         for (int i = 0; i + pwa <= n; i++)
           for (int j = 0; j + pwb <= m; j++) {
-            if (!ka)
-              cur[i][j] = max(st[ka][kb - 1][i][j], st[ka][kb - 1][i][j + pwb / 2]);
-            else
-              cur[i][j] = max(st[ka - 1][kb][i][j], st[ka - 1][kb][i + pwa / 2][j]);
+            if (!ka) cur[i][j] = max(st[ka][kb - 1][i][j], st[ka][kb - 1][i][j + pwb / 2]);
+            else cur[i][j] = max(st[ka - 1][kb][i][j], st[ka - 1][kb][i + pwa / 2][j]);
           }
       }
     }
