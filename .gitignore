@@ -44,3 +44,30 @@ page*.txt
 # PDF outputs
 # notebook/main.pdf
 # notebook/JUST_ORIONS_Notebook.pdf
+
+# Temp / backup / merge artifacts
+*.tmp
+*.temp
+*.orig
+*.rej
+
+# Build outputs
+build/
+dist/
+out/
+target/
+bin/
+obj/
+_build/
+
+# IDE / package / coverage caches
+.idea/
+node_modules/
+.npm/
+.yarn/
+.tox/
+.coverage
+.pytest_cache/
+.mypy_cache/
+.sass-cache/
+.egg-info/
