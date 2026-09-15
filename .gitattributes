@@ -1,0 +1,24 @@
+# Set default behavior to automatically normalize line endings
+* text=auto
+
+# Source and text files
+*.cpp text
+*.h text
+*.hpp text
+*.c text
+*.py text
+*.tex text
+*.sh text eol=lf
+*.md text
+*.txt text
+*.json text
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.dvi binary
+*.zip binary
+*.tar.gz binary

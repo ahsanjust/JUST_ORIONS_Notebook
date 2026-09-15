@@ -10,6 +10,19 @@
 *~
 .DS_Store
 Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Windows NTFS Alternate Data Streams (Zone.Identifier)
+*:Zone.Identifier
+*Zone.Identifier*
+
+# Python virtual environments & bytecode
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
 
 # LaTeX build artifacts
 *.aux
