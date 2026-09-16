@@ -197,6 +197,36 @@ struct Articulation {
   }
 };
 \end{minted}
+\subsection{Boruvka's MST}
+Time: $O(E \log V)$. Returns MST weight, or $-1$ if disconnected. Requires \texttt{dsu} template. Finds the minimum outgoing edge for each component simultaneously. Excellent for problems with implicit edges.
+\begin{minted}{c++}
+struct Edge { int u, v; ll w; };
+ll boruvka(int n, const vector<Edge>& edges) {
+  dsu d(n); ll ans = 0;
+  while (d.cnt > 1) {
+    vector<int> mn(n, -1);
+    for (int i = 0; i < (int)edges.size(); ++i) {
+      int u = d.find(edges[i].u);
+      int v = d.find(edges[i].v);
+      if (u == v) continue;
+      if (mn[u] == -1 || edges[i].w < edges[mn[u]].w)
+        mn[u] = i;
+      if (mn[v] == -1 || edges[i].w < edges[mn[v]].w)
+        mn[v] = i;
+    }
+    bool changed = false;
+    for (int i = 0; i < n; ++i) {
+      if (mn[i] == -1) continue;
+      auto& e = edges[mn[i]];
+      if (d.unite(e.u, e.v)) {
+        ans += e.w; changed = true;
+      }
+    }
+    if (!changed) break;
+  }
+  return d.cnt > 1 ? -1 : ans;
+}
+\end{minted}
 \subsection{Biconnected Comp. \texorpdfstring{\&}{&} Bridge Tree}
 Finds 2-edge-connected components (BCCs) -- maximal subgraphs with no bridges. Contract each BCC into a node; original bridges become edges of a tree (bridge tree).
 
