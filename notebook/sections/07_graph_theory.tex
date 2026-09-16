@@ -261,29 +261,6 @@ struct BCC {
   }
 };
 \end{minted}
-\subsection{Euler Tour (Tree Flattening)}
-Key idea: $in[u]$ = DFS entry time, $out[u]$ = DFS exit time. Subtree of $u$ = contiguous segment $[in[u], out[u]]$ in the flat array. Enables any subtree range query on a 1D array (use with BIT/Segment Tree).
-\begin{minted}{c++}
-struct EulerTour {
-  int n, timer;
-  vector<vector<int>> adj;
-  vector<int> in, out, flat;
-  EulerTour(int _n) : n(_n), timer(0), adj(_n + 1),
-    in(_n + 1), out(_n + 1) {}
-  void add_edge(int u, int v) {
-    adj[u].push_back(v);
-    adj[v].push_back(u);
-  }
-  void dfs(int u, int p = 0) {
-    in[u] = ++timer;
-    flat.push_back(u);
-    for (int v : adj[u])
-      if (v != p) dfs(v, u);
-    out[u] = timer;
-  }
-  void build(int root = 1) { dfs(root); }
-};
-\end{minted}
 \subsection{Binary Lifting}
 Preprocess $O(N \log N)$, query $O(\log N)$. \texttt{lift(u,k)} returns $k$-th ancestor (or $-1$). \texttt{query(u,v)} returns LCA. Call \texttt{dfs(root,-1)} first. Key idea: $up[u][i] = 2^i$-th ancestor of $u$. Lift deeper node to same depth, then binary-search highest ancestor where paths diverge.
 \begin{minted}{c++}
@@ -462,125 +439,139 @@ Maximum bipartite matching. Left side size = $n$, right side size = $m$. $O(E \s
 
 How it works: BFS builds layers of unmatched nodes, then DFS finds augmenting paths simultaneously (multi-augmenting). Each phase increases matching size by at least 1; at most $O(\sqrt{V})$ phases.
 \begin{minted}{c++}
-struct HopcroftKarp {
+struct HK {
   int n, m;
-  vector<vector<int>> g;
-  vector<int> dist, pairU, pairV;
-  static const int INF = 1e9;
-  HopcroftKarp(int n_ = 0, int m_ = 0) {
-    n = n_; m = m_;
-    g.assign(n, {});
-    pairU.assign(n, -1);
-    pairV.assign(m, -1);
-    dist.assign(n, 0);
-  }
-  void add_edge(int u, int v) { g[u].push_back(v); }
+  vector<vector<int>> adj;
+  vector<int> L, R, d;
+  HK(int n, int m) : n(n), m(m), adj(n), 
+                     L(n, -1), R(m, -1), d(n) {}
+  void add_edge(int u, int v) { adj[u].push_back(v); }
   bool bfs() {
-    queue<int> q;
-    for (int u = 0; u < n; ++u) {
-      if (pairU[u] == -1) {
-        dist[u] = 0; q.push(u);
-      } else dist[u] = INF;
+    queue<int> q; bool ok = false;
+    for (int i = 0; i < n; ++i) {
+      if (L[i] == -1) d[i] = 0, q.push(i);
+      else d[i] = -1;
     }
-    bool foundAug = false;
     while (!q.empty()) {
       int u = q.front(); q.pop();
-      for (int v : g[u]) {
-        int u2 = pairV[v];
-        if (u2 == -1) foundAug = true;
-        else if (dist[u2] == INF) {
-          dist[u2] = dist[u] + 1; q.push(u2);
-        }
+      for (int v : adj[u]) {
+        if (R[v] == -1) ok = true;
+        else if (d[R[v]] == -1) 
+          d[R[v]] = d[u] + 1, q.push(R[v]);
       }
     }
-    return foundAug;
+    return ok;
   }
   bool dfs(int u) {
-    for (int v : g[u]) {
-      int u2 = pairV[v];
-      if (u2 == -1 || (dist[u2] == dist[u] + 1
-      && dfs(u2))) {
-        pairU[u] = v; pairV[v] = u; return true;
+    for (int v : adj[u]) {
+      if (R[v] == -1 || 
+      (d[R[v]] == d[u] + 1 && dfs(R[v]))) {
+        L[u] = v; R[v] = u;
+        return true;
       }
     }
-    dist[u] = INF; return false;
+    d[u] = -1; return false;
   }
   int max_matching() {
-    int matching = 0;
-    while (bfs()) {
-      for (int u = 0; u < n; ++u)
-        if (pairU[u] == -1 && dfs(u)) ++matching;
-    }
-    return matching;
+    int ans = 0;
+    while (bfs()) for (int i = 0; i < n; ++i) 
+      if (L[i] == -1 && dfs(i)) ans++;
+    return ans;
   }
-  vector<pair<int,int>> matching_edges() const {
-    vector<pair<int,int>> res;
-    for (int v = 0; v < m; ++v)
-      if (pairV[v] != -1)
-        res.emplace_back(pairV[v], v);
+  vector<pair<int, int>> matching_edges() {
+    vector<pair<int, int>> res;
+    for (int i = 0; i < n; i++) 
+      if (L[i] != -1) 
+        res.emplace_back(i, L[i]);
     return res;
+  }
+  pair<vector<int>, 
+  vector<int>> min_vertex_cover() {
+    max_matching();
+    vector<int> Z(n, 0), cvL, cvR;
+    auto vis = [&](auto& self, int u) -> void {
+      Z[u] = 1;
+      for (int v : adj[u]) 
+        if (R[v] != -1 && !Z[R[v]]) self(self, R[v]);
+    };
+    for (int i = 0; i < n; i++) 
+      if (L[i] == -1) vis(vis, i);
+    for (int i = 0; i < n; i++) 
+      if (!Z[i]) cvL.push_back(i);
+    for (int j = 0; j < m; j++) 
+      if (R[j] != -1 && Z[R[j]]) 
+        cvR.push_back(j);
+    return {cvL, cvR};
   }
 };
 \end{minted}
 \subsection{Dinic's Algorithm (Max Flow)}
-$O(EV^2)$ worst case, $O(E \sqrt{V})$ for unit capacities. Edge $(u,v)$ with capacity $w$ is added as TWO directed arcs. \texttt{e.flow} = current flow, \texttt{e.w} = capacity. Access residual capacity via \texttt{e.w - e.flow}.
+$O(V^2E)$ worst case, $O(E \sqrt{V})$ for unit capacities. Edge $(u,v)$ with capacity $c$ is added as TWO directed arcs. \texttt{e.flow} = current flow, \texttt{e.cap} = capacity. Access residual capacity via \texttt{e.cap - e.flow}.
 
-Key idea: BFS builds level graph; DFS sends blocking flow along it. "dead-end" nodes are skipped via \texttt{done[u]} (current arc trick).
+Key idea: BFS builds level graph; DFS sends blocking flow along it. "Dead-end" nodes are skipped via \texttt{ptr[u]} (current arc trick).
 \begin{minted}{c++}
-const int64_t inf = 1LL << 61;
 struct Dinic {
-  struct edge { int to, rev;
-    int64_t flow, w; };
+  struct Edge { int u, v; ll cap, flow; };
+  const ll inf = 1e18;
   int n, s, t;
-  vector<int> d, done;
-  vector<vector<edge>> g;
-  Dinic() {}
-  Dinic(int _n) { n = _n + 10, g.resize(n); }
-  void add_edge(int u, int v, int64_t w) {
-    if (u == v) return;
-    edge a = {v, (int)g[v].size(), 0, w};
-    edge b = {u, (int)g[u].size(), 0, 0};
-    g[u].push_back(a), g[v].push_back(b);
+  vector<Edge> edges;
+  vector<vector<int>> adj;
+  vector<int> lvl, ptr, cut;
+  vector<bool> in_s;
+  Dinic(int n, int s, int t) : n(n), s(s), t(t), 
+    adj(n), lvl(n), ptr(n), in_s(n) {}
+  void add_edge(int u, int v, ll cap) {
+    adj[u].push_back(edges.size());
+    edges.push_back({u, v, cap, 0});
+    adj[v].push_back(edges.size());
+    edges.push_back({v, u, 0, 0});
   }
   bool bfs() {
-    d.assign(n, -1), d[s] = 0;
-    queue<int> Q; Q.push(s);
-    while (Q.size()) {
-      int u = Q.front(); Q.pop();
-      for (auto &e : g[u]) {
-        int v = e.to;
-        if (!~d[v] && e.flow < e.w)
-          d[v] = d[u] + 1, Q.push(v);
-      }
-    }
-    return d[t] != -1;
-  }
-  int64_t dfs(int u, int64_t flow) {
-    if (u == t) return flow;
-    for (int &i = done[u]; i < (int)g[u].size(); i++) {
-      edge &e = g[u][i];
-      if (e.w <= e.flow) continue;
-      int v = e.to;
-      if (d[v] == d[u] + 1) {
-        int64_t nw = dfs(v, min(flow, e.w - e.flow));
-        if (nw > 0) {
-          e.flow += nw;
-          g[v][e.rev].flow -= nw;
-          return nw;
+    fill(lvl.begin(), lvl.end(), -1);
+    lvl[s] = 0; queue<int> q; q.push(s);
+    while (!q.empty()) {
+      int u = q.front(); q.pop();
+      for (int id : adj[u]) {
+        auto& e = edges[id];
+        if (e.cap - e.flow > 0 && lvl[e.v] == -1) {
+          lvl[e.v] = lvl[u] + 1; q.push(e.v);
         }
       }
     }
+    return lvl[t] != -1;
+  }
+  ll dfs(int u, ll pushed) {
+    if (pushed == 0 || u == t) return pushed;
+    for (int &i=ptr[u]; i<(int)adj[u].size(); ++i) {
+      int id = adj[u][i]; auto& e = edges[id];
+      ll rem = e.cap - e.flow;
+      if (lvl[u]+1 != lvl[e.v] || rem == 0) continue;
+      ll tr = dfs(e.v, min(pushed, rem));
+      if (tr == 0) continue;
+      e.flow += tr; edges[id ^ 1].flow -= tr;
+      return tr;
+    }
     return 0;
   }
-  int64_t max_flow(int _s, int _t) {
-    if (_s == _t) return 0;
-    s = _s, t = _t;
-    int64_t flow = 0;
+  ll max_flow() {
+    ll f = 0, pushed;
     while (bfs()) {
-      done.assign(n, 0);
-      while (int64_t nw = dfs(s, inf)) flow += nw;
+      fill(ptr.begin(), ptr.end(), 0);
+      while ((pushed = dfs(s, inf)) > 0) f += pushed;
     }
-    return flow;
+    queue<int> q; q.push(s); in_s[s] = true;
+    while (!q.empty()) {
+      int u = q.front(); q.pop();
+      for (int id : adj[u]) {
+        auto& e = edges[id];
+        if (e.cap - e.flow > 0 && !in_s[e.v])
+          in_s[e.v] = true, q.push(e.v);
+      }
+    }
+    for (int i=0; i<(int)edges.size(); i+=2) 
+      if (in_s[edges[i].u] && !in_s[edges[i].v]) 
+        cut.push_back(i);
+    return f;
   }
 };
 \end{minted}
