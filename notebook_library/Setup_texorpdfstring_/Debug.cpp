@@ -1,90 +1,43 @@
-// In main.cpp:
 #ifndef ONLINE_JUDGE
-#include "trace.cpp"
-#else
-#define dbg(...)
-#endif
+#define dbg(...) cerr << "[" #__VA_ARGS__ "]:", pr(__VA_ARGS__)
 
-// ---- paste below into trace.cpp ----
-#ifndef ONLINE_JUDGE
-#define dbg(...) cerr << __LINE__ << ": ", __dbg(#__VA_ARGS__, __VA_ARGS__), cerr << "\n"
+string to_string(char c) { return string(1, c); }
+string to_string(bool b) { return b ? "T" : "F"; }
+string to_string(const char* s) { return s; }
+string to_string(char* s) { return s; }
+string to_string(string s) { return s; }
 
-// primitive types (int,ll,char,string,etc.)
-template <class T>
-void __p(T x) {
-  cerr << x;
-}
-// pair<T1,T2>
-template <class T, class U>
-void __p(pair<T, U> x) {
-  cerr << "(" << x.first << "," << x.second << ")";
-}
-// vector<T>
-template <class T>
-void __p(vector<T> x) {
-  cerr << "{";
-  int _ = 0;
-  for (auto y : x) {
-    if (_++) cerr << ",";
-    __p(y);
-  }
-  cerr << "}";
-}
-// set<T>
-template <class T>
-void __p(set<T> x) {
-  cerr << "{";
-  int _ = 0;
-  for (auto y : x) {
-    if (_++) cerr << ",";
-    __p(y);
-  }
-  cerr << "}";
-}
-// map<K,V>
-template <class T, class U>
-void __p(map<T, U> x) {
-  cerr << "{";
-  int _ = 0;
-  for (auto [k, v] : x) {
-    if (_++) cerr << ",";
-    __p(k);
-    cerr << ":";
-    __p(v);
-  }
-  cerr << "}";
-}
-// stack<T>
-template <class T>
-void __p(stack<T> s) {
-  vector<T> v;
-  while (v.size() || s.size()) v.push_back(s.top()), s.pop();
-  reverse(v.begin(), v.end());
-  __p(v);
-}
-// queue<T>
-template <class T>
-void __p(queue<T> q) {
-  vector<T> v;
-  while (q.size()) v.push_back(q.front()), q.pop();
-  __p(v);
-}
-// priority_queue<T>
-template <class T>
-void __p(priority_queue<T> q) {
-  vector<T> v;
-  while (q.size()) v.push_back(q.top()), q.pop();
-  __p(v);
+template <class A, class B>
+string to_string(pair<A, B> p);
+
+template <class A>
+string to_string(A v) {
+  string r = "{"; int f = 0;
+  for (auto& x : v)
+    r += (f++ ? "," : "") + to_string(x);
+  return r + "}";
 }
 
-void __dbg(const char*) {}
-template <class T, class... U>
-void __dbg(const char* s, T x, U... t) {
-  int i = 0;
-  while (s[i] && s[i] != ',') i++;
-  cerr.write(s, i) << "=";
-  __p(x);
-  if constexpr (sizeof...(t)) cerr << " || ", __dbg(s + i + 1, t...);
+template <class A, class B>
+string to_string(pair<A, B> p) {
+  return "(" + to_string(p.first) + ","
+             + to_string(p.second) + ")";
+}
+
+template <class T, class... C>
+string to_string(queue<T, C...> q) {
+  string r = "{"; int f = 0;
+  for (; q.size(); q.pop())
+    r += (f++ ? "," : "") + to_string(q.front());
+  return r + "}";
+}
+
+// For stack / priority_queue: replace queue with stack / priority_queue & .front() with .top()
+
+void pr() { cerr << "\n"; }
+template <class H, class... T>
+void pr(H h, T... t) {
+  cerr << " " << to_string(h); pr(t...);
 }
 #else
 #define dbg(...)

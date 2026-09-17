@@ -11,12 +11,20 @@ bool greaterThan(double a, double b) {
   return a > b + EPS; }
 \end{minted}
 \subsection{Geometry Formulas}
-Triangle:
-Side length $a, b, c$
-Area: $\frac{1}{2} \times base \times height$
-$s = \frac{a+b+c}{2}$, Area $= \sqrt{s(s-a)(s-b)(s-c)}$
-Inradius: $r = \frac{Area}{s}$
-Circumradius: $R = \frac{abc}{4 \times Area}$
+\textbf{General Triangle} (sides $a, b, c$; $s = \frac{a+b+c}{2}$): \\
+\textbullet{} \textbf{Area:} $A = \frac{1}{2}bh = \frac{1}{2}ab\sin C = \sqrt{s(s-a)(s-b)(s-c)}$ \\
+\textbullet{} \textbf{Radii:} Inradius $r = \frac{A}{s}$, \quad Circumradius $R = \frac{abc}{4A}$ \\
+\textbullet{} \textbf{Heights ($h_a$):} $\perp$ to base $a$: $h_a = \frac{2A}{a}$; \quad $\sum \frac{1}{h_i} = \frac{1}{r}$ \\
+\textbullet{} \textbf{Excircle ($r_a$):} Outside touching $a$: $r_a = \frac{A}{s-a}$; \quad $\sum \frac{1}{r_i} = \frac{1}{r}$ \\
+\textbullet{} \textbf{Sine/Cosine:} $\frac{a}{\sin A} = \frac{b}{\sin B} = 2R$; \ $\cos C = \frac{a^2+b^2-c^2}{2ab}$ \\
+\textbullet{} \textbf{Medians ($m_a$):} To midpoint of $a$: $m_a = \frac{1}{2}\sqrt{2b^2+2c^2-a^2}$ \\
+\textbullet{} \textbf{Area from 3 Medians:} $A = \frac{4}{3} \times \text{Heron}(m_a, m_b, m_c)$ \\
+\textbullet{} \textbf{Angle Bisector:} $t_a = \sqrt{bc - mn} = \frac{2bc\cos(A/2)}{b+c}$ ($\frac{m}{n} = \frac{c}{b}, \ m+n=a$) \\
+\textbullet{} \textbf{Stewart's Thm:} Cevian $d$ on $a = m+n$: $b^2 m + c^2 n = a(d^2 + mn)$ \\
+\textbf{Special Triangles}: \\
+\textbullet{} \textbf{Equilateral}: $h = \frac{\sqrt{3}}{2}a, \ A = \frac{\sqrt{3}}{4}a^2, \ r = \frac{a}{2\sqrt{3}}, \ R = 2r$ \\
+\textbullet{} \textbf{Isosceles} (base $b$, equal $a$): $h = \sqrt{a^2 - \frac{b^2}{4}}, \ A = \frac{b}{4}\sqrt{4a^2-b^2}$ \\
+\textbullet{} \textbf{Right-Angled}: $A = \frac{1}{2}ab, \ r = \frac{a+b-c}{2}, \ R = \frac{c}{2}, \ h = \frac{ab}{c}$ \\
 
 Circles:
 Arc Length: $L = \theta r$
