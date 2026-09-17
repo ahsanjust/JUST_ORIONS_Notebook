@@ -44,9 +44,6 @@ mt19937_64 rnd(chrono::steady_clock::now()
 int64_t Random(int64_t l, int64_t r) {
   return uniform_int_distribution<int64_t>(l, r)(rnd);
 }
-// Usage: Random(l, r) returns uniform int in [l, r]
-// Use gp_hash_table<ll, ll, custom_hash> mp for
-// O(1) lookups without hash collisions
 \end{minted}
 \subsection{Fast I/O}
 Reads ints only ($10^6+$). Redirect with \texttt{./a.out < input.txt}. \textbf{Note:} Do NOT mix \texttt{readInt()} with \texttt{cin} or \texttt{cout}.
