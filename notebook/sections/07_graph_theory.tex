@@ -74,6 +74,26 @@ vector<int> eulerPath(
   return ret;
 }
 \end{minted}
+\subsection{Eulerian Circuit}
+Finds Eulerian circuit. Populates \texttt{path} with nodes in reverse order. Call \texttt{dfs(src)} and then \texttt{reverse(path.begin(), path.end())}. \texttt{visited} must be sized to total edges.
+\begin{minted}{c++}
+struct Edge {
+  int to, edge_id;
+};
+vector<vector<Edge>> g;
+vector<bool> visited;
+vector<int> path;
+void dfs(int node) {
+  while (!g[node].empty()) {
+    auto e = g[node].back();
+    g[node].pop_back();
+    if (visited[e.edge_id]) continue;
+    visited[e.edge_id] = true;
+    dfs(e.to);
+  }
+  path.push_back(node);
+}
+\end{minted}
 \subsection{Graph Condense (Kosaraju SCC)}
 Builds condensed DAG of strongly connected components. Two DFS passes: first on original graph, second on reversed graph. \texttt{comps} = number of SCCs. \texttt{comp[u]} = component id of node $u$. Key idea: DFS1 on original records finish-order; DFS2 on reverse assigns SCCs in reverse finish-order (Kosaraju's trick).
 \begin{minted}{c++}
