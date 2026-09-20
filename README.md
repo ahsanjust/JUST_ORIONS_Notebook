@@ -116,7 +116,7 @@ pdflatex -shell-escape main.tex   # second pass for correct TOC page numbers
 | # | Section | Key Algorithms |
 |---|---------|----------------|
 | 01 | **Setup & Basics** | Sublime build, PBDS, GP Hash, Fast I/O, Debug |
-| 02 | **Math** | XOR Basis, Matrix Exp, FFT, NTT, Gaussian Elimination, FWHT, Berlekamp-Massey |
+| 02 | **Math** | XOR Basis, FFT, NTT, Gaussian Elimination, FWHT, Berlekamp-Massey, Kitamasa |
 | 03 | **Number Theory** | Extended Euclid, CRT, SPF/Möbius, Miller-Rabin, Pollard Rho, Segmented Sieve, Discrete Log |
 | 04 | **Combinatorics** | Burnside, Derangements, Lucas, Bishop Placement, Inclusion-Exclusion |
 | 05 | **Data Structure** | Sparse Table, Merge Sort Tree, PST, Fenwick, Treap, Mo's, DSU, Lazy SegTree, Wavelet Tree |

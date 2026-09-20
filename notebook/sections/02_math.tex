@@ -32,37 +32,6 @@ $E[X + Y] = E[X] + E[Y]$ \hfill $E[XY] = E[X]E[Y]$ (if indep.) \\
 $Var(X) = E[X^2] - (E[X])^2$ \hfill $Var(aX + b) = a^2 Var(X)$ \\
 \textbf{Markov}: $P(X \ge a) \le \frac{E[X]}{a}$ \hfill \textbf{Chebyshev}: $P(|X - \mu| \ge k\sigma) \le \frac{1}{k^2}$ \\
 $Cov(X, Y) = E[XY] - E[X]E[Y]$ \hfill $E[\sum X_i] = \sum E[X_i]$ always
-\subsection{Matrix Exponentiation}
-\texttt{multiply(a,b)} multiplies matrices $O(N M P)$. \texttt{expo(t,p)} computes $t^p$ in $O(N^3 \log p)$. Skips zero entries in first matrix for speed. Define \texttt{mod} globally. Use for linear recurrences.
-\begin{minted}{c++}
-vector<vector<int>> multiply(
-  vector<vector<int>>& a,
-  vector<vector<int>>& b) {
-  int n = sz(a), m = sz(a[0]), p = sz(b[0]);
-  vector<vector<int>> result(n, vector<int>(p, 0));
-  for (int i = 0; i < n; i++)
-    for (int k = 0; k < m; k++) {
-      if (a[i][k] == 0) continue;
-      for (int j = 0; j < p; j++)
-        result[i][j] = ((long long)result[i][j] +
-          (long long)a[i][k] * b[k][j]) % mod;
-    }
-  return result;
-}
-vector<vector<int>> expo(
-  vector<vector<int>> t, int p) {
-  int n = t.size();
-  vector<vector<int>> result(n, vector<int>(n, 0));
-  for (int i = 0; i < n; i++) result[i][i] = 1;
-  assert(p >= 0);
-  while (p > 0) {
-    if (p & 1) result = multiply(result, t);
-    t = multiply(t, t);
-    p >>= 1;
-  }
-  return result;
-}
-\end{minted}
 \subsection{Basis Vector (XOR Basis)}
 Maintains linear basis of vectors mod 2 (XOR space). \\
 \texttt{insert(x)} -- returns true if x is independent. \\
@@ -349,7 +318,7 @@ vector<int> subset_conv(const vector<int>& f,
 \subsection{Berlekamp-Massey}
 \textbf{What it is:} A "black box" algorithm that looks at a sequence of numbers (like the first few terms of a DP) and automatically discovers the hidden formula (linear recurrence) generating them. E.g., for Fibonacci, it discovers $a_n = a_{n-1} + a_{n-2}$.
 
-\textbf{How to use:} Compute the first $\approx 100$ terms of your sequence using naive DP and pass them as a vector. It returns the recurrence coefficients $C$. You can then use Matrix Exponentiation (or Kitamasa) with $C$ to find the $K$-th term for a massive $K$.
+\textbf{How to use:} Compute the first $\approx 100$ terms of your sequence using naive DP and pass them as a vector. It returns the recurrence coefficients $C$. You can then use Kitamasa with $C$ to find the $K$-th term for a massive $K$.
 
 \textbf{Note:} Needs at least $2L$ terms to correctly find a recurrence of length $L$.
 \begin{minted}{c++}
@@ -376,7 +345,36 @@ vector<int> berlekampMassey(vector<int> x) {
   for (auto &i : C) i = (MOD - i) % MOD;
   return C;
 }
-// Kitamasa: compute k-th term of linear recurrence
-// using C (from BM) and first terms.
-// Complexity O(L^2 log k).
+\end{minted}
+
+\subsection{Kitamasa Method}
+\texttt{mul(a,b,c)} multiplies polynomials modulo $c$. \texttt{kth} finds $k$-th term of linear recurrence in $O(N^2 \log k)$. Define \texttt{MOD} globally, and use \texttt{sz(x)}.
+\begin{minted}{c++}
+vector<int> mul(const vector<int>& a, const vector<int>& b, const vector<int>& c) {
+  int n = sz(c);
+  vector<int> r(sz(a) + sz(b) - 1, 0);
+  for (int i = 0; i < sz(a); i++)
+    for (int j = 0; j < sz(b); j++)
+      r[i + j] = (r[i + j] + 1LL * a[i] * b[j]) % MOD;
+  for (int i = sz(r) - 1; i >= n; i--)
+    for (int j = 0; j < n; j++)
+      r[i - j - 1] = (r[i - j - 1] + 1LL * r[i] * c[j]) % MOD;
+  r.resize(min(sz(r), n));
+  return r;
+}
+int kth(const vector<int>& c, const vector<int>& s, long long k) {
+  int n = sz(c);
+  if (n == 0) return 0;
+  if (k < (long long)sz(s)) return s[k];
+  vector<int> a = (n == 1) ? vector<int>{c[0]} : vector<int>{0, 1}, x{1};
+  for (; k > 0; k /= 2) {
+    if (k % 2) x = mul(x, a, c);
+    a = mul(a, a, c);
+  }
+  x.resize(n);
+  int ans = 0;
+  for (int i = 0; i < n; i++)
+    ans = (ans + 1LL * x[i] * s[i]) % MOD;
+  return ans;
+}
 \end{minted}
