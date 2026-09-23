@@ -140,6 +140,23 @@ vector<int> getSps(const vector<int> &pi) {
 }
 \end{minted}
 Usage: \texttt{auto pi = getLps(s); auto sp = getSps(pi);}
+
+\subsection{Border Chain DP (Count Matching Prefixes)}
+Count how many prefixes of pattern $P$ ($|P|=m$) end at each index of text $S$ (where match length is $L$).
+Matches form a border chain $L \to \pi[L-1] \to \dots \to 0$. Precompute in $O(m)$ on $P$ for $O(1)$ query per text pos:
+\begin{minted}{c++}
+// dp[len] = count of prefixes of P ending at match length len
+vector<int> getBorderCnt(const vector<int> &pi, bool proper = false) {
+  int m = pi.size();
+  vector<int> dp(m + 1, 0);
+  for (int len = 1; len <= m; len++) {
+    if (proper && len == m) dp[m] = dp[pi[m - 1]]; // proper: len < m
+    else dp[len] = 1 + dp[pi[len - 1]];
+  }
+  return dp;
+}
+// At text pos with KMP match length L: count = dp[L] (dp[0] = 0)
+\end{minted}
 \subsection{Z-Algorithm}
 $O(N)$. \texttt{z[i]} = longest common prefix of $s[0..n-1]$ and $s[i..n-1]$.
 \begin{minted}{c++}
@@ -190,7 +207,7 @@ struct Manacher {
 $O(N \log N)$ prefix-doubling. Returns SA and LCP.
 \texttt{sa[i]} = starting index of $i$-th smallest suffix.
 \texttt{lcp[i]} = LCP of \texttt{sa[i]} and \texttt{sa[i-1]} (\texttt{lcp[0]}=0).
-\textbf{Tricks:} Distinct substrings = $\frac{n(n+1)}{2} - \sum lcp[i]$. Longest repeated substring = $\max(lcp)$.
+\textbf{Tricks:} Longest repeated substring = $\max(lcp)$.
 Works with string or \texttt{vector<int>}. \texttt{lim} = alphabet size (128 for ASCII).
 \begin{minted}{c++}
 array<vector<int>, 2> get_sa(auto& s, int lim = 128) {
