@@ -29,29 +29,6 @@ int from_gray(int g) {
 }
 \end{minted}
 
-\subsection{Zobrist Hashing (XOR Hashing)}
-Each element gets a random 64-bit value via \texttt{mt19937\_64}. Hash of a set $=$ XOR of its elements' hashes. $O(1)$ add/remove, collision probability negligible ($\approx 2^{-64}$).
-
-\textbf{Applications:}
-\begin{itemize}
-  \item \textbf{Subarray anagram detection}: Assign random $rnd[v]$ to each distinct value. Prefix XOR $pre[i+1] = pre[i] \oplus rnd[a[i]]$. Two subarrays $[l,r]$ and $[l',r']$ are anagrams iff $pre[r+1] \oplus pre[l] = pre[r'+1] \oplus pre[l']$.
-  \item \textbf{Set equality}: Hash two sets by XORing element hashes; equal $\implies$ equal hash.
-  \item \textbf{Tree isomorphism}: $hash[u] = rnd[val[u]] \oplus \bigoplus_{v \in children} hash[v]$ (sort child hashes first for unordered trees).
-  \item \textbf{Game state hashing}: Chess/Go engines assign random numbers to each piece+square; board hash $=$ XOR of all active pieces (Zobrist origin).
-\end{itemize}
-\begin{minted}{c++}
-mt19937_64 rng(chrono::steady_clock::now()
-  .time_since_epoch().count());
-vector<uint64_t> rnd(N);
-for (auto &x : rnd) x = rng();
-
-// Prefix XOR for subarray hash
-vector<uint64_t> pre(n + 1, 0);
-for (int i = 0; i < n; i++)
-  pre[i + 1] = pre[i] ^ rnd[a[i]];
-// xor of range [l, r] = pre[r+1] ^ pre[l]
-\end{minted}
-
 \subsection{Range OR, XOR, AND Tricks}
 \begin{minted}{c++}
 int64_t xor_0ton(int64_t n) {
@@ -73,30 +50,6 @@ int64_t range_or(int64_t l, int64_t r) {
   while ((l >> b) ^ (r >> b)) b += 1;
   return r | ((1LL << b) - 1);
 }
-\end{minted}
-
-\subsection{Inclusion–Exclusion with Bitmasks}
-Count elements satisfying \textbf{none} of $n$ properties $P_1,\dots,P_n$:
-$$\Big|\bigcap_{i=1}^n \overline{P_i}\Big| = \sum_{mask=0}^{2^n-1} (-1)^{\text{popcount}(mask)} \cdot f(mask)$$
-where $f(mask)$ = count of elements satisfying all properties with bit $=1$ in mask.
-\begin{minted}{c++}
-template<typename F>
-ll inclusion_exclusion(int n, F f) {
-  ll ans = 0;
-  for (int mask = 0; mask < (1 << n); mask++) {
-    ll sign = (__builtin_popcount(mask) & 1) ? -1 : 1;
-    ans += sign * f(mask);
-  }
-  return ans;
-}
-// Count numbers in [1,N] not divisible by any prime in p[0..n-1]
-// auto f = [&](int mask) -> ll {
-//   ll prod = 1;
-//   for (int i = 0; i < n; i++)
-//     if (mask >> i & 1) prod *= p[i];
-//   return N / prod;
-// };
-// ll result = inclusion_exclusion(n, f);
 \end{minted}
 
 \subsection{Sum of Digits up to N}
