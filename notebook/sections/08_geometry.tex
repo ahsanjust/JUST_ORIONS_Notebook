@@ -599,28 +599,4 @@ Given $n$ axis-aligned cubes, find the volume of their intersection.
 For each axis, the overlapping interval is $[\max\text{ of mins},\ \min\text{ of maxes}]$. If any interval is empty, the intersection volume is $0$.
 \[V = \max\left(0,\ (x_{\min} - x_{\max})(y_{\min} - y_{\max})(z_{\min} - z_{\max})\right)\]
 where $x_{\min} = \min(x_{i,\max})$, $x_{\max} = \max(x_{i,\min})$, etc.
-\begin{minted}{c++}
-int t, n, x1, y1, z1, x2, y2, z2;
-scanf("%d", &t);
-for (int i = 1; i <= t; i++) {
-  int xFar = 0, yFar = 0, zFar = 0;
-  int xNear = 1001, yNear = 1001, zNear = 1001;
-  scanf("%d", &n);
-  for (int j = 1; j <= n; j++) {
-    scanf("%d %d %d %d %d %d", &x1, &y1, &z1, &x2, &y2, &z2);
-    xFar = max(xFar, x1);
-    yFar = max(yFar, y1);
-    zFar = max(zFar, z1);
-    xNear = min(xNear, x2);
-    yNear = min(yNear, y2);
-    zNear = min(zNear, z2);
-  }
-  int xCommon = xNear - xFar;
-  int yCommon = yNear - yFar;
-  int zCommon = zNear - zFar;
-  if (xCommon > 0 && yCommon > 0 && zCommon > 0)
-    printf("Case %d: %d\n", i, xCommon * yCommon * zCommon);
-  else
-    printf("Case %d: 0\n", i);
-}
-\end{minted}
+
