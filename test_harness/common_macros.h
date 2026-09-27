@@ -4,6 +4,7 @@ using namespace std;
 
 #define sz(x) (int)(x).size()
 using ll = long long;
+using ld = long double;
 #define all(x) (x).begin(), (x).end()
 #define rall(x) (x).rbegin(), (x).rend()
 #define pb push_back

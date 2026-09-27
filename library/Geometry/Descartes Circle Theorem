@@ -10,24 +10,24 @@ here k = 1 / r
 when one of the cirle is replaced by straightline, then k3 = 0!
 
 // Radius of small circle tangent to three given circles (external)
-long double computeSmallCircleRadius(long double R1, long double R2, long double R3) {
-  long double a = 1.0L / R1;
-  long double b = 1.0L / R2;
-  long double c = 1.0L / R3;
-  long double sum = a + b + c;
-  long double rootPart = 2.0L * sqrt(a * b + b * c + c * a);
-  long double k = sum + rootPart;
+ld computeSmallCircleRadius(ld R1, ld R2, ld R3) {
+  ld a = 1.0L / R1;
+  ld b = 1.0L / R2;
+  ld c = 1.0L / R3;
+  ld sum = a + b + c;
+  ld rootPart = 2.0L * sqrt(a * b + b * c + c * a);
+  ld k = sum + rootPart;
   return 1.0L / k;
 }
 
 // Radius of large enclosing circle tangent to three given circles (internal)
-long double computeBigCircleRadius(long double R1, long double R2, long double R3) {
-  long double a = 1.0L / R1;
-  long double b = 1.0L / R2;
-  long double c = 1.0L / R3;
-  long double sum = a + b + c;
-  long double rootPart = 2.0L * sqrt(a * b + b * c + c * a);
-  long double k = sum - rootPart;
+ld computeBigCircleRadius(ld R1, ld R2, ld R3) {
+  ld a = 1.0L / R1;
+  ld b = 1.0L / R2;
+  ld c = 1.0L / R3;
+  ld sum = a + b + c;
+  ld rootPart = 2.0L * sqrt(a * b + b * c + c * a);
+  ld k = sum - rootPart;
   return 1.0L / k;
 }
 

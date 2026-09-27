@@ -106,17 +106,17 @@ vector<P>& tmp, int l, int r) {
 \subsection{Rectangle Distance}
 Distance between the two incircle touch points of the right triangles formed by the diagonal of an $L \times W$ rectangle.
 \begin{minted}{c++}
-long double L, W;
+ld L, W;
 if(!(cin >> L >> W)) return 0;
-long double h = sqrtl(L*L + W*W);
-long double P = L + W + h;
-long double x1 = L*(L + h)/P;
-long double y1 = L*W/P;
-long double x2 = L*W/P;
-long double y2 = W*(W + h)/P;
-long double dx = x1 - x2;
-long double dy = y1 - y2;
-long double D = sqrtl(dx*dx + dy*dy);
+ld h = sqrtl(L*L + W*W);
+ld P = L + W + h;
+ld x1 = L*(L + h)/P;
+ld y1 = L*W/P;
+ld x2 = L*W/P;
+ld y2 = W*(W + h)/P;
+ld dx = x1 - x2;
+ld dy = y1 - y2;
+ld D = sqrtl(dx*dx + dy*dy);
 cout << fixed << setprecision(6) << (double)D
 << "\n";
 \end{minted}
@@ -214,11 +214,11 @@ bool seg_int(P a, P b, P c, P d) {
          cp(c, d, a) != cp(c, d, b);
 }
 // area of polygon (shoelace), vertices in order (strict CCW or CW)
-long double polygon_area(vector<P> &p) {
+ld polygon_area(vector<P> &p) {
   int64_t area = 0, n = p.size();
   for (int i = 0; i < n; ++i)
     area += p[i] * p[(i + 1) % n];
-  return (long double)abs(area) / 2.0L;
+  return (ld)abs(area) / 2.0L;
 }
 // convex hull vertices (CCW, monotone chain)
 vector<P> convexHull(vector<P> p) {
@@ -256,28 +256,28 @@ int is_point_in_polygon(const vector<P>& p, P q) {
 \subsection{Area Enclosed by Three Circles}
 Black area between three mutually tangent circles of radii $r_1, r_2, r_3$ (triangle area minus sector areas).
 \begin{minted}{c++}
-long double r1, r2, r3;
+ld r1, r2, r3;
 cin >> r1 >> r2 >> r3;
-long double a = r2 + r3;
-long double b = r3 + r1;
-long double c = r1 + r2;
-long double s = (a + b + c) / 2.0L;
-long double val = s*(s - a)*(s - b)*(s - c);
-long double T = val > 0 ? sqrtl(val) : 0;
-auto angle = [&](long double opp, long double x,
-long double y) {
-  long double cosv = (x*x + y*y - opp*opp) /
+ld a = r2 + r3;
+ld b = r3 + r1;
+ld c = r1 + r2;
+ld s = (a + b + c) / 2.0L;
+ld val = s*(s - a)*(s - b)*(s - c);
+ld T = val > 0 ? sqrtl(val) : 0;
+auto angle = [&](ld opp, ld x,
+ld y) {
+  ld cosv = (x*x + y*y - opp*opp) /
   (2.0L * x * y);
-  cosv = min((long double)1.0,
-  max((long double)-1.0, cosv));
+  cosv = min((ld)1.0,
+  max((ld)-1.0, cosv));
   return acosl(cosv);
 };
-long double A = angle(a, b, c);
-long double B = angle(b, c, a);
-long double C = angle(c, a, b);
-long double sectorSum = 0.5L*(r1*r1*A +
+ld A = angle(a, b, c);
+ld B = angle(b, c, a);
+ld C = angle(c, a, b);
+ld sectorSum = 0.5L*(r1*r1*A +
 r2*r2*B + r3*r3*C);
-long double blackArea = T - sectorSum;
+ld blackArea = T - sectorSum;
 cout << fixed << setprecision(6) <<
 (double)blackArea << "\n";
 \end{minted}

@@ -167,6 +167,15 @@ To reformat all C++ snippets in `notebook_library/`:
 find notebook_library/ -name "*.cpp" -exec clang-format -i {} +
 ```
 
+### Type Aliases & Abbreviations (Rules for Agents & Contributors)
+
+> ⚠️ **CRITICAL FOR ALL AGENTS & CONTRIBUTORS:**
+> The team always uses and understands shorthand type aliases instead of verbose C++ standard types:
+> - **Use `ld` instead of `long double`**: Never use `long double` in code snippets, algorithm templates, or LaTeX sections (especially in **Geometry**). Always use `ld`.
+> - **Use `ll` instead of `long long`**: Never use `long long`. Always use `ll`.
+>
+> **Rationale:** In competitive programming contests, our team's standard base template predefines `using ll = long long;` and `using ld = long double;`. Using `ld` and `ll` maximizes horizontal character density and eliminates avoidable line wrapping, ensuring templates stay compact to fit strictly within our 25-page IUPC reference notebook budget.
+
 ---
 
 ## About

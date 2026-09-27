@@ -27,9 +27,9 @@ volume of rectangle : h * l * w
 volume of right angle triange : 1 / 2 * b * h * w 
 volume : area * depth
 
-long double inradius(long double a, long double b, long double c) {
-  long double s = (a + b + c) / 2.0;
-  long double area = sqrt(s * (s - a) * (s - b) * (s - c));
+ld inradius(ld a, ld b, ld c) {
+  ld s = (a + b + c) / 2.0;
+  ld area = sqrt(s * (s - a) * (s - b) * (s - c));
   if (area == 0) return 0; // Invalid triangle
   return area / s;
 }

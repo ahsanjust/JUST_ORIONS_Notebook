@@ -12,7 +12,7 @@ struct P {
   T operator ^ (const P &b) const { return x * b.x + y * b.y; }
   T dot (P &a, P &b) const {return (a - *this) ^ (b - *this); }
   T cross (P &a, P &b) { return (a - *this) * (b - *this); }
-  long double slope() { return (long double)y / x; }
+  ld slope() { return (ld)y / x; }
 };
 
 bool collinear(P &a, P &b, P &c) {

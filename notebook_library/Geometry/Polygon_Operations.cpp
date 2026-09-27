@@ -81,10 +81,10 @@ bool seg_int(P a, P b, P c, P d) {
   return cp(a, b, c) != cp(a, b, d) && cp(c, d, a) != cp(c, d, b);
 }
 // area of polygon (shoelace), vertices in order (strict CCW or CW)
-long double polygon_area(vector<P> &p) {
+ld polygon_area(vector<P> &p) {
   int64_t area = 0, n = p.size();
   for (int i = 0; i < n; ++i) area += p[i] * p[(i + 1) % n];
-  return (long double)abs(area) / 2.0L;
+  return (ld)abs(area) / 2.0L;
 }
 // convex hull vertices (CCW, monotone chain)
 vector<P> convexHull(vector<P> p) {
