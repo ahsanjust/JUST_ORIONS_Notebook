@@ -3,10 +3,7 @@ struct LCA {
   vector<vector<int>> adj, up;
   vector<int> depth;
   LCA(int _n) : n(_n), LOG(__lg(_n) + 2), adj(_n), up(_n, vector<int>(LOG, -1)), depth(_n, 0) {}
-  void add_edge(int u, int v) {
-    adj[u].push_back(v);
-    adj[v].push_back(u);
-  }
+  void add_edge(int u, int v) { adj[u].push_back(v); adj[v].push_back(u); }
   void dfs(int u, int p = -1, int d = 0) {
     up[u][0] = p;
     depth[u] = d;

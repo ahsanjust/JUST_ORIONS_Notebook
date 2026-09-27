@@ -1,15 +1,15 @@
-string kth(vector<int> f, int n, long long k) {
+string kth(vector<int> f, int n, ll k) {
   if (k < 1) return "";
   string s;
   for (int i = 0; i < n; i++) {
     for (int c = 0; c < (int)f.size(); c++)
       if (f[c]) {
         f[c]--;
-        long long w = 1;
+        ll w = 1;
         int r = n - i - 1;
         for (int d : f)
           if (d) {
-            long long cm = 1;
+            ll cm = 1;
             int m = min(d, r - d);
             for (int j = 1; j <= m; j++) cm = cm * (r - m + j) / j;
             w *= cm;

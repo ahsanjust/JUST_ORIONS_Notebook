@@ -416,11 +416,11 @@ struct Eertree {
 \subsection{k-th Multiset Permutation}
 Given freq array $cnt[\sigma]$ and length $n = \sum cnt[i]$, find $k$-th lexicographic permutation (1-indexed). For each position try $c$ in order, count per prefix via $P = \prod_i C(rem - \sum_{j<i} cnt[j], cnt[i])$, cap at $k+1$. $O(n \cdot \sigma \cdot \log k)$.
 \begin{minted}{c++}
-string kth(vector<int> f, int n, long long k) {
+string kth(vector<int> f, int n, ll k) {
   string s;
   for (int i = 0; i < n && s.size() == i; i++)
     for (int c = 0; c < (int)f.size(); c++) if (f[c]) {
-      f[c]--; long long w = 1; int r = n - i - 1;
+      f[c]--; ll w = 1; int r = n - i - 1;
       for (int d : f) if (d) {
         for (int j = 1, m = min(d, r - d); j <= m && w <= k; j++)
           w = min<__int128>(k + 1, (__int128)w * (r - j + 1) / j);

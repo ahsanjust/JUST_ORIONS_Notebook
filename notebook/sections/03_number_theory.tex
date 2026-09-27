@@ -105,7 +105,7 @@ vector<pair<int,int>> factorize(int x) {
 vector<int> divisors(int x) {
   vector<int> ret = {1};
   for (auto [p, c] : factorize(x)) {
-    int n = ret.size(); long long a = 1;
+    int n = ret.size(); ll a = 1;
     for (int d = 1; d <= c; d++) { a *= p; for (int i = 0; i < n; i++) ret.push_back(ret[i] * a); }
   }
   return ret;
@@ -114,29 +114,25 @@ vector<int> divisors(int x) {
 \subsection{Segmented Sieve}
 Key idea: Sieve small primes $\le \sqrt{R}$, then strike composites in $[L,R]$ using offsets. Efficient for very large ranges ($L,R \le 10^{12}$, $R-L \le 10^7$).
 \begin{minted}{c++}
-vector<char> segmentedSieve(long long L,
-long long R) {
-  long long lim = sqrt(R);
+vector<char> segmentedSieve(ll L, ll R) {
+  ll lim = sqrt(R);
   vector<char> mark(lim + 1, false);
-  vector<long long> primes;
-  for (long long i = 2; i <= lim; ++i) {
+  vector<ll> primes;
+  for (ll i = 2; i <= lim; ++i) {
     if (!mark[i]) {
       primes.emplace_back(i);
-      for (long long j = i * i; j <= lim; j += i)
-        mark[j] = true;
+      for (ll j = i * i; j <= lim; j += i) mark[j] = true;
     }
   }
   vector<char> isPrime(R - L + 1, true);
-  for (long long i : primes) {
+  for (ll i : primes) {
     ll sm = (L / i) * i;
     if (sm < L) sm += i;
-    for (long long j = max(i * i, sm); j <= R; j += i)
+    for (ll j = max(i * i, sm); j <= R; j += i)
       isPrime[j - L] = false;
   }
-  if (L <= 1) {
-    for (long long i = L; i <= 1 && i <= R; i++)
-      isPrime[i - L] = false;
-  }
+  if (L <= 1)
+    for (ll i = L; i <= 1 && i <= R; i++) isPrime[i - L] = false;
   return isPrime;
 }
 \end{minted}
@@ -358,13 +354,13 @@ $F_0 = 0, F_1 = 1, F_n = F_{n-1} + F_{n-2}$.
 \begin{minted}{c++}
 // Fast Doubling — returns {F_n, F_{n+1}} in O(log n),  n up to 1e18
 // F_0=0, F_1=1.  F_n = fib(n).first
-const long long MOD = 1e9 + 7;
-pair<long long, long long> fib(long long n) {
+const ll MOD = 1e9 + 7;
+pair<ll, ll> fib(ll n) {
   if (n == 0) return {0, 1};
   auto [a, b] = fib(n >> 1);
-  long long c = a * ((2 * b % MOD - a + MOD) % MOD) % MOD; // F(2k)
-  long long d = (a * a % MOD + b * b % MOD) % MOD;          // F(2k+1)
-  if (n & 1) return {d, (c + d) % MOD}; // F(2k+1), F(2k+2)
-  return {c, d};                         // F(2k), F(2k+1)
+  ll c = a * ((2 * b % MOD - a + MOD) % MOD) % MOD;
+  ll d = (a * a % MOD + b * b % MOD) % MOD;
+  if (n & 1) return {d, (c + d) % MOD};
+  return {c, d};
 }
 \end{minted}

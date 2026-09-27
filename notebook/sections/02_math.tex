@@ -117,9 +117,7 @@ struct Basis {
     return ret;
   }
   T count_leq(T x) { return count_less(x) + (can(x) ? 1 : 0); }
-  T jumpK(T val, T k) {
-    return kth(count_leq(val) + k);
-  }
+  T jumpK(T val, T k) { return kth(count_leq(val) + k); }
 };
 \end{minted}
 \subsection{Linear Combination Checking}
@@ -131,7 +129,7 @@ Ans: $N \bmod \text{GCD}(\text{all elements}) == 0$.
 \textbf{Note:} A sum $S$ can be formed if $S \pmod{\gcd} == 0$.
 
 \subsection{FFT (Fast Fourier Transform)}
-Convolution for integer polynomials (double-based). \texttt{multiply(a,b)} returns $a * b$ as \texttt{vector<long long>}.
+Convolution for integer polynomials (double-based). \texttt{multiply(a,b)} returns $a * b$ as \texttt{vector<ll>}.
 Prefer NTT when modulus supports it (no precision issues). Complexity $O(N \log N)$ where $N$ is next power of 2.
 \textbf{Note:} Array sizes must be a power of 2. Pad arrays with 0s before calling.
 \begin{minted}{c++}
@@ -139,12 +137,9 @@ const double PI = acos(-1);
 struct base {
   double a, b;
   base(double a = 0, double b = 0) : a(a), b(b) {}
-  const base operator+(const base &c) const
-    { return base(a + c.a, b + c.b); }
-  const base operator-(const base &c) const
-    { return base(a - c.a, b - c.b); }
-  const base operator*(const base &c) const
-    { return base(a*c.a - b*c.b, a*c.b + b*c.a); }
+  base operator+(const base &c) const { return base(a + c.a, b + c.b); }
+  base operator-(const base &c) const { return base(a - c.a, b - c.b); }
+  base operator*(const base &c) const { return base(a*c.a - b*c.b, a*c.b + b*c.a); }
 };
 void fft(vector<base> &p, bool inv = 0) {
   int n = p.size(), i = 0;
@@ -169,8 +164,7 @@ void fft(vector<base> &p, bool inv = 0) {
     for (int i = 0; i < n; ++i)
       p[i].a /= n, p[i].b /= n;
 }
-vector<long long> multiply(vector<long long> &a,
-                            vector<long long> &b) {
+vector<ll> multiply(vector<ll> &a, vector<ll> &b) {
   if (a.empty() || b.empty()) return {};
   int n = a.size(), m = b.size(), t = n + m - 1, sz = 1;
   while (sz < t) sz <<= 1;
@@ -182,11 +176,9 @@ vector<long long> multiply(vector<long long> &a,
   fft(x), fft(y);
   for (int i = 0; i < sz; ++i) x[i] = x[i] * y[i];
   fft(x, 1);
-  vector<long long> ret(sz);
-  for (int i = 0; i < sz; ++i)
-    ret[i] = (long long)round(x[i].a);
-  while (ret.size() > 1 && ret.back() == 0)
-    ret.pop_back();
+  vector<ll> ret(sz);
+  for (int i = 0; i < sz; ++i) ret[i] = (ll)round(x[i].a);
+  while (ret.size() > 1 && ret.back() == 0) ret.pop_back();
   return ret;
 }
 \end{minted}
@@ -200,8 +192,8 @@ const int MOD = 998244353, ROOT = 62;
 int modpow(int a, int e) {
   int r = 1;
   while (e) {
-    if (e & 1) r = (long long)r * a % MOD;
-    a = (long long)a * a % MOD;
+    if (e & 1) r = (ll)r * a % MOD;
+    a = (ll)a * a % MOD;
     e >>= 1;
   }
   return r;
@@ -213,7 +205,7 @@ void ntt(vector<int> &a) {
     rt.resize(n);
     int z[] = {1, modpow(ROOT, MOD >> s)};
     for (int i = k; i < 2 * k; i++)
-      rt[i] = (long long)rt[i / 2] * z[i & 1] % MOD;
+      rt[i] = (ll)rt[i / 2] * z[i & 1] % MOD;
   }
   vector<int> rev(n);
   for (int i = 0; i < n; i++)
@@ -223,7 +215,7 @@ void ntt(vector<int> &a) {
   for (int k = 1; k < n; k *= 2)
     for (int i = 0; i < n; i += 2 * k)
       for (int j = 0; j < k; j++) {
-        int z = (long long)rt[j + k] * a[i + j + k] % MOD;
+        int z = (ll)rt[j + k] * a[i + j + k] % MOD;
         a[i + j + k] = a[i + j] - z +
           (z > a[i + j] ? MOD : 0);
         a[i + j] += a[i + j] + z >= MOD ? z - MOD : z;
@@ -239,7 +231,7 @@ vector<int> conv(const vector<int> &a,
   L.resize(n); R.resize(n);
   ntt(L); ntt(R);
   for (int i = 0; i < n; i++)
-    out[(n - i) & (n - 1)] = (long long)L[i] * R[i] %
+    out[(n - i) & (n - 1)] = (ll)L[i] * R[i] %
       MOD * inv % MOD;
   ntt(out);
   return {out.begin(), out.begin() + s};
@@ -363,10 +355,10 @@ vector<int> mul(const vector<int>& a, const vector<int>& b, const vector<int>& c
   r.resize(min(sz(r), n));
   return r;
 }
-int kth(const vector<int>& c, const vector<int>& s, long long k) {
+int kth(const vector<int>& c, const vector<int>& s, ll k) {
   int n = sz(c);
   if (n == 0) return 0;
-  if (k < (long long)sz(s)) return s[k];
+  if (k < (ll)sz(s)) return s[k];
   vector<int> a = (n == 1) ? vector<int>{c[0]} : vector<int>{0, 1}, x{1};
   for (; k > 0; k /= 2) {
     if (k % 2) x = mul(x, a, c);

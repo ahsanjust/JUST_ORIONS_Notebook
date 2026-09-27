@@ -27,7 +27,7 @@ void fft(vector<base> &p, bool inv = 0) {
   if (inv)
     for (int i = 0; i < n; ++i) p[i].a /= n, p[i].b /= n;
 }
-vector<long long> multiply(vector<long long> &a, vector<long long> &b) {
+vector<ll> multiply(vector<ll> &a, vector<ll> &b) {
   if (a.empty() || b.empty()) return {};
   int n = a.size(), m = b.size(), t = n + m - 1, sz = 1;
   while (sz < t) sz <<= 1;
@@ -39,8 +39,8 @@ vector<long long> multiply(vector<long long> &a, vector<long long> &b) {
   fft(x), fft(y);
   for (int i = 0; i < sz; ++i) x[i] = x[i] * y[i];
   fft(x, 1);
-  vector<long long> ret(sz);
-  for (int i = 0; i < sz; ++i) ret[i] = (long long)round(x[i].a);
+  vector<ll> ret(sz);
+  for (int i = 0; i < sz; ++i) ret[i] = (ll)round(x[i].a);
   while (ret.size() > 1 && ret.back() == 0) ret.pop_back();
   return ret;
 }

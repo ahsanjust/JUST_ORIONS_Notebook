@@ -8,10 +8,7 @@ for (int len = 2; len <= n; len++) {
     dp[i][j] = LLONG_MAX;
     for (int k = p[i][j - 1]; k <= p[i + 1][j]; k++) {
       ll val = dp[i][k] + dp[k][j] + cost(i, j);
-      if (val < dp[i][j]) {
-        dp[i][j] = val;
-        p[i][j] = k;
-      }
+      if (val < dp[i][j]) { dp[i][j] = val; p[i][j] = k; }
     }
   }
 }

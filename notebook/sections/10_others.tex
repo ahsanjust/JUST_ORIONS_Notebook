@@ -13,9 +13,7 @@
 \begin{minted}{c++}
 // --- Bit & Mask Iteration ---
 // 1. Iterate set bits of x:
-for (int s = x; s; s &= s - 1) {
-  int i = __builtin_ctz(s);
-}
+for (int s = x; s; s &= s - 1) { int i = __builtin_ctz(s); }
 // 2. Iterate non-empty submasks of m:
 for (int s = m; s; s = (s - 1) & m) { }
 // 3. Iterate supersets of mask m (< 2^n):
@@ -32,22 +30,18 @@ int from_gray(int g) {
 \subsection{Range OR, XOR, AND Tricks}
 \begin{minted}{c++}
 int64_t xor_0ton(int64_t n) {
-  if (n % 4 == 0) return n;
-  if (n % 4 == 1) return 1;
-  if (n % 4 == 2) return n + 1;
-  return 0;
+  int r = n % 4;
+  return r == 0 ? n : r == 1 ? 1 : r == 2 ? n + 1 : 0;
 }
 int64_t range_xor(int64_t l, int64_t r) {
   return xor_0ton(r) ^ xor_0ton(l - 1);
 }
 int64_t range_and(int64_t l, int64_t r) {
-  int b = 0;
-  while ((l >> b) ^ (r >> b)) b += 1;
+  int b = 0; while ((l >> b) ^ (r >> b)) b++;
   return (l >> b) << b;
 }
 int64_t range_or(int64_t l, int64_t r) {
-  int b = 0;
-  while ((l >> b) ^ (r >> b)) b += 1;
+  int b = 0; while ((l >> b) ^ (r >> b)) b++;
   return r | ((1LL << b) - 1);
 }
 \end{minted}
@@ -60,12 +54,8 @@ uint64_t sumDigitsUpTo(uint64_t n) {
   if (n <= 0) return 0;
   uint64_t sum = 0;
   for (uint64_t f = 1; f <= n; f *= 10) {
-    uint64_t hi = n / (f * 10);
-    uint64_t cur = (n / f) % 10;
-    uint64_t lo = n % f;
-    sum += hi * 45LL * f;
-    sum += cur * (lo + 1);
-    sum += f * (cur * (cur - 1) / 2);
+    uint64_t hi = n / (f * 10), cur = (n / f) % 10, lo = n % f;
+    sum += hi * 45LL * f + cur * (lo + 1) + f * (cur * (cur - 1) / 2);
   }
   return sum;
 }
@@ -82,9 +72,7 @@ uint64_t get(uint64_t n) {
     now += (base - base / 10) * digits;
     digits += 1;
   }
-  n -= (base - 1);
-  now += n * digits;
-  return now;
+  return now + (n - base + 1) * digits;
 }
 \end{minted}
 \subsection{Game Theory \texorpdfstring{\&}{&} Nim}

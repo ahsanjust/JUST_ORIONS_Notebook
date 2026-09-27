@@ -167,14 +167,45 @@ To reformat all C++ snippets in `notebook_library/`:
 find notebook_library/ -name "*.cpp" -exec clang-format -i {} +
 ```
 
-### Type Aliases & Abbreviations (Rules for Agents & Contributors)
+### Rules for Agents & Contributors (Adding New Sections & Space Optimization)
 
-> ⚠️ **CRITICAL FOR ALL AGENTS & CONTRIBUTORS:**
-> The team always uses and understands shorthand type aliases instead of verbose C++ standard types:
-> - **Use `ld` instead of `long double`**: Never use `long double` in code snippets, algorithm templates, or LaTeX sections (especially in **Geometry**). Always use `ld`.
-> - **Use `ll` instead of `long long`**: Never use `long long`. Always use `ll`.
->
-> **Rationale:** In competitive programming contests, our team's standard base template predefines `using ll = long long;` and `using ld = long double;`. Using `ld` and `ll` maximizes horizontal character density and eliminates avoidable line wrapping, ensuring templates stay compact to fit strictly within our 25-page IUPC reference notebook budget.
+> ⚠️ **CRITICAL INSTRUCTIONS FOR ALL AGENTS & CONTRIBUTORS:**
+> This repository produces the printed competition reference notebook for ICPC / IUPC contests. Any mistake or page overflow can severely compromise contest performance. Whenever adding new sections, modifying algorithms, or optimizing space, you **MUST** strictly adhere to the following rules:
+
+1. **Strict 25-Page Limit (`<= 25 Pages`)**:
+   - The reference notebook has a hard limit of **25 pages** (`pdfinfo notebook/main.pdf | grep Pages`).
+   - Under no circumstances may changes cause the document to expand to 26 pages or more.
+   - Always verify that the final page has a comfortable margin buffer to absorb future additions.
+
+2. **Horizontal Space Optimization & Density ("Best Use of Right-Side Empty Spaces")**:
+   - **Column Character Limit**: The layout is a 3-column landscape document with 9pt minted font. The effective column width is **~48–52 characters per line**.
+   - **Avoid Automatic Wrapping**: Any line exceeding ~50 characters will automatically wrap with a red arrow `\ensuremath{\hookrightarrow}`, consuming an extra vertical line and diminishing readability.
+   - **Optimize Right-Side Space**:
+     - Collapse single-line conditionals and loops onto the same line: `if (l == r) return;`, `for (int i = 0; i < n; i++) cin >> a[i];`.
+     - Compact short structs and classes: `struct Edge { int to, edge_id; };` instead of 3 separate lines.
+     - Inline trivial getters, operators, and methods: `T jumpK(T val, T k) { return kth(count_leq(val) + k); }`.
+     - Group related variable declarations: `int n = a.size(), m = b.size();`, `ll dx = max(0LL, rx - lx), dy = max(0LL, ry - ly);`.
+     - Eliminate dangling single-brace lines (`}`) when a block `{ ... }` comfortably fits on a single line within the 48-character limit.
+
+3. **Type Aliases & Shorthand Conventions**:
+   - **Always use `ld` instead of `long double`**: Never use `long double` in code snippets, algorithm templates, or LaTeX sections (especially in **Geometry**). Always use `ld`.
+   - **Always use `ll` instead of `long long`**: Never use `long long`. Always use `ll`.
+   - The team's contest setup pre-declares `using ll = long long;` and `using ld = long double;`. Using `ld` and `ll` maximizes character density, prevents line wrapping, and saves essential vertical space.
+
+4. **Bidirectional Synchronization (`notebook/sections/` ↔ `notebook_library/`)**:
+   - Every algorithm snippet in `notebook/sections/*.tex` must have an identical, standalone counterpart in `notebook_library/<Section>/`.
+   - When editing or adding code in a LaTeX section, always update or create the corresponding `.cpp` file in `notebook_library/`.
+   - Do not allow the LaTeX sections and the source snippet files to drift out of sync.
+
+5. **Notebook Integrity & Algorithmic Correctness ("Never Destroy the Notebook")**:
+   - Never compromise correctness, numerical stability, or edge-case handling for brevity.
+   - Text explanations in LaTeX must be concise, mathematically exact, and highlight crucial competitive programming pitfalls (e.g., coordinate clamping, sign multiplication traps, $O(1)$ vs $O(\log N)$ tradeoffs).
+
+6. **Mandatory Build & Verification Workflow**:
+   - Run `make build` to ensure LaTeX compiles cleanly (0 errors, no broken minted environments).
+   - Check `pdfinfo notebook/main.pdf | grep Pages` to confirm that page count is strictly $\le 25$.
+   - Inspect page layout visually (using `pdftoppm` or `make view`) to verify clean columns with no ugly line-wrapping arrows.
+   - Run tests (`python3 test_harness/run_tests.py`) to confirm snippet integrity.
 
 ---
 

@@ -2,8 +2,8 @@ const int MOD = 998244353, ROOT = 62;
 int modpow(int a, int e) {
   int r = 1;
   while (e) {
-    if (e & 1) r = (long long)r * a % MOD;
-    a = (long long)a * a % MOD;
+    if (e & 1) r = (ll)r * a % MOD;
+    a = (ll)a * a % MOD;
     e >>= 1;
   }
   return r;
@@ -14,7 +14,7 @@ void ntt(vector<int> &a) {
   for (static int k = 2, s = 2; k < n; k *= 2, s++) {
     rt.resize(n);
     int z[] = {1, modpow(ROOT, MOD >> s)};
-    for (int i = k; i < 2 * k; i++) rt[i] = (long long)rt[i / 2] * z[i & 1] % MOD;
+    for (int i = k; i < 2 * k; i++) rt[i] = (ll)rt[i / 2] * z[i & 1] % MOD;
   }
   vector<int> rev(n);
   for (int i = 0; i < n; i++) rev[i] = (rev[i / 2] | (i & 1) << L) / 2;
@@ -23,7 +23,7 @@ void ntt(vector<int> &a) {
   for (int k = 1; k < n; k *= 2)
     for (int i = 0; i < n; i += 2 * k)
       for (int j = 0; j < k; j++) {
-        int z = (long long)rt[j + k] * a[i + j + k] % MOD;
+        int z = (ll)rt[j + k] * a[i + j + k] % MOD;
         a[i + j + k] = a[i + j] - z + (z > a[i + j] ? MOD : 0);
         a[i + j] += a[i + j] + z >= MOD ? z - MOD : z;
       }
@@ -37,7 +37,7 @@ vector<int> conv(const vector<int> &a, const vector<int> &b) {
   R.resize(n);
   ntt(L);
   ntt(R);
-  for (int i = 0; i < n; i++) out[(n - i) & (n - 1)] = (long long)L[i] * R[i] % MOD * inv % MOD;
+  for (int i = 0; i < n; i++) out[(n - i) & (n - 1)] = (ll)L[i] * R[i] % MOD * inv % MOD;
   ntt(out);
   return {out.begin(), out.begin() + s};
 }

@@ -84,7 +84,7 @@ $\sum_{k=1}^n k^c = \frac{1}{c+1} \sum_{k=0}^c (-1)^k \binom{c+1}{k} B_k n^{c+1-
 Computes $\binom{n}{r} \bmod p$ for prime $p$, when $n, r$ are large. Breaks $n, r$ into base-$p$ digits and multiplies small binomials. MOD must be prime and $\le 10^5$ for precomputed factorials. Usage: $C(10^{18}, 10^9) \bmod 1000000007$ in $O(\log_p n)$ time.
 \textbf{Note:} Computes $\binom{N}{R} \pmod P$ for large $N, R$ and small prime $P$.
 \begin{minted}{c++}
-long long lucas(long long n, long long r) {
+ll lucas(ll n, ll r) {
   if (r == 0) return 1;
   return lucas(n / MOD, r / MOD) *
          nCr(n % MOD, r % MOD) % MOD;

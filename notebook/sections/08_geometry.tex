@@ -2,13 +2,10 @@
 \subsection{Precision Handling}
 \textbf{Note:} Never use \texttt{a == b} for floats. Use \texttt{abs(a - b) < EPS}.
 \begin{minted}{c++}
-const double EPS = 1e-9;
-bool equal(double a, double b) {
-  return abs(a - b) < EPS; }
-bool lessThan(double a, double b) {
-  return a < b - EPS; }
-bool greaterThan(double a, double b) {
-  return a > b + EPS; }
+const ld EPS = 1e-9;
+bool equal(ld a, ld b) { return abs(a - b) < EPS; }
+bool lessThan(ld a, ld b) { return a < b - EPS; }
+bool greaterThan(ld a, ld b) { return a > b + EPS; }
 \end{minted}
 \subsection{Geometry Formulas}
 \textbf{General Triangle} (sides $a, b, c$; $s = \frac{a+b+c}{2}$): \\
@@ -106,19 +103,13 @@ vector<P>& tmp, int l, int r) {
 \subsection{Rectangle Distance}
 Distance between the two incircle touch points of the right triangles formed by the diagonal of an $L \times W$ rectangle.
 \begin{minted}{c++}
-ld L, W;
-if(!(cin >> L >> W)) return 0;
-ld h = sqrtl(L*L + W*W);
-ld P = L + W + h;
-ld x1 = L*(L + h)/P;
-ld y1 = L*W/P;
-ld x2 = L*W/P;
-ld y2 = W*(W + h)/P;
-ld dx = x1 - x2;
-ld dy = y1 - y2;
+ld L, W; if (!(cin >> L >> W)) return 0;
+ld h = sqrtl(L*L + W*W), P = L + W + h;
+ld x1 = L*(L + h)/P, y1 = L*W/P;
+ld x2 = y1, y2 = W*(W + h)/P;
+ld dx = x1 - x2, dy = y1 - y2;
 ld D = sqrtl(dx*dx + dy*dy);
-cout << fixed << setprecision(6) << (double)D
-<< "\n";
+cout << fixed << setprecision(6) << (double)D << "\n";
 \end{minted}
 \subsection{Polygon Operations}
 \begin{minted}{c++}
@@ -132,26 +123,18 @@ struct P {
   using T = int64_t;
   T x, y;
   void read() { cin >> x >> y; }
-  P operator - (const P &b) const {
-    return P{x - b.x, y - b.y}; }
-  P operator + (const P &b) const {
-    return P{x + b.x, y + b.y}; }
+  P operator - (const P &b) const { return P{x - b.x, y - b.y}; }
+  P operator + (const P &b) const { return P{x + b.x, y + b.y}; }
   template<class U> P operator * (const U &c) const {
     return P{(T)(x * c), (T)(y * c)}; }
   template<class U> P operator / (const U &c) const {
     return P{(T)(x / c), (T)(y / c)}; }
-  bool operator < (const P &b) const {
-    return x == b.x ? y < b.y : x < b.x; }
-  bool operator == (const P &b) const {
-    return x == b.x && y == b.y; }
-  T operator * (const P &b) const {
-    return x * b.y - y * b.x; }
-  T operator ^ (const P &b) const {
-    return x * b.x + y * b.y; }
-  T dot(P &a, P &b) const {
-    return (a - *this) ^ (b - *this); }
-  T cross(P &a, P &b) {
-    return (a - *this) * (b - *this); }
+  bool operator < (const P &b) const { return x == b.x ? y < b.y : x < b.x; }
+  bool operator == (const P &b) const { return x == b.x && y == b.y; }
+  T operator * (const P &b) const { return x * b.y - y * b.x; }
+  T operator ^ (const P &b) const { return x * b.x + y * b.y; }
+  T dot(P &a, P &b) const { return (a - *this) ^ (b - *this); }
+  T cross(P &a, P &b) { return (a - *this) * (b - *this); }
   ld sq() const { return x * x + y * y; }
   ld abs() const { return sqrtl(sq()); }
   P rot() const { return P(-y, x); } // 90 CCW
@@ -256,27 +239,18 @@ int is_point_in_polygon(const vector<P>& p, P q) {
 \subsection{Area Enclosed by Three Circles}
 Black area between three mutually tangent circles of radii $r_1, r_2, r_3$ (triangle area minus sector areas).
 \begin{minted}{c++}
-ld r1, r2, r3;
-cin >> r1 >> r2 >> r3;
-ld a = r2 + r3;
-ld b = r3 + r1;
-ld c = r1 + r2;
+ld r1, r2, r3; cin >> r1 >> r2 >> r3;
+ld a = r2 + r3, b = r3 + r1, c = r1 + r2;
 ld s = (a + b + c) / 2.0L;
 ld val = s*(s - a)*(s - b)*(s - c);
 ld T = val > 0 ? sqrtl(val) : 0;
-auto angle = [&](ld opp, ld x,
-ld y) {
-  ld cosv = (x*x + y*y - opp*opp) /
-  (2.0L * x * y);
-  cosv = min((ld)1.0,
-  max((ld)-1.0, cosv));
-  return acosl(cosv);
+auto angle = [&](ld opp, ld x, ld y) {
+  ld cosv = (x*x + y*y - opp*opp) / (2.0L * x * y);
+  return acosl(min((ld)1.0, max((ld)-1.0, cosv)));
 };
-ld A = angle(a, b, c);
-ld B = angle(b, c, a);
+ld A = angle(a, b, c), B = angle(b, c, a);
 ld C = angle(c, a, b);
-ld sectorSum = 0.5L*(r1*r1*A +
-r2*r2*B + r3*r3*C);
+ld sectorSum = 0.5L*(r1*r1*A + r2*r2*B + r3*r3*C);
 ld blackArea = T - sectorSum;
 cout << fixed << setprecision(6) <<
 (double)blackArea << "\n";
@@ -287,15 +261,10 @@ Lines are sorted by angle, then a deque maintains the intersection.
 \texttt{halfPlaneIntersection(lines)} returns vertices of the resulting polygon. $O(N \log N)$.
 \begin{minted}{c++}
 struct Line {
-  double a, b, c; // ax + by <= c
-  double ang;
+  double a, b, c, ang; // ax + by <= c
   Line(double a = 0, double b = 0, double c = 0)
-    : a(a), b(b), c(c) {
-    ang = atan2(b, a);
-  }
-  bool operator < (const Line &o) const {
-    return ang < o.ang;
-  }
+    : a(a), b(b), c(c), ang(atan2(b, a)) {}
+  bool operator < (const Line &o) const { return ang < o.ang; }
 };
 pair<double,double> intersect(Line &p, Line &q) {
   double d = p.a * q.b - p.b * q.a;
@@ -306,8 +275,7 @@ bool ok(Line &a, Line &b, Line &c) {
   auto [x, y] = intersect(a, b);
   return c.a * x + c.b * y < c.c + 1e-9;
 }
-vector<pair<double,double>>
-halfPlaneIntersection(vector<Line> v) {
+vector<pair<double,double>> halfPlaneIntersection(vector<Line> v) {
   sort(v.begin(), v.end());
   vector<Line> filtered;
   for (int i = 0; i < (int)v.size(); i++) {
@@ -318,20 +286,15 @@ halfPlaneIntersection(vector<Line> v) {
   v = filtered;
   deque<Line> dq;
   for (auto &l : v) {
-    while (dq.size() >= 2 &&
-           !ok(dq[dq.size()-2], dq.back(), l))
-      dq.pop_back();
-    while (dq.size() >= 2 &&
-           !ok(dq[0], dq[1], l))
-      dq.pop_front();
+    while (dq.size() >= 2 && !ok(dq[dq.size()-2], dq.back(), l)) dq.pop_back();
+    while (dq.size() >= 2 && !ok(dq[0], dq[1], l)) dq.pop_front();
     dq.push_back(l);
   }
   while (dq.size() >= 3 && !ok(dq[dq.size()-2], dq.back(), dq[0])) dq.pop_back();
   while (dq.size() >= 3 && !ok(dq[0], dq[1], dq.back())) dq.pop_front();
   vector<pair<double,double>> res;
   for (int i = 0; i < (int)dq.size(); i++)
-    res.push_back(intersect(dq[i],
-                  dq[(i+1)%dq.size()]));
+    res.push_back(intersect(dq[i], dq[(i+1)%dq.size()]));
   return res;
 }
 \end{minted}
@@ -346,10 +309,8 @@ ld rotating_diameter(vector<P> &h) {
   if (n == 2) return (h[0] - h[1]).abs();
   ld ans = 0;
   for (int i = 0, j = 1; i < n; i++) {
-    while ((h[(i+1)%n] - h[i]) * (h[(j+1)%n] - h[j]) > 0)
-      j = (j + 1) % n;
-    ans = max(ans, (h[i] - h[j]).sq());
-    ans = max(ans, (h[(i+1)%n] - h[j]).sq());
+    while ((h[(i+1)%n] - h[i]) * (h[(j+1)%n] - h[j]) > 0) j = (j + 1) % n;
+    ans = max({ans, (h[i] - h[j]).sq(), (h[(i+1)%n] - h[j]).sq()});
   }
   return sqrtl(ans);
 }
@@ -359,10 +320,8 @@ ld polygon_width(vector<P> &h) {
   if (n <= 2) return 0;
   ld ans = 1e30;
   for (int i = 0, j = 1; i < n; i++) {
-    while ((h[(i+1)%n] - h[i]) * (h[(j+1)%n] - h[j]) > 0)
-      j = (j + 1) % n;
-    ld d = fabsl((h[(i+1)%n] - h[i]) * (h[j] - h[i]))
-           / (h[(i+1)%n] - h[i]).abs();
+    while ((h[(i+1)%n] - h[i]) * (h[(j+1)%n] - h[j]) > 0) j = (j + 1) % n;
+    ld d = fabsl((h[(i+1)%n] - h[i]) * (h[j] - h[i])) / (h[(i+1)%n] - h[i]).abs();
     ans = min(ans, d);
   }
   return ans;
@@ -375,11 +334,12 @@ Determines if a point is inside a CCW-ordered convex hull in $O(\log N)$.
 // Returns 1 if q is inside or on boundary of convex polygon p (CCW), 0 otherwise
 int point_in_convex(P &q, vector<P> &p) {
   int n = p.size();
+  auto in_box = [&](P a, P b) {
+    return min(a.x, b.x) <= q.x && q.x <= max(a.x, b.x) &&
+           min(a.y, b.y) <= q.y && q.y <= max(a.y, b.y);
+  };
   int64_t cross_first = (p[1] - p[0]) * (q - p[0]);
-  if (cross_first == 0) {
-    return min(p[0].x, p[1].x) <= q.x && q.x <= max(p[0].x, p[1].x) &&
-           min(p[0].y, p[1].y) <= q.y && q.y <= max(p[0].y, p[1].y);
-  }
+  if (cross_first == 0) return in_box(p[0], p[1]);
   if (cross_first < 0) return 0;
   int lo = 1, hi = n - 1;
   while (lo < hi) {
@@ -389,11 +349,7 @@ int point_in_convex(P &q, vector<P> &p) {
   }
   int64_t cross_last = (p[(lo+1)%n] - p[lo]) * (q - p[lo]);
   if (cross_last < 0) return 0;
-  if (cross_last == 0) {
-    P a = p[lo], b = p[(lo+1)%n];
-    return min(a.x, b.x) <= q.x && q.x <= max(a.x, b.x) &&
-           min(a.y, b.y) <= q.y && q.y <= max(a.y, b.y);
-  }
+  if (cross_last == 0) return in_box(p[lo], p[(lo+1)%n]);
   return 1;
 }
 \end{minted}
@@ -432,8 +388,7 @@ Circle welzl(vector<P> &pts) {
     if (i == (int)p.size() || b.size() == 3) {
       if (b.empty()) return {{0,0}, 0};
       if (b.size() == 1) return {b[0], 0};
-      if (b.size() == 2)
-        return {(b[0]+b[1])/2, (b[0]-b[1]).abs()/2};
+      if (b.size() == 2) return {(b[0]+b[1])/2, (b[0]-b[1]).abs()/2};
       return circum(b[0], b[1], b[2]);
     }
     Circle c = f(i+1, b);
@@ -496,8 +451,7 @@ pair<PointD, ld> circumcircle(P a, P b, P c) {
   return {o, (o - A).abs()};
 }
 // Circle-Line: returns number of intersection points
-int circle_line(PointD c, ld r, P a, P b,
-                vector<PointD> &res) {
+int circle_line(PointD c, ld r, P a, P b, vector<PointD> &res) {
   PointD A(a), B(b), ab = B - A;
   PointD p = A + ab * (((c-A).x * ab.x + (c-A).y * ab.y) / ab.sq());
   ld d = (p - c).abs();
@@ -509,11 +463,9 @@ int circle_line(PointD c, ld r, P a, P b,
   return 2;
 }
 // Circle-Circle: returns number of intersection points
-int circle_circle(PointD c1, ld r1, PointD c2, ld r2,
-                  vector<PointD> &res) {
+int circle_circle(PointD c1, ld r1, PointD c2, ld r2, vector<PointD> &res) {
   ld d = (c1 - c2).abs();
-  if (d > r1 + r2 + 1e-9 || d < fabsl(r1-r2) - 1e-9)
-    return 0;
+  if (d > r1 + r2 + 1e-9 || d < fabsl(r1-r2) - 1e-9) return 0;
   if (d < 1e-9 && fabsl(r1-r2) < 1e-9) return -1;
   ld a = (r1*r1 - r2*r2 + d*d) / (2*d);
   ld h = sqrtl(r1*r1 - a*a);
@@ -594,9 +546,11 @@ ll union_area(vector<tuple<ll,ll,ll,ll>> &rects) {
 }
 \end{minted}
 
-\subsection{Intersection of Many Cubes}
-Given $n$ axis-aligned cubes, find the volume of their intersection.
-For each axis, the overlapping interval is $[\max\text{ of mins},\ \min\text{ of maxes}]$. If any interval is empty, the intersection volume is $0$.
-\[V = \max\left(0,\ (x_{\min} - x_{\max})(y_{\min} - y_{\max})(z_{\min} - z_{\max})\right)\]
-where $x_{\min} = \min(x_{i,\max})$, $x_{\max} = \max(x_{i,\min})$, etc.
+\subsection{Intersection of Many Cubes / 3D Boxes}
+Given $n$ axis-aligned boxes $[x_{i,1}, x_{i,2}] \times [y_{i,1}, y_{i,2}] \times [z_{i,1}, z_{i,2}]$, find their mutual intersection volume.
+The intersection along each axis is independent:
+\[ L_x = \max_i x_{i,1},\quad R_x = \min_i x_{i,2},\quad \Delta x = \max(0\text{LL}, R_x - L_x) \]
+Compute $\Delta y, \Delta z$ analogously. The intersection volume is:
+\[ V = \Delta x \cdot \Delta y \cdot \Delta z \]
+\textbf{Trap:} Always clamp each $\Delta \ge 0$ individually before multiplying. Never multiply $(R-L)$ directly, as two disjoint intervals with negative spans can falsely multiply to a positive volume.
 

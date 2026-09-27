@@ -6,7 +6,5 @@ uint64_t get(uint64_t n) {
     now += (base - base / 10) * digits;
     digits += 1;
   }
-  n -= (base - 1);
-  now += n * digits;
-  return now;
+  return now + (n - base + 1) * digits;
 }

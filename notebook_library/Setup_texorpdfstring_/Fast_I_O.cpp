@@ -15,6 +15,6 @@ int readInt() {
   if (minus) a = gc();
   unsigned res = a - 48;
   while ((c = gc()) >= 48) res = res * 10 + (c - 48);
-  return minus ? -(long long)res : (int)res;
+  return minus ? -(ll)res : (int)res;
 }
 // ~5x faster than cin/scanf

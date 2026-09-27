@@ -5,8 +5,7 @@ struct SCC {
   vector<bool> vis;
   SCC(int _n) : n(_n), comps(0), adj(_n), rev_adj(_n), comp(_n, -1), vis(_n, false) {}
   void add_edge(int u, int v) {
-    adj[u].push_back(v);
-    rev_adj[v].push_back(u);
+    adj[u].push_back(v); rev_adj[v].push_back(u);
   }
   void dfs1(int u) {
     vis[u] = true;
@@ -23,9 +22,8 @@ struct SCC {
     for (int i = 0; i < n; i++)
       if (!vis[i]) dfs1(i);
     reverse(order.begin(), order.end());
-    for (int u : order) {
+    for (int u : order)
       if (comp[u] == -1) dfs2(u, comps++);
-    }
     scc_adj.resize(comps);
     for (int u = 0; u < n; u++) {
       for (int v : adj[u]) {

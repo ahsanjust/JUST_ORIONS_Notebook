@@ -77,16 +77,13 @@ vector<int> eulerPath(
 \subsection{Eulerian Circuit}
 Finds Eulerian circuit. Populates \texttt{path} with nodes in reverse order. Call \texttt{dfs(src)} and then \texttt{reverse(path.begin(), path.end())}. \texttt{visited} must be sized to total edges.
 \begin{minted}{c++}
-struct Edge {
-  int to, edge_id;
-};
+struct Edge { int to, edge_id; };
 vector<vector<Edge>> g;
 vector<bool> visited;
 vector<int> path;
 void dfs(int node) {
   while (!g[node].empty()) {
-    auto e = g[node].back();
-    g[node].pop_back();
+    auto e = g[node].back(); g[node].pop_back();
     if (visited[e.edge_id]) continue;
     visited[e.edge_id] = true;
     dfs(e.to);
@@ -105,8 +102,7 @@ struct SCC {
   SCC(int _n) : n(_n), comps(0), adj(_n), rev_adj(_n),
     comp(_n, -1), vis(_n, false) {}
   void add_edge(int u, int v) {
-    adj[u].push_back(v);
-    rev_adj[v].push_back(u);
+    adj[u].push_back(v); rev_adj[v].push_back(u);
   }
   void dfs1(int u) {
     vis[u] = true;
@@ -121,9 +117,8 @@ struct SCC {
   void build() {
     for (int i = 0; i < n; i++) if (!vis[i]) dfs1(i);
     reverse(order.begin(), order.end());
-    for (int u : order) {
+    for (int u : order)
       if (comp[u] == -1) dfs2(u, comps++);
-    }
     scc_adj.resize(comps);
     for (int u = 0; u < n; u++) {
       for (int v : adj[u]) {
@@ -321,8 +316,7 @@ struct LCA {
   LCA(int _n) : n(_n), LOG(__lg(_n) + 2), adj(_n),
     up(_n, vector<int>(LOG, -1)), depth(_n, 0) {}
   void add_edge(int u, int v) {
-    adj[u].push_back(v);
-    adj[v].push_back(u);
+    adj[u].push_back(v); adj[v].push_back(u);
   }
   void dfs(int u, int p = -1, int d = 0) {
     up[u][0] = p;
@@ -421,18 +415,15 @@ vector<int> subtree_size;
 int get_subtree_size(int node, int parent = -1) {
   subtree_size[node] = 1;
   for (int child : adj[node]) {
-    if (child == parent || is_removed[child])
-      continue;
-    subtree_size[node] +=
-    get_subtree_size(child, node);
+    if (child == parent || is_removed[child]) continue;
+    subtree_size[node] += get_subtree_size(child, node);
   }
   return subtree_size[node];
 }
 int get_centroid(int node, int tree_size,
-int parent = -1) {
+                 int parent = -1) {
   for (int child : adj[node]) {
-    if (child == parent || is_removed[child])
-      continue;
+    if (child == parent || is_removed[child]) continue;
     if (subtree_size[child] * 2 > tree_size)
       return get_centroid(child, tree_size, node);
   }
@@ -531,12 +522,10 @@ struct HK {
   vector<pair<int, int>> matching_edges() {
     vector<pair<int, int>> res;
     for (int i = 0; i < n; i++) 
-      if (L[i] != -1) 
-        res.emplace_back(i, L[i]);
+      if (L[i] != -1) res.emplace_back(i, L[i]);
     return res;
   }
-  pair<vector<int>, 
-  vector<int>> min_vertex_cover() {
+  pair<vector<int>, vector<int>> min_vertex_cover() {
     max_matching();
     vector<int> Z(n, 0), cvL, cvR;
     auto vis = [&](auto& self, int u) -> void {
@@ -549,8 +538,7 @@ struct HK {
     for (int i = 0; i < n; i++) 
       if (!Z[i]) cvL.push_back(i);
     for (int j = 0; j < m; j++) 
-      if (R[j] != -1 && Z[R[j]]) 
-        cvR.push_back(j);
+      if (R[j] != -1 && Z[R[j]]) cvR.push_back(j);
     return {cvL, cvR};
   }
 };

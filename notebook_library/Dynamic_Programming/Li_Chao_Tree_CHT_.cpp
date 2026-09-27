@@ -1,13 +1,7 @@
 struct LiChao {
-  struct Line {
-    ll m, b;
-    ll eval(ll x) const { return m * x + b; }
-  };
+  struct Line { ll m, b; ll eval(ll x) const { return m * x + b; } };
   static constexpr ll INF = 2e18;
-  struct Node {
-    int l = -1, r = -1;
-    Line line = {0, INF};
-  };
+  struct Node { int l = -1, r = -1; Line line = {0, INF}; };
   vector<Node> t = {Node()};
 
   void add_line(Line nw, int u = 0, ll l = -1e9, ll r = 1e9) {
@@ -17,39 +11,24 @@ struct LiChao {
     if (bm) swap(t[u].line, nw);
     if (l == r) return;
     if (bl != bm) {
-      if (t[u].l == -1) {
-        t[u].l = t.size();
-        t.emplace_back();
-      }
+      if (t[u].l == -1) { t[u].l = t.size(); t.emplace_back(); }
       add_line(nw, t[u].l, l, mid);
     } else {
-      if (t[u].r == -1) {
-        t[u].r = t.size();
-        t.emplace_back();
-      }
+      if (t[u].r == -1) { t[u].r = t.size(); t.emplace_back(); }
       add_line(nw, t[u].r, mid + 1, r);
     }
   }
 
   void add_segment(ll ql, ll qr, Line nw, int u = 0, ll l = -1e9, ll r = 1e9) {
     if (qr < l || r < ql) return;
-    if (ql <= l && r <= qr) {
-      add_line(nw, u, l, r);
-      return;
-    }
+    if (ql <= l && r <= qr) { add_line(nw, u, l, r); return; }
     ll mid = l + (r - l) / 2;
     if (ql <= mid) {
-      if (t[u].l == -1) {
-        t[u].l = t.size();
-        t.emplace_back();
-      }
+      if (t[u].l == -1) { t[u].l = t.size(); t.emplace_back(); }
       add_segment(ql, qr, nw, t[u].l, l, mid);
     }
     if (qr > mid) {
-      if (t[u].r == -1) {
-        t[u].r = t.size();
-        t.emplace_back();
-      }
+      if (t[u].r == -1) { t[u].r = t.size(); t.emplace_back(); }
       add_segment(ql, qr, nw, t[u].r, mid + 1, r);
     }
   }
@@ -59,8 +38,7 @@ struct LiChao {
     ll res = t[u].line.eval(x);
     if (l == r) return res;
     ll mid = l + (r - l) / 2;
-    if (x <= mid) return min(res, query(x, t[u].l, l, mid));
-    return min(res, query(x, t[u].r, mid + 1, r));
+    return min(res, x <= mid ? query(x, t[u].l, l, mid) : query(x, t[u].r, mid + 1, r));
   }
 };
 // Usage:
