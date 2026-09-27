@@ -524,6 +524,25 @@ int circle_circle(PointD c1, ld r1, PointD c2, ld r2,
 }
 \end{minted}
 
+\subsection{Intersection Area of Two Circles}
+The overlap region of two intersecting circles forms a symmetric lens bounded by a common chord.
+It equals the sum of two circular segments:
+\[A = \frac{1}{2}r_1^2(\alpha - \sin\alpha) + \frac{1}{2}r_2^2(\beta - \sin\beta)\]
+Central angles in radians:
+\[\alpha = 2\cos^{-1}\left(\frac{r_1^2 + d^2 - r_2^2}{2r_1 d}\right),\quad \beta = 2\cos^{-1}\left(\frac{r_2^2 + d^2 - r_1^2}{2r_2 d}\right)\]
+If circles do not intersect or one contains the other, the area is 0.
+\begin{minted}{c++}
+ld circle_intersection_area(ld r1, ld r2, ld d) {
+  if (d >= r1 + r2 - EPS) return 0;
+  if (d <= fabsl(r1 - r2) + EPS) return 0;
+  ld alpha = 2.0L * acosl((r1*r1 + d*d - r2*r2) / (2.0L * r1 * d));
+  ld beta  = 2.0L * acosl((r2*r2 + d*d - r1*r1) / (2.0L * r2 * d));
+  ld seg1 = 0.5L * r1*r1 * (alpha - sinl(alpha));
+  ld seg2 = 0.5L * r2*r2 * (beta  - sinl(beta));
+  return seg1 + seg2;
+}
+\end{minted}
+
 \subsection{Line Sweep (Rectangle Union Area)}
 Union area of axis-aligned rectangles via sweep line and segment tree. $O(N \log N)$.
 \begin{minted}{c++}
