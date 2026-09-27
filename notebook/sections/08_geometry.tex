@@ -597,7 +597,8 @@ ll union_area(vector<tuple<ll,ll,ll,ll>> &rects) {
 \subsection{Intersection of Many Cubes}
 Given $n$ axis-aligned cubes, find the volume of their intersection.
 For each axis, the overlapping interval is $[\max\text{ of mins},\ \min\text{ of maxes}]$. If any interval is empty, the intersection volume is $0$.
-\[V = \max\left(0,\ (x_{\text{min_max}} - x_{\text{max_min}})(y_{\text{min_max}} - y_{\text{max_min}})(z_{\text{min_max}} - z_{\text{max_min}})\right)\]
+\[V = \max\left(0,\ (x_{\min} - x_{\max})(y_{\min} - y_{\max})(z_{\min} - z_{\max})\right)\]
+where $x_{\min} = \min(x_{i,\max})$, $x_{\max} = \max(x_{i,\min})$, etc.
 \begin{minted}{c++}
 int t, n, x1, y1, z1, x2, y2, z2;
 scanf("%d", &t);
