@@ -119,7 +119,7 @@ pdflatex -shell-escape main.tex   # second pass for correct TOC page numbers
 | 02 | **Math** | XOR Basis, FFT, NTT, Gaussian Elimination, FWHT, Berlekamp-Massey, Kitamasa |
 | 03 | **Number Theory** | Extended Euclid, CRT, SPF/Möbius, Miller-Rabin, Pollard Rho, Segmented Sieve, Discrete Log |
 | 04 | **Combinatorics** | Burnside, Derangements, Lucas, Bishop Placement, Inclusion-Exclusion |
-| 05 | **Data Structure** | Sparse Table, Merge Sort Tree, PST, Fenwick, Treap, Mo's, DSU, Lazy SegTree, Wavelet Tree |
+| 05 | **Data Structure** | Sparse Table, PST, Fenwick, Treap, Mo's, DSU, Lazy SegTree, Wavelet Tree |
 | 06 | **Strings** | Binary Trie, Booth, KMP, Z, Manacher, Suffix Array, Aho-Corasick, Hashing, Eertree |
 | 07 | **Graph Theory** | SCC, Bridges, Hopcroft-Karp, Dinic, HLD, Centroid Decomp, 2-SAT, MCMF, Euler Tour |
 | 08 | **Geometry** | Closest Pair, Polygon Ops, Convex Hull, Half-Plane Intersection, Minkowski Sum |

@@ -230,10 +230,7 @@ Solid. Static globals avoid reallocation — good for contest use. Must be defin
 
 ## 12. Merge Sort Tree
 
-**Notebook:** `vector<vector<int>> tree` — 4N vectors
-
-### Verdict
-PST and Wavelet Tree (both in notebook) are strictly better alternatives. Consider adding a comparison note.
+**Notebook:** Removed (was `vector<vector<int>> tree` — 4N vectors). PST and Wavelet Tree strictly dominate it (`O(log n)` vs `O(log²n)`); a one-line pointer remains in the notebook. Library copy kept at `notebook_library/Data_Structure/Merge_Sort_Tree.cpp` (zero page cost).
 
 ---
 

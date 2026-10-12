@@ -45,7 +45,6 @@ gp_hash_table<int, int, custom_hash> mp;
 \end{minted}
 
 \subsection{DSU}
-KACTL-style single-vector DSU: \texttt{e[x]} is negative for roots (stores \texttt{-size}) and non-negative for parents. $66\%$ memory savings vs 3-vector approach. \texttt{size(x)} returns component size. \texttt{cnt} tracks number of components.
 \begin{minted}{c++}
 struct dsu {
   vector<int> e;  // negative = size (root), non-negative = parent
@@ -388,45 +387,7 @@ int pqry(int cur, int b, int e, int l, int r) {
 // proot[i]=pupd(r,1,n,i,1); ans=pqry(proot[r],1,n,l,r).
 // Distinct sum: use +-a[i] instead of +-1 (pval -> long long).
 \end{minted}
-\subsection{Merge Sort Tree}
-Segment tree where each node stores a sorted list of its range. $qry(l,r,k)$ = number of elements $\le k$ in $[l,r]$. Build $O(N \log N)$, query $O(\log^2 N)$, space $O(N \log N)$.
-\begin{minted}{c++}
-struct MergeSortTree {
-  int n;
-  vector<vector<int>> tree;
-  MergeSortTree(const vector<int>& arr) {
-    n = arr.size();
-    tree.resize(4 * n);
-    build(1, 0, n - 1, arr);
-  }
-  void build(int node, int l, int r,
-             const vector<int>& arr) {
-    if (l == r) {
-      tree[node].push_back(arr[l]);
-      return;
-    }
-    int mid = (l + r) / 2;
-    build(2 * node, l, mid, arr);
-    build(2 * node + 1, mid + 1, r, arr);
-    merge(tree[2 * node].begin(), tree[2 * node].end(),
-          tree[2 * node + 1].begin(),
-          tree[2 * node + 1].end(),
-          back_inserter(tree[node]));
-  }
-  int query(int node, int l, int r, int ql, int qr, int k) {
-    if (l > qr || r < ql) return 0;
-    if (l >= ql && r <= qr) {
-      // binary search in sorted node list: count <= k
-      return upper_bound(tree[node].begin(),
-      tree[node].end(), k) - tree[node].begin();
-    }
-    int mid = (l + r) / 2;
-    return query(2 * node, l, mid, ql, qr, k) +
-           query(2 * node + 1, mid + 1, r, ql, qr, k);
-  }
-};
-\end{minted}
-% PST: O(log N) with compression. MST: O(log^2 N), no compression needed.
+\textit{Merge Sort Tree (sorted vectors per node, $O(\log^2 N)$ query) omitted --- PST and Wavelet above strictly dominate it.}
 
 \subsection{Wavelet Matrix}
 Wavelet Matrix (compact iterative WT) using \texttt{vector<uint64\_t>} bit vectors instead of \texttt{vector<int>} prefix arrays --- $32\times$ memory savings per level. Build $O(N \log M)$, query $O(\log M)$. 0-indexed. \texttt{kth(l,r,k)} returns $k$-th smallest (0-based) in $[l,r]$. \texttt{count\_leq(l,r,x)} counts $\le x$. \texttt{count\_seg(l,r,x,y)} counts in $[x,y]$.

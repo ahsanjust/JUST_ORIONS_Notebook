@@ -18,7 +18,6 @@ for (int s = x; s; s &= s - 1) { int i = __builtin_ctz(s); }
 for (int s = m; s; s = (s - 1) & m) { }
 // 3. Iterate supersets of mask m (< 2^n):
 for (int s = m; s < (1<<n); s = (s+1)|m) { }
-
 // --- Gray Code ---
 int to_gray(int x) { return x ^ (x >> 1); }
 int from_gray(int g) {
@@ -76,12 +75,9 @@ uint64_t get(uint64_t n) {
 }
 \end{minted}
 \subsection{Game Theory \texorpdfstring{\&}{&} Nim}
-\textbf{Standard Nim}: XOR sum of piles $= 0 \implies$ Second player wins. $\neq 0 \implies$ First player wins.
-
-\textbf{Subtraction Game}: Can only take up to $k$ stones. XOR sum of $(pile_i \bmod (k+1))$.
-
-\textbf{Index-k Nim}: Can remove from up to $k$ piles at once. Write sizes in binary. Sum each column. If all column sums $\equiv 0 \pmod{k+1}$, second player wins.
-
+\textbf{Standard Nim}: XOR sum of piles $= 0 \implies$ Second player wins. $\neq 0 \implies$ First player wins. \\
+\textbf{Subtraction Game}: Can only take up to $k$ stones. XOR sum of $(pile_i \bmod (k+1))$. \\
+\textbf{Index-k Nim}: Can remove from up to $k$ piles at once. Write sizes in binary. Sum each column. If all column sums $\equiv 0 \pmod{k+1}$, second player wins. \\
 \textbf{Mis\`{e}re Nim} (Last player to move LOSES): If all piles have size 1, Second wins if $N$ is ODD. Otherwise, play like Standard Nim (XOR sum).
 
 \subsection{Sprague-Grundy}

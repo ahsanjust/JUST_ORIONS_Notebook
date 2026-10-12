@@ -32,6 +32,7 @@ Each entry: **Section file** — subsections tested, variant compile flags passe
 | 2026-07-23 | `07_graph_theory.tex` | Kruskal, Euler Tour | `-O2`, `-O0 -fsanitize=address,undefined` | 2706+165770 | ✅ PASS |
 | 2026-07-23 | `06_strings.tex` | Double Hash (DHash) | `-O2`, `-O0 -fsanitize=address,undefined`, `#define int long long` | 2000 each | ✅ ALL PASS |
 | 2026-07-23 | `06_strings.tex` | Periods, KMP Automaton, Lyndon Factorization | `-O2`, `-O0 -fsanitize=address,undefined` | 2000 each | ✅ ALL PASS |
+| 2026-10-12 | `06_strings.tex` | String Big Integer (signed add/sub/mul; rewrote broken borrow + added sign/zero/empty handling) | `-O2`, `-O0 -fsanitize=address,undefined` | 2.17M exhaustive + 6500 oracle + 413 extreme ×2 builds | ✅ PASS |
 | 2026-07-23 | `10_others.tex` | Sum of Digits up to N, Number of Digits up to N | `-O2`, `-O0 -fsanitize=address,undefined` | 2000 each | ✅ ALL PASS |
 | 2026-07-23 | `08_geometry.tex` | Rectangle Distance, Area Enclosed by Three Circles | `-O2`, `-O0 -fsanitize=address,undefined` | 2000 each | ✅ ALL PASS |
 | 2026-07-23 | `07_graph_theory.tex` | Kruskal's MST, Euler Tour, Binary Lifting (LCA), Max Rectangular Sum in Matrix, Rerooting DP, Articulation Points, Precision Handling (EEP), Bit Hacks | `-O2`, `-O0 -fsanitize=address,undefined` | 2000 each | ✅ ALL PASS |

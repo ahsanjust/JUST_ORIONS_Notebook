@@ -548,10 +548,9 @@ ll union_area(vector<tuple<ll,ll,ll,ll>> &rects) {
 \end{minted}
 
 \subsection{Intersection of Many Cubes / 3D Boxes}
-Given $n$ axis-aligned boxes $[x_{i,1}, x_{i,2}] \times [y_{i,1}, y_{i,2}] \times [z_{i,1}, z_{i,2}]$, find their mutual intersection volume.
-The intersection along each axis is independent:
-\[ L_x = \max_i x_{i,1},\quad R_x = \min_i x_{i,2},\quad \Delta x = \max(0\text{LL}, R_x - L_x) \]
-Compute $\Delta y, \Delta z$ analogously. The intersection volume is:
-\[ V = \Delta x \cdot \Delta y \cdot \Delta z \]
-\textbf{Trap:} Always clamp each $\Delta \ge 0$ individually before multiplying. Never multiply $(R-L)$ directly, as two disjoint intervals with negative spans can falsely multiply to a positive volume.
+Mutual volume of $n$ axis-aligned boxes $[x_{i,1}, x_{i,2}] \times [y_{i,1}, y_{i,2}] \times [z_{i,1}, z_{i,2}]$: \\
+Intersections along each axis are independent: \\
+$L_x = \max_i x_{i,1}, \ R_x = \min_i x_{i,2}, \ \Delta x = \max(0\text{LL}, R_x - L_x)$. \\
+Compute $\Delta y, \Delta z$ analogously. Mutual volume is $V = \Delta x \cdot \Delta y \cdot \Delta z$. \\
+\textbf{Trap:} Clamp each $\Delta \ge 0$ individually before multiplying (never $(R-L)$ directly, as two negative spans falsely multiply to positive volume).
 

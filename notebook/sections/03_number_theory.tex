@@ -111,6 +111,26 @@ vector<int> divisors(int x) {
   return ret;
 }
 \end{minted}
+\subsection{SOD \& POD (Divisor Functions)}
+\begin{itemize}\setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}\setlength{\parsep}{0pt}
+  \item \textbf{Divisor Counts:} For $n = \prod p_i^{e_i}$, positive divisor count $d(n) = \prod (e_i+1)$. \\
+  $\omega(n) =$ distinct prime factors count; $\Omega(n) = \sum e_i$ (with multiplicity).
+  \item \textbf{SOD (Sum of Divisors):} $\sigma(n) = \sum_{d \mid n} d = \prod \frac{p_i^{e_i+1}-1}{p_i-1} = \prod (1+p_i+\dots+p_i^{e_i})$.
+  \item \textbf{$k$-th Power Divisor Sum:} $\sigma_k(n) = \sum d^k = \prod \frac{p_i^{k(e_i+1)}-1}{p_i^k-1}$.
+  \item \textbf{Proper Divisor Sum:} $s(n) = \sigma(n) - n$: $=n$ (perfect), $>n$ (abundant), $<n$ (deficient).
+  \item \textbf{POD (Product of Divisors):} $\text{POD}(n) = \prod_{d \mid n} d = n^{d(n)/2} = (\sqrt{n})^{d(n)}$. \\
+  Each pair $(d, n/d)$ multiplies to $n$. When $d(n)$ is odd ($n$ is square), use $(\sqrt{n})^{d(n)}$ or $\prod p_i^{e_i \cdot d(n)/2}$ to avoid float error. Ex: $12 \to d=6, \sigma=28, \text{POD}=12^3$.
+  \item \textbf{Mod SOD without Division:} Compute $S(k) = \sum_{j=0}^{k-1} r^j \pmod M$ when $\gcd(r-1, M) \ne 1$ (no mod inverse) via D\&C in $O(\log k)$: $S(2m) = S(m)(1+r^m)$, $S(2m+1) = S(2m) + r^{2m}$ (base $S(0)=0, S(1)=1$).
+  \item \textbf{Legendre's Formula:} $v_p(n!) = \sum_{k \ge 1} \lfloor n/p^k \rfloor$ is the exponent of prime $p$ in $n!$. \\
+  Trailing zeros of $n!$: base 10 is $v_5(n!)$; general base $B = \prod q_j^{a_j}$ is $\min_j \lfloor v_{q_j}(n!)/a_j \rfloor$.
+  \item \textbf{Wilson's Theorem:} $n > 1$ is prime $\iff (n-1)! \equiv -1 \pmod n$. \\
+  Compute $(p-k)! \pmod p$ for small $k \ll p$: $(p-k)! \equiv \frac{(-1)^k}{(k-1)!} \pmod p$ (e.g. $(p-2)! \equiv 1$).
+  \item \textbf{Fermat \& Euler's Criterion (QR):} If $\gcd(a,p)=1$, $a^{p-1} \equiv 1 \pmod p \implies a^{-1} \equiv a^{p-2}$. \\
+  $a^{(p-1)/2} \equiv \left(\frac{a}{p}\right) \pmod p$: $+1 \implies a$ is quadratic residue (square mod $p$), $-1 \implies$ non-residue (no square root mod $p$), $0 \implies p \mid a$.
+  \item \textbf{Carmichael $\lambda(n)$:} Smallest exponent with $a^{\lambda(n)} \equiv 1 \pmod n$ for all $\gcd(a,n)=1$ (divides $\varphi(n)$). For odd prime powers: $\lambda(p^k) = p^{k-1}(p-1) = \varphi(p^k)$. For powers of 2: $\lambda(2)=1, \lambda(4)=2, \lambda(2^k)=2^{k-2}$ ($k \ge 3$). General: $\lambda(n) = \operatorname{lcm}_i \lambda(p_i^{e_i})$. Ex: $\lambda(1000) = \operatorname{lcm}(2, 100) = 100 < \varphi(1000)=400$.
+  \item \textbf{Primitive Root:} Generator $g$ whose powers produce all $\varphi(n)$ coprime residues mod $n$ (order $\varphi(n)$). Exists iff $n \in \{1, 2, 4, p^k, 2p^k\}$ (odd prime $p$); count is $\varphi(\varphi(n))$. \\
+  Test: $g$ is primitive iff $g^{\varphi(n)/q} \not\equiv 1 \pmod n$ for all prime factors $q \mid \varphi(n)$.
+\end{itemize}
 \subsection{Segmented Sieve}
 Key idea: Sieve small primes $\le \sqrt{R}$, then strike composites in $[L,R]$ using offsets. Efficient for very large ranges ($L,R \le 10^{12}$, $R-L \le 10^7$).
 \begin{minted}{c++}
