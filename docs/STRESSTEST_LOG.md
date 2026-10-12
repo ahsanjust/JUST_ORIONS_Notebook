@@ -46,6 +46,7 @@ Each entry: **Section file** — subsections tested, variant compile flags passe
 | 2026-07-23 | `05_data_structure.tex` | BIT Range Update & Range Query | `-O2`, `-O0 -fsanitize=address,undefined` | 3000 random | ✅ PASS |
 | 2026-07-23 | `05_data_structure.tex` | Lazy Segment Tree | `-O2`, `-O0 -fsanitize=address,undefined` | 1000 random | ✅ PASS |
 | 2026-07-23 | `05_data_structure.tex` | Persistent Segment Tree | `-O2`, `-O0 -fsanitize=address,undefined` | 1000 random | ✅ PASS |
+| 2026-10-12 | `05_data_structure.tex` | Persistent Segment Tree value-domain (vkth/vcnt) + position-domain (distinct/pqry, time-travel) — replaced single struct snippet | `-O2`, `-O0 -fsanitize=address,undefined` | 313011 checks: 300 value trials (kth/cnt/range), 300 distinct trials, 100 branching time-travel trials, full-scale n=200k worst-case node budgets (pos 7.48M/8M, val 3.74M/4M), n=1 + boundary edges | ✅ PASS |
 | 2026-07-23 | `05_data_structure.tex` | Merge Sort Tree | `-O2`, `-O0 -fsanitize=address,undefined` | 2000 random | ✅ PASS |
 | 2026-07-23 | `05_data_structure.tex` | Implicit Treap | `-O2`, `-O0 -fsanitize=address,undefined` | 500 random | ✅ PASS |
 | 2026-07-23 | `05_data_structure.tex` | Wavelet Tree | `-O2`, `-O0 -fsanitize=address,undefined` | 500 random | ✅ PASS |

@@ -219,10 +219,12 @@ The **Library's "Lazy Segment Tree (Minimal)"** already eliminates the `hz` vect
 
 ## 11. Persistent Segment Tree
 
-**Notebook:** Static arrays `lc[M]`, `rc[M]`, `val[M]` (M = 4.4M, ~53 MB for N=200k)
+**Notebook:** Two bare-global snippets, null-node (`root[0]=0`), no `build()`:
+- **Value domain** (`vupd/vkth/vcnt`): `vlc/vrc/vval[VM]`, VM = N*20 = 4.0M (~46 MB for N=200k). k-th smallest + count `<=x` / `[x,y]` over compressed values.
+- **Position domain** (`pupd/pqry`): `plc/prc/pval[PM]`, PM = N*40 = 8.0M (~92 MB for N=200k). Distinct count via last-occurrence trick (worst 2 upd/version = 7.6M nodes — fits).
 
 ### Verdict
-Solid implementation. Static arrays avoid reallocation — good for contest use.
+Solid. Static globals avoid reallocation — good for contest use. Must be defined globally (stack overflow otherwise); `v`/`p` prefixes keep the two snippets collision-free in one file.
 
 ---
 
