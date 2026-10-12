@@ -5,9 +5,6 @@ pair<bool, string> sparts(string s) {  // {neg, magnitude w/o leading zeros}
   size_t p = s.find_first_not_of('0');
   return {neg && p != string::npos, p == string::npos ? "0" : s.substr(p)};
 }
-int scmp(const string &a, const string &b) {  // magnitudes: -1,0,1
-  return a.size() != b.size() ? (a.size() < b.size() ? -1 : 1) : a == b ? 0 : (a < b ? -1 : 1);
-}
 string uadd(string a, string b) {  // magnitudes
   if (a.size() < b.size()) swap(a, b);
   int c = 0, i = a.size() - 1, j = b.size() - 1;
@@ -35,7 +32,7 @@ string str_add(string a, string b) {
     string m = uadd(ma, mb);
     return na && m != "0" ? "-" + m : m;
   }
-  int c = scmp(ma, mb);
+  int c = ma.size() != mb.size() ? (ma.size() < mb.size() ? -1 : 1) : (ma == mb ? 0 : ma < mb ? -1 : 1);
   if (c == 0) return "0";
   string m = c > 0 ? usub(ma, mb) : usub(mb, ma);
   return (c > 0 ? na : nb) ? "-" + m : m;
