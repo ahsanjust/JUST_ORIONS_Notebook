@@ -559,9 +559,7 @@ struct Trie {
 };
 \end{minted}
 \subsection{Mo's Algorithm}
-\texttt{add(pos)} and \texttt{rem(pos)} must be implemented per problem. Snake-order (even/odd block sorting) for $O(N \sqrt{Q})$. Sort queries first. Block size $B = \sqrt{N}$. Alternating sort order within even/odd blocks cuts the total right-pointer moves nearly in half in practice.
 \begin{minted}{c++}
-// sort queries: blocks of size B, snake-order within blocks
 sort(cu.begin(), cu.end(), [&](auto &x, auto &y){
   if (x.l / B != y.l / B)
     return x.l / B < y.l / B;
