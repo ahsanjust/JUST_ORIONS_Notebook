@@ -546,7 +546,7 @@ struct HK {
 };
 \end{minted}
 \subsection{Dinic's Algorithm (Max Flow)}
-$O(V^2E)$ worst case, $O(E \sqrt{V})$ for unit capacities. Edge $(u,v)$ with capacity $c$ is added as TWO directed arcs. \texttt{e.flow} = current flow, \texttt{e.w} = capacity. Access residual capacity via \texttt{e.w - e.flow}. Use \texttt{directed=true} for one-way edges.
+$O(V^2E)$ worst case, $O(E \sqrt{V})$ for unit capacities. Edge $(u,v)$ with capacity $c$ is added as TWO directed arcs. \texttt{e.flow} = current flow, \texttt{e.w} = capacity. Access residual capacity via \texttt{e.w - e.flow}. Use \texttt{directed=true} for one-way edges. After \texttt{max\_flow()}, \texttt{min\_cut(M)} returns the original edges crossing the min cut (both endpoints $\le M$; omit \texttt{M} for all) --- the last BFS leaves the source side in \texttt{lvl[v] >= 0} (sink side \texttt{-1}), so no extra pass is needed.
 
 Key idea: BFS builds level graph; DFS sends blocking flow along it. "Dead-end" nodes are skipped via \texttt{ptr[u]} (current arc trick).
 \begin{minted}{c++}
@@ -556,12 +556,12 @@ struct Dinic {
   int n, s, t;
   vector<vector<edge>> g;
   vector<int> lvl, ptr;
-  vector<bool> in_s;
-  vector<pair<int,int>> cut;
+  vector<array<int,3>> edges;                 // {u, v, directed} of original edges
   Dinic(int n, int s, int t) : n(n), s(s), t(t), 
-    g(n), lvl(n), ptr(n), in_s(n) {}
+    g(n), lvl(n), ptr(n) {}
   void add_edge(int u, int v, ll w, bool directed = false) {
     if (u == v) return;
+    edges.push_back({u, v, (int)directed});
     edge a = {v, (int)g[v].size(), 0, w};
     edge b = {u, (int)g[u].size(), 0, directed ? 0 : w};
     g[u].push_back(a), g[v].push_back(b);
@@ -600,21 +600,19 @@ struct Dinic {
       fill(ptr.begin(), ptr.end(), 0);
       while ((pushed = dfs(s, inf)) > 0) f += pushed;
     }
-    queue<int> q; q.push(s); in_s[s] = true;
-    while (!q.empty()) {
-      int u = q.front(); q.pop();
-      for (auto &e : g[u]) {
-        int v = e.to;
-        if (e.flow < e.w && !in_s[v])
-          in_s[v] = true, q.push(v);
-      }
+    return f;                   // the last (failed) bfs left lvl[] = source side of the cut
+  }
+  // Min-cut edges among nodes with both endpoints <= M (call right after max_flow()).
+  // lvl[v] >= 0  <=>  v on the source side;  lvl[v] == -1  <=>  sink side.
+  vector<pair<int,int>> min_cut(int M = INT_MAX) {
+    vector<pair<int,int>> ans;
+    for (auto &[u, v, dir] : edges) if (max(u, v) <= M) {
+      bool ru = lvl[u] >= 0, rv = lvl[v] >= 0;
+      if (dir ? (ru && !rv) : (ru != rv)) ans.push_back({u, v});
     }
-    cut.clear();
-    for (int u = 0; u < n; u++)
-      for (auto &e : g[u])
-        if (in_s[u] && !in_s[e.to])
-          cut.push_back({u, e.to});
-    return f;
+    sort(ans.begin(), ans.end());
+    ans.erase(unique(ans.begin(), ans.end()), ans.end());
+    return ans;
   }
 };
 \end{minted}

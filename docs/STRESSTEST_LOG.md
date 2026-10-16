@@ -56,3 +56,4 @@ Each entry: **Section file** — subsections tested, variant compile flags passe
 | 2026-07-23 | `05_data_structure.tex` | Disjoint Sparse Table | `-O2`, `-O0 -fsanitize=address,undefined` | 3000 random | ✅ PASS |
 | 2026-07-23 | `05_data_structure.tex` | Min Queue | `-O2`, `-O0 -fsanitize=address,undefined` | 3000 random | ✅ PASS |
 | 2026-07-23 | `05_data_structure.tex` | Small-to-Large Merging | `-O2`, `-O0 -fsanitize=address,undefined` | 500 random | ✅ PASS |
+| 2026-10-16 | `07_graph_theory.tex` | Dinic Min-Cut (`min_cut(M)` reuses the final failed BFS's `lvl` as the source side — no extra pass, no `in_s` vector) | `-O2`, `-O0 -fsanitize=address,undefined` | 500,000 random graphs (directed/undirected, parallel + antiparallel edges, caps 0–4) + 300,000 super-source/sink (nodes 1..M, S/T > M) tests vs independent Edmonds-Karp | ✅ PASS (max-flow match; cut capacity = max flow; removing cut disconnects s/t; `lvl` == fresh residual BFS) |
