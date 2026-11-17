@@ -1,0 +1,72 @@
+// Tree Counting & Enumeration (Cayley's formula, Otter's formula, Catalan trees)
+// ==============================================================================
+
+/*
+Summary by Tree Type (n vertices):
+----------------------------------
+1. Labeled Trees (Vertices 1..n distinguishable):
+   - Unrooted: n^(n-2)                  (Cayley's formula)
+   - Rooted:   n * n^(n-2) = n^(n-1)    (Pick any of n vertices as root)
+   - Fixed degree sequence (d_1..d_n, sum d_i = 2n-2, d_i >= 1):
+       (n - 2)! / prod_{i=1}^n (d_i - 1)!   (Prüfer sequence multinomial)
+   - Forest of k trees rooted at specified vertices r_1..r_k:
+       k * n^(n - k - 1)
+   - Trees containing a specific edge:
+       2 * n^(n-3)
+   - Spanning trees on Complete Bipartite graph K_{a, b}:
+       a^(b-1) * b^(a-1)
+   - Spanning trees on Complete k-partite graph K_{n_1, ..., n_k} (n = sum n_i):
+       n^(k-2) * prod_{i=1}^k (n - n_i)^(n_i - 1)
+   - General graph G (Kirchhoff's Matrix Tree Theorem):
+       Any cofactor of Laplacian matrix L = D - A
+
+2. Binary & Ordered (Plane) Trees:
+   - Unlabeled Binary Trees (n nodes):
+       C_n = 1/(n+1) * binom(2n, n)         (Catalan number)
+   - Labeled Binary Trees (n nodes):
+       n! * C_n = (2n)! / (n+1)!
+   - Unlabeled Full Binary Trees (n internal nodes, n+1 leaves):
+       C_n
+   - Unlabeled Plane (Ordered) Rooted Trees (n nodes):
+       C_{n-1} = 1/n * binom(2n-2, n-1)
+   - Labeled Plane (Ordered) Rooted Trees (n nodes):
+       n! * C_{n-1} = (2n-2)! / (n-1)!
+
+3. Unlabeled Trees (Isomorphism Classes):
+   - Rooted (r_n, OEIS A000081):
+       r_1 = 1
+       r_n = 1/(n-1) * sum_{i=1}^{n-1} (sum_{d | i} d * r_d) * r_{n-i}
+       Sequence: 1, 1, 2, 4, 9, 20, 48, 115, 286, 719, 1842, 4766...
+   - Unrooted (t_n, OEIS A000055, Otter's dissimilarity characteristic):
+       t_n = r_n - sum_{i=1}^{floor((n-1)/2)} r_i * r_{n-i} - [n even] * binom(r_{n/2}, 2)
+       Sequence: 1, 1, 1, 2, 3, 6, 11, 23, 47, 106, 235, 551...
+*/
+
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+pair<vector<ll>, vector<ll>> count_unlabeled_trees(int max_n) {
+  vector<ll> r(max_n + 1, 0), t(max_n + 1, 0);
+  r[1] = t[1] = 1;
+  for (int n = 2; n <= max_n; n++) {
+    ll sum_all = 0;
+    for (int i = 1; i < n; i++) {
+      ll d_sum = 0;
+      for (int d = 1; d <= i; d++) {
+        if (i % d == 0) d_sum += d * r[d];
+      }
+      sum_all += d_sum * r[n - i];
+    }
+    r[n] = sum_all / (n - 1);
+
+    ll sub = 0;
+    for (int i = 1; i <= (n - 1) / 2; i++) sub += r[i] * r[n - i];
+    if (n % 2 == 0) {
+      ll mid = r[n / 2];
+      sub += mid * (mid - 1) / 2;
+    }
+    t[n] = r[n] - sub;
+  }
+  return {r, t};
+}

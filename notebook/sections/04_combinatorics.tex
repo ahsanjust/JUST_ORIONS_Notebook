@@ -184,4 +184,27 @@ $A(x)B(x) \Rightarrow \sum_{i=0}^n a_i b_{n-i}$ \\
 $xA(x) \Rightarrow n a_n$,
 $A(x)B(x) \Rightarrow \sum_{i=0}^n \binom{n}{i} a_i b_{n-i}$
 
+\subsection{Tree Counting \texorpdfstring{\&}{&} Enumeration}
+\textbf{Labeled Trees ($n$ vertices $1..n$):} \\
+\textbullet{} \textbf{Unrooted}: $n^{n-2}$ \hfill (Cayley's formula) \\
+\textbullet{} \textbf{Rooted}: $n \cdot n^{n-2} = n^{n-1}$ \\
+\textbullet{} \textbf{Degree seq} $(d_1, \dots, d_n, \sum d_i = 2n-2, d_i \ge 1)$: $\frac{(n-2)!}{\prod (d_i - 1)!}$ \\
+\textbullet{} \textbf{Forest of $k$ trees} (specified roots $r_1, \dots, r_k$): $k \cdot n^{n-k-1}$ \\
+\textbullet{} \textbf{Complete Bipartite $K_{a,b}$}: $a^{b-1} b^{a-1}$ \\
+\textbullet{} \textbf{Complete $k$-partite $K_{n_1,\dots,n_k}$ ($n = \sum n_i$)}:
+$n^{k-2} \prod_{i=1}^k (n-n_i)^{n_i-1}$ \\
+\textbullet{} \textbf{General Graph $G$}: Any cofactor of Laplacian $L = D - A$. \\
+\textbf{Binary \& Ordered (Plane) Trees ($n$ nodes):} \\
+\textbullet{} \textbf{Unlabeled Binary}: $C_n = \frac{1}{n+1}\binom{2n}{n}$ \hfill \textbf{Labeled}: $n! \cdot C_n = \frac{(2n)!}{(n+1)!}$ \\
+\textbullet{} \textbf{Unlabeled Plane Rooted}: $C_{n-1} = \frac{1}{n}\binom{2n-2}{n-1}$ \\
+\textbullet{} \textbf{Labeled Plane Rooted}: $n! \cdot C_{n-1} = \frac{(2n-2)!}{(n-1)!}$ \\
+\textbf{Unlabeled Trees (Isomorphism Classes):} \\
+\textbullet{} \textbf{Rooted ($r_n$, A000081)}: $r_1 = 1$,
+$r_n = \frac{1}{n-1} \sum_{i=1}^{n-1} \left(\sum_{d \mid i} d \cdot r_d\right) r_{n-i}$ \\
+Seq: $1, 1, 2, 4, 9, 20, 48, 115, 286, 719 \dots$ \\
+\textbullet{} \textbf{Unrooted ($t_n$, A000055, Otter's formula)}: \\
+$t_n = r_n - \sum_{i=1}^{\lfloor (n-1)/2 \rfloor} r_i r_{n-i} - [n \text{ even}] \binom{r_{n/2}}{2}$ \\
+Seq: $1, 1, 1, 2, 3, 6, 11, 23, 47, 106 \dots$
+
+
 

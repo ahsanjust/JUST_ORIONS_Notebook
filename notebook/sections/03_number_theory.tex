@@ -1,31 +1,11 @@
 \section{Number Theory}
 \subsection{GCD Properties}
-\begin{itemize}
+\begin{itemize}\setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}\setlength{\parsep}{0pt}
   \item \textbf{Divisibility Trick:} If $a$ perfectly divides $(b \times c)$, and the GCD of $a$ and $b$ is $d$, then the remaining part of $a$ (which is $a/d$) MUST perfectly divide $c$.
   \item \textbf{Exponents:} The GCD of $(n^a - 1)$ and $(n^b - 1)$ is beautifully simple: it is just $n^{\gcd(a,b)} - 1$.
   \item \textbf{Geometry:} If you draw a straight line on a 2D grid from $(0,0)$ to $(a,b)$, the number of exact grid points strictly between them is $\gcd(|a|, |b|) - 1$.
 \end{itemize}
-\begin{minted}{c++}
-// Inline x86 GCD via idiv | faster than __gcd on old compilers.
-// Avoid for large inputs; prefer std::gcd (C++17) otherwise.
-int gcdFast(int a, int b) {
-  int result;
-  __asm__ __volatile__(
-    "movl %1, %%eax;"
-    "movl %2, %%ebx;"
-    "CONTD: cmpl $0, %%ebx;"
-    "je DONE;"
-    "xorl %%edx, %%edx;"
-    "idivl %%ebx;"
-    "movl %%ebx, %%eax;"
-    "movl %%edx, %%ebx;"
-    "jmp CONTD;"
-    "DONE: movl %%eax, %0;"
-    : "=g"(result)
-    : "g"(a), "g"(b));
-  return result;
-}
-\end{minted}
+
 \subsection{Extended Euclid, CRT, Diophantine}
 \texttt{egcd(a,b,x,y)} returns $g = \gcd(a,b)$ with $ax + by = g$. \texttt{crt(a1,m1,a2,m2)} solves $x \equiv a_1 \pmod{m_1}$, $x \equiv a_2 \pmod{m_2}$. Returns $\{x, \text{lcm}(m_1,m_2)\}$ or $\{0, -1\}$ if no solution. \texttt{find\_any\_solution(a,b,c,x0,y0,g)} solves $Ax + By = C$. Solutions exist iff $g = \gcd(|A|, |B|)$ divides $C$. General: $x = x_0 + k \frac{B}{g}$, $y = y_0 - k \frac{A}{g}$.
 \textbf{Note:} CRT requires pairwise coprime moduli. If not coprime, it returns $\{0, -1\}$.
@@ -74,17 +54,35 @@ ll &x0, ll &y0, ll &g) {
 \begin{minted}{c++}
 // O(N)
 const int N = 1e6 + 9;
-int spf[N], mob[N];
+int spf[N];      // Smallest prime factor
+int phi[N];      // Euler's totient function
+int mob[N];      // Möbius function
+int divisor[N];  // Number of divisors d(n)
+int cnt[N];      // Exponent of spf in n
 vector<int> primes;
-void sieve() {
-  mob[1] = 1;
+
+void linear_sieve() {
+  phi[1] = mob[1] = divisor[1] = 1;
   for (int i = 2; i < N; i++) {
-    if (!spf[i]) spf[i] = i, mob[i] = -1, primes.push_back(i);
+    if (!spf[i]) {
+      spf[i] = i; primes.push_back(i);
+      phi[i] = i - 1; mob[i] = -1;
+      divisor[i] = 2; cnt[i] = 1;
+    }
     for (int p : primes) {
-      if (p > spf[i] || 1LL * i * p >= N) break;
+      if (1LL * i * p >= N) break;
       spf[i * p] = p;
-      if (i % p == 0) { mob[i * p] = 0; break; }
-      mob[i * p] = -mob[i];
+      if (i % p == 0) {
+        phi[i * p] = phi[i] * p; mob[i * p] = 0;
+        cnt[i * p] = cnt[i] + 1;
+        divisor[i * p] = divisor[i] / (cnt[i] + 1)
+                         * (cnt[i * p] + 1);
+        break;
+      } else {
+        phi[i * p] = phi[i] * (p - 1);
+        mob[i * p] = -mob[i]; cnt[i * p] = 1;
+        divisor[i * p] = divisor[i] * 2;
+      }
     }
   }
 }

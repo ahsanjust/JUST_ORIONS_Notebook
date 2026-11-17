@@ -1,19 +1,38 @@
 // O(N)
 const int N = 1e6 + 9;
-int spf[N], mob[N];
+int spf[N];      // Smallest prime factor
+int phi[N];      // Euler's totient function
+int mob[N];      // Möbius function
+int divisor[N];  // Number of divisors d(n)
+int cnt[N];      // Exponent of spf in n
 vector<int> primes;
-void sieve() {
-  mob[1] = 1;
+
+void linear_sieve() {
+  phi[1] = mob[1] = divisor[1] = 1;
   for (int i = 2; i < N; i++) {
-    if (!spf[i]) spf[i] = i, mob[i] = -1, primes.push_back(i);
+    if (!spf[i]) {
+      spf[i] = i;
+      primes.push_back(i);
+      phi[i] = i - 1;
+      mob[i] = -1;
+      divisor[i] = 2;
+      cnt[i] = 1;
+    }
     for (int p : primes) {
-      if (p > spf[i] || 1LL * i * p >= N) break;
+      if (1LL * i * p >= N) break;
       spf[i * p] = p;
       if (i % p == 0) {
+        phi[i * p] = phi[i] * p;
         mob[i * p] = 0;
+        cnt[i * p] = cnt[i] + 1;
+        divisor[i * p] = divisor[i] / (cnt[i] + 1) * (cnt[i * p] + 1);
         break;
+      } else {
+        phi[i * p] = phi[i] * (p - 1);
+        mob[i * p] = -mob[i];
+        cnt[i * p] = 1;
+        divisor[i * p] = divisor[i] * 2;
       }
-      mob[i * p] = -mob[i];
     }
   }
 }
@@ -45,7 +64,7 @@ vector<int> divisors(int x) {
   vector<int> ret = {1};
   for (auto [p, c] : factorize(x)) {
     int n = ret.size();
-    long long a = 1;
+    ll a = 1;
     for (int d = 1; d <= c; d++) {
       a *= p;
       for (int i = 0; i < n; i++) ret.push_back(ret[i] * a);

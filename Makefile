@@ -15,7 +15,7 @@ ifeq ($(OS),Windows_NT)
 else
     NULL_DEV  := /dev/null
     VIEW_CMD  := xdg-open $(PDF) 2>/dev/null || open $(PDF) 2>/dev/null || echo "→ Open $(PDF) manually"
-    CLEAN_CMD := cd $(NOTEBOOK_DIR) && rm -f *.aux *.log *.out *.toc *.fls *.fdb_latexmk *.pyg && rm -rf _minted-$(MAIN)/
+    CLEAN_CMD := cd $(NOTEBOOK_DIR) && rm -f *.aux *.log *.out *.toc *.fls *.fdb_latexmk *.pyg && rm -rf _minted*/
 endif
 
 .PHONY: all build clean view help
