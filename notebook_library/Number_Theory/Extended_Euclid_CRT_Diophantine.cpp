@@ -1,53 +1,113 @@
-using T = __int128_t;
-T egcd(T a, T b, T &x, T &y) {
-  T xx = y = 0, yy = x = 1;
-  while (b) {
-    T q = a / b;
-    T t = b;
-    b = a % b;
-    a = t;
-    t = xx;
-    xx = x - q * xx;
-    x = t;
-    t = yy;
-    yy = y - q * yy;
-    y = t;
-  }
-  if (a < 0) {
-    a = -a;
-    x = -x;
-    y = -y;
-  }
-  return a;
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+namespace LDE {
+using i128 = __int128_t;
+
+// ax + by = g = gcd(a, b) >= 0
+ll extgcd(ll a, ll b, ll& x, ll& y) {
+  if (!b) return x = (a < 0 ? -1 : 1), y = 0, abs(a);
+  ll g = extgcd(b, a % b, y, x);
+  return y -= a / b * x, g;
 }
-pair<T, T> crt(T a1, T m1, T a2, T m2) {
-  T p, q;
-  T g = egcd(m1, m2, p, q);
-  if (a1 % g != a2 % g) return {0, -1};
-  T m = m1 / g * m2;
-  p = (p % m + m) % m;
-  q = (q % m + m) % m;
-  T x = p * a2 % m * (m1 / g) % m + q * a1 % m * (m2 / g) % m;
-  return {x % m, m};
+
+// Returns x in [0, m-1] with (a * x) % m == 1, or -1
+ll mod_inv(ll a, ll m) {
+  if (m <= 1) return -1;
+  ll x, y, g = extgcd((a % m + m) % m, m, x, y);
+  return g == 1 ? (x % m + m) % m : -1;
 }
-ll extgcd(ll a, ll b, ll &x, ll &y) {
-  if (b == 0) {
-    x = 1;
-    y = 0;
-    return a;
+
+// a*x = b (mod m) => x = x0 (mod st). Total sols = m/st. {-1,-1} if none
+pair<ll, ll> congruence(ll a, ll b, ll m) {
+  if (m <= 0) return {-1, -1};
+  ll u, v, g = extgcd(a, m, u, v);
+  if (b % g) return {-1, -1};
+  ll st = m / g, x0 = ((i128)u * (b / g) % st + st) % st;
+  return {x0, st};
+}
+
+// General CRT: merges x=r1 (m1), x=r2 (m2) => {x0, lcm}
+// Supports arbitrary non-coprime moduli. Returns {-1, -1} if inconsistent
+pair<ll, ll> crt(ll r1, ll m1, ll r2, ll m2) {
+  if (m1 <= 0 || m2 <= 0) return {-1, -1};
+  r1 = (r1 % m1 + m1) % m1;
+  r2 = (r2 % m2 + m2) % m2;
+  auto [k0, st] = congruence(m1, r2 - r1, m2);
+  if (k0 == -1) return {-1, -1};
+  i128 lcm = (i128)m1 * st;
+  return {(r1 + (i128)k0 * m1) % lcm, (ll)lcm};
+}
+
+// Multi-CRT: solves system x = r[i] (mod m[i])
+pair<ll, ll> crt(const vector<ll>& r, const vector<ll>& m) {
+  pair<ll, ll> c = {0, 1};
+  for (int i = 0; i < (int)r.size(); i++)
+    if ((c = crt(c.first, c.second, r[i], m[i])).second == -1) break;
+  return c;
+}
+
+// Canonical: x in [0, |b/g|-1], y never overflows
+bool any_sol(ll a, ll b, ll c, ll& x, ll& y, ll& g) {
+  if (!a && !b) {
+    g = x = y = 0;
+    return c == 0;
   }
-  ll x1, y1;
-  ll d = extgcd(b, a % b, x1, y1);
-  x = y1;
-  y = x1 - y1 * (a / b);
-  return d;
-}
-bool find_any_solution(ll a, ll b, ll c, ll &x0, ll &y0, ll &g) {
-  g = extgcd(abs(a), abs(b), x0, y0);
+  g = extgcd(a, b, x, y);
   if (c % g) return false;
-  x0 *= c / g;
-  y0 *= c / g;
-  if (a < 0) x0 = -x0;
-  if (b < 0) y0 = -y0;
+  if (b) {
+    ll m = abs(b / g);
+    x = ((i128)x * (c / g) % m + m) % m;
+    y = (c - (i128)a * x) / b;
+  } else x = c / a, y = 0;
   return true;
 }
+
+// Precondition: b > 0
+i128 flr(i128 a, i128 b) {
+  return a >= 0 ? a / b : (a - b + 1) / b;
+}
+i128 cil(i128 a, i128 b) {
+  return a >= 0 ? (a + b - 1) / b : a / b;
+}
+
+// Range of k such that L <= u + k * v <= R
+pair<i128, i128> range_k(i128 u, i128 v, i128 L, i128 R) {
+  if (v < 0) u = -u, v = -v, swap(L, R), L = -L, R = -R;
+  return {cil(L - u, v), flr(R - u, v)};
+}
+
+// Returns [kl, kr] for parameter k. If kl > kr, no solution exists
+pair<i128, i128> k_range(ll a, ll b, ll c, ll lx, ll rx, ll ly, ll ry, ll& x, ll& y, ll& g) {
+  if (lx > rx || ly > ry || !any_sol(a, b, c, x, y, g)) return {1, 0};
+  auto [k1, k2] = range_k(x, b / g, lx, rx);
+  auto [k3, k4] = range_k(y, -a / g, ly, ry);
+  return {max(k1, k3), min(k2, k4)};
+}
+
+// Total solutions to a*x + b*y = c in [lx, rx] * [ly, ry]
+ll count_sol(ll a, ll b, ll c, ll lx, ll rx, ll ly, ll ry) {
+  if (lx > rx || ly > ry) return 0;
+  if (!a && !b) return c ? 0 : (ll)((i128)(rx - lx + 1) * (ry - ly + 1));
+  if (!a) return (c % b == 0 && ly <= c / b && c / b <= ry) ? rx - lx + 1 : 0;
+  if (!b) return (c % a == 0 && lx <= c / a && c / a <= rx) ? ry - ly + 1 : 0;
+  ll x, y, g;
+  auto [kl, kr] = k_range(a, b, c, lx, rx, ly, ry, x, y, g);
+  return kl > kr ? 0 : (ll)(kr - kl + 1);
+}
+
+// Solution with minimum x in [lx, rx] * [ly, ry]. Returns {-1, -1} if none
+pair<ll, ll> min_x_sol(ll a, ll b, ll c, ll lx, ll rx, ll ly, ll ry) {
+  if (lx > rx || ly > ry) return {-1, -1};
+  if (!a && !b) return c == 0 ? pair{lx, ly} : pair{-1LL, -1LL};
+  if (!a) return (c % b == 0 && ly <= c / b && c / b <= ry) ? pair{lx, c / b} : pair{-1LL, -1LL};
+  if (!b) return (c % a == 0 && lx <= c / a && c / a <= rx) ? pair{c / a, ly} : pair{-1LL, -1LL};
+  ll x, y, g;
+  auto [kl, kr] = k_range(a, b, c, lx, rx, ly, ry, x, y, g);
+  if (kl > kr) return {-1, -1};
+  i128 k = (b / g > 0 ? kl : kr);
+  return {(ll)(x + k * (b / g)), (ll)(y - k * (a / g))};
+}
+}  // namespace LDE
